@@ -8,7 +8,7 @@ import { loadState, saveState } from './utils/storage.js';
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight, RefreshCw } from 'lucide-react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
-import HighlightingEditor from './components/HighlightingEditor';
+import LexicalEditor from './lexical/LexicalEditor.jsx';
 import AISidebar from './components/AISidebar';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
@@ -54,7 +54,7 @@ const customEditorStyles = `
   mark.var-highlight {
     background: transparent !important;
     color: transparent !important; /* keep caret/text from being doubled visually */
-    border-bottom: 2px dotted rgba(31, 138, 153, 0.5); /* default cue color */
+    border-bottom: 2px dotted rgba(0, 0, 0, 0.5); /* default cue color */
     padding: 0 0 0.05em 0; /* minimal padding for consistent underline */
   }
   mark.var-highlight.filled {
@@ -2424,7 +2424,7 @@ function App() {
                                 const cardW = 360
                                 const gap = 8
                                 const headerH = 80
-                                const rowH = 120
+                                const rowH = 120 // approx per row
                                 const rows = Math.max(1, Math.ceil(count / columns))
                                 let w = columns * cardW + (columns - 1) * gap + 48
                                 let h = headerH + rows * rowH + 48
@@ -2434,7 +2434,7 @@ function App() {
                                 h = Math.min(Math.max(500, h), availH)
                                 const left = Math.max(0, Math.floor(((window.screen?.availWidth || window.innerWidth) - w) / 2))
                                 const top = Math.max(0, Math.floor(((window.screen?.availHeight || window.innerHeight) - h) / 3))
-                                const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1`
+                                const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1,noopener=1`
                                 
                                 const win = window.open(url.toString(), '_blank', features)
                                 if (win && win.focus) win.focus()
@@ -2492,16 +2492,10 @@ function App() {
                         <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
                         <span>{t.subject}</span>
                       </div>
-                      <HighlightingEditor
+                      <LexicalEditor
                         key={`subject-${selectedTemplate?.id}-${Object.keys(variables).length}`}
                         value={finalSubject}
-                        onChange={(e) => {
-                          manualEditRef.current.subject = true
-                          setFinalSubject(e.target.value)
-                        }}
-                        onBlur={() => {
-                          manualEditRef.current.subject = false
-                        }}
+                        onChange={(e) => { setFinalSubject(e.target.value); manualEditRef.current.subject = true; }}
                         variables={variables}
                         placeholder={getPlaceholderText()}
                         minHeight="60px"
@@ -2517,16 +2511,10 @@ function App() {
                         <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
                         <span>{t.body}</span>
                       </div>
-                      <HighlightingEditor
+                      <LexicalEditor
                         key={`body-${selectedTemplate?.id}-${Object.keys(variables).length}`}
                         value={finalBody}
-                        onChange={(e) => {
-                          manualEditRef.current.body = true
-                          setFinalBody(e.target.value)
-                        }}
-                        onBlur={() => {
-                          manualEditRef.current.body = false
-                        }}
+                        onChange={(e) => { setFinalBody(e.target.value); manualEditRef.current.body = true; }}
                         variables={variables}
                         placeholder={getPlaceholderText()}
                         minHeight="250px"
@@ -2816,12 +2804,12 @@ function App() {
                         const headerH = 64
                         const rowH = 112 // approx per row
                         const rows = Math.max(1, Math.ceil(count / columns))
-                        let w = columns * cardW + (columns - 1) * gap
-                        let h = headerH + rows * rowH
+                        let w = columns * cardW + (columns - 1) * gap + 48
+                        let h = headerH + rows * rowH + 48
                         const availW = (window.screen?.availWidth || window.innerWidth) - 40
                         const availH = (window.screen?.availHeight || window.innerHeight) - 80
-                        w = Math.min(Math.max(560, w), availW)
-                        h = Math.min(Math.max(420, h), availH)
+                        w = Math.min(Math.max(600, w), availW)
+                        h = Math.min(Math.max(500, h), availH)
                         const left = Math.max(0, Math.floor(((window.screen?.availWidth || window.innerWidth) - w) / 2))
                         const top = Math.max(0, Math.floor(((window.screen?.availHeight || window.innerHeight) - h) / 3))
                         const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1,noopener=1`
