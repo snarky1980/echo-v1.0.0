@@ -195,26 +195,26 @@ html, body { background: var(--background); color: var(--foreground); }
 }
 
 /* Variable highlighting using <mark> tags in contentEditable */
+/* Updated to use light blue/sage colors for better visibility */
 mark.var-highlight {
   display: inline;
   padding: 1px 4px;
   border-radius: 5px;
-  font-weight: 600;
-  background: rgba(254, 243, 199, 0.8);
-  color: #92400e;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(186, 230, 253, 0.7); /* light blue */
+  color: #0369a1; /* sky-700 */
+  border: 1px solid rgba(125, 211, 252, 0.5); /* sky-300 */
   font-style: normal;
 }
 mark.var-highlight.filled {
-  background: rgba(254, 243, 199, 0.9);
-  border-color: rgba(245, 158, 11, 0.6);
+  background: rgba(186, 230, 253, 0.9); /* light blue - more opaque when filled */
+  border-color: rgba(56, 189, 248, 0.6); /* sky-400 */
   font-weight: 700;
 }
 mark.var-highlight.empty {
-  background: rgba(254, 252, 232, 0.6);
-  border-color: rgba(253, 230, 138, 0.5);
-  color: #b45309;
-  font-style: italic;
+  background: rgba(224, 242, 254, 0.6); /* very light blue */
+  border-color: rgba(186, 230, 253, 0.5); /* sky-200 */
+  color: #0c4a6e; /* sky-900 */
+  font-weight: 500;
 }
 
 /* Clean view mode - hide highlighting visually but keep markup intact */
