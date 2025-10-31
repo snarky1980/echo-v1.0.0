@@ -19,6 +19,7 @@ export default function VariablesPopout({
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncStatus, setSyncStatus] = useState(null)
   const channelRef = useRef(null)
+  const senderIdRef = useRef(Math.random().toString(36).slice(2))
   const varInputRefs = useRef({})
 
   // Initialize BroadcastChannel for syncing with main window
@@ -29,15 +30,18 @@ export default function VariablesPopout({
 
       // Listen for messages from main window
       channel.onmessage = (event) => {
-        if (event.data.type === 'variablesUpdated') {
-          setVariables(event.data.variables)
+        const message = event.data
+        if (!message || message.sender === senderIdRef.current) return
+
+        if (message.type === 'variablesUpdated') {
+          setVariables(message.variables)
         }
         
         // Handle sync completion
-        if (event.data.type === 'syncComplete') {
+        if (message.type === 'syncComplete') {
           setIsSyncing(false)
-          if (event.data.success) {
-            setVariables(event.data.variables)
+          if (message.success) {
+            setVariables(message.variables)
             setSyncStatus('success')
             setTimeout(() => setSyncStatus(null), 2000)
           } else {
@@ -59,7 +63,7 @@ export default function VariablesPopout({
   useEffect(() => {
     if (!channelRef.current) return
     try {
-      channelRef.current.postMessage({ type: 'syncFromText' })
+  channelRef.current.postMessage({ type: 'syncFromText', sender: senderIdRef.current })
     } catch (e) {
       console.error('Failed to request initial syncFromText:', e)
     }
@@ -77,7 +81,8 @@ export default function VariablesPopout({
           type: 'variableChanged',
           varName,
           value,
-          allVariables: newVariables
+          allVariables: newVariables,
+          sender: senderIdRef.current
         })
       } catch (e) {
         console.error('Failed to send variable update:', e)
@@ -94,7 +99,8 @@ export default function VariablesPopout({
     
     try {
       channelRef.current.postMessage({
-        type: 'syncFromText'
+        type: 'syncFromText',
+        sender: senderIdRef.current
       })
     } catch (e) {
       console.error('Failed to request sync:', e)

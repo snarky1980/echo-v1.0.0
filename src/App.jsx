@@ -412,6 +412,8 @@ function App() {
   // Cross-window sync for variables (main <-> pop-out)
   const varsChannelRef = useRef(null)
   const varsSenderIdRef = useRef(Math.random().toString(36).slice(2))
+  const popoutChannelRef = useRef(null)
+  const popoutSenderIdRef = useRef(Math.random().toString(36).slice(2))
   const varsRemoteUpdateRef = useRef(false)
   const manualEditRef = useRef({ subject: false, body: false })
   const pendingTemplateIdRef = useRef(null)
@@ -426,6 +428,25 @@ function App() {
       return () => { nodes.forEach(n => n.classList.remove('focused')) }
     } catch {}
   }, [focusedVar])
+
+  const handleInlineVariableChange = useCallback((updates) => {
+    if (!updates) return
+
+    setVariables(prev => {
+      let hasDiff = false
+      const next = { ...prev }
+
+      Object.entries(updates).forEach(([key, rawValue]) => {
+        const normalized = (rawValue ?? '').toString()
+        if ((next[key] ?? '') !== normalized) {
+          next[key] = normalized
+          hasDiff = true
+        }
+      })
+
+      return hasDiff ? next : prev
+    })
+  }, [setVariables])
 
   // Refresh outlines if content updates while focused
   useEffect(() => {
@@ -686,27 +707,45 @@ function App() {
     if (!canUseBC) return
     try {
       const channel = new BroadcastChannel('email-assistant-sync')
+      popoutChannelRef.current = channel
       
       channel.onmessage = (event) => {
         const msg = event.data
-        if (!msg) return
+        if (!msg || msg.sender === popoutSenderIdRef.current) return
         
         // Handle variable changes from popout
         if (msg.type === 'variableChanged' && msg.allVariables) {
           setVariables(msg.allVariables)
+          return
+        }
+
+        if (msg.type === 'popoutOpened') {
+          try {
+            channel.postMessage({
+              type: 'variablesUpdated',
+              variables,
+              templateId: selectedTemplate?.id || null,
+              templateLanguage,
+              sender: popoutSenderIdRef.current
+            })
+          } catch (e) {
+            console.error('Failed to send variables snapshot to popout:', e)
+          }
+          return
         }
         
         // Handle sync request from popout
         if (msg.type === 'syncFromText') {
           console.log('🔄 Received syncFromText request from popout')
-          const success = syncFromText()
+          const result = syncFromText()
           
           // Send back the result
           try {
             channel.postMessage({
               type: 'syncComplete',
-              success: success,
-              variables: variables
+              success: result.success,
+              variables: result.variables,
+              sender: popoutSenderIdRef.current
             })
           } catch (e) {
             console.error('Failed to send sync result:', e)
@@ -720,6 +759,7 @@ function App() {
         } catch (e) {
           console.error('Error closing BroadcastChannel:', e)
         }
+        popoutChannelRef.current = null
       }
     } catch (e) {
       console.error('BroadcastChannel not available:', e)
@@ -748,6 +788,23 @@ function App() {
     if (!ch) return
     try { ch.postMessage({ type: 'update', templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current }) } catch {}
   }, [selectedTemplateId, templateLanguage])
+
+  useEffect(() => {
+    if (!canUseBC) return
+    const channel = popoutChannelRef.current
+    if (!channel) return
+    try {
+      channel.postMessage({
+        type: 'variablesUpdated',
+        variables,
+        templateId: selectedTemplateId || null,
+        templateLanguage,
+        sender: popoutSenderIdRef.current
+      })
+    } catch (e) {
+      console.error('Failed to broadcast variables to popout:', e)
+    }
+  }, [variables, selectedTemplateId, templateLanguage])
 
   // Emit focused variable changes immediately for real-time visual feedback
   useEffect(() => {
@@ -1452,7 +1509,7 @@ function App() {
     
     if (!selectedTemplate || !templatesData) {
       console.log('🔄 No template selected or templates data unavailable')
-      return
+      return { success: false, variables }
     }
 
     const extracted = {}
@@ -1485,13 +1542,14 @@ function App() {
     
     // Update variables state
     if (Object.keys(extracted).length > 0) {
-      setVariables(prev => ({ ...prev, ...extracted }))
+      const mergedVariables = { ...variables, ...extracted }
+      setVariables(mergedVariables)
       console.log('🔄 Variables updated successfully')
-      return true // Indicate success
-    } else {
-      console.log('🔄 No values extracted')
-      return false // Indicate no changes
+      return { success: true, variables: mergedVariables }
     }
+
+    console.log('🔄 No values extracted')
+    return { success: false, variables }
   }
   
   // Helper function to extract a variable value from text
@@ -2459,6 +2517,7 @@ function App() {
                         onChange={(e) => { setFinalSubject(e.target.value); manualEditRef.current.subject = true; }}
                         variables={variables}
                         placeholder={getPlaceholderText()}
+                        onVariablesChange={handleInlineVariableChange}
                       />
 
                     </div>
@@ -2475,6 +2534,7 @@ function App() {
                         onChange={(e) => { setFinalBody(e.target.value); manualEditRef.current.body = true; }}
                         variables={variables}
                         placeholder={getPlaceholderText()}
+                        onVariablesChange={handleInlineVariableChange}
                       />
 
                     </div>

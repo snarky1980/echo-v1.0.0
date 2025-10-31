@@ -12,7 +12,7 @@ const escapeHtml = (input = '') =>
  * SimplePillEditor - A simple contentEditable editor that displays variables as styled pills
  * This is a much simpler alternative to the Lexical framework
  */
-const SimplePillEditor = ({ value, onChange, variables, placeholder }) => {
+const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange }) => {
   const editorRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -31,6 +31,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder }) => {
       const isFilled = varValue.trim().length > 0;
       const displayValue = isFilled ? varValue : `<<${varName}>>`;
       const storedValue = `<<${varName}>>`;
+      const displayAttr = isFilled ? varValue : '';
 
       // Add text before the variable
       if (match.index > lastIndex) {
@@ -39,7 +40,9 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder }) => {
 
       // Add the pill
       const pillClass = `var-pill ${isFilled ? 'filled' : 'empty'}`;
-      parts.push(`<span class="${pillClass}" data-var="${varName}" data-value="${escapeHtml(storedValue)}" contenteditable="false">${escapeHtml(displayValue)}</span>`);
+      parts.push(
+        `<span class="${pillClass}" data-var="${varName}" data-value="${escapeHtml(storedValue)}" data-display="${escapeHtml(displayAttr)}" contenteditable="true" spellcheck="false">${escapeHtml(displayValue)}</span>`
+      );
 
       lastIndex = regex.lastIndex;
     }
@@ -90,6 +93,50 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder }) => {
 
   const handleInput = () => {
     const text = extractText();
+
+    const pillElements = editorRef.current?.querySelectorAll('.var-pill');
+    const updates = {};
+    let hasChanges = false;
+
+    if (pillElements) {
+      pillElements.forEach((pill) => {
+        const varName = pill.getAttribute('data-var');
+        if (!varName) return;
+
+        const rawText = pill.textContent ?? '';
+        const normalizedText = rawText
+          .replace(/\u00a0/g, ' ')
+          .replace(/[\r\n]+/g, ' ');
+        const trimmed = normalizedText.trim();
+        const placeholder = `<<${varName}>>`;
+        let newValue = normalizedText;
+
+        if (!trimmed || trimmed === placeholder) {
+          newValue = '';
+          if (rawText !== placeholder) {
+            pill.textContent = placeholder;
+          }
+          pill.classList.remove('filled');
+          pill.classList.add('empty');
+        } else {
+          pill.classList.add('filled');
+          pill.classList.remove('empty');
+        }
+
+        pill.setAttribute('data-display', newValue);
+
+        if ((variables?.[varName] || '') !== newValue) {
+          hasChanges = true;
+        }
+
+        updates[varName] = newValue;
+      });
+    }
+
+    if (hasChanges && typeof onVariablesChange === 'function') {
+      onVariablesChange(updates);
+    }
+
     if (onChange) {
       onChange({ target: { value: text } });
     }
@@ -104,6 +151,30 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder }) => {
     handleInput(); // Ensure final value is captured
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    const selection = document.getSelection?.();
+    if (!selection) {
+      return;
+    }
+
+    const anchorNode = selection.anchorNode;
+    if (!anchorNode) {
+      return;
+    }
+
+    const pillElement = anchorNode.nodeType === Node.ELEMENT_NODE
+      ? anchorNode.closest?.('.var-pill')
+      : anchorNode.parentElement?.closest?.('.var-pill');
+
+    if (pillElement) {
+      event.preventDefault();
+    }
+  };
+
   return (
     <div
       ref={editorRef}
@@ -112,6 +183,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder }) => {
       onInput={handleInput}
       onFocus={handleFocus}
       onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
       suppressContentEditableWarning
       data-placeholder={placeholder}
     />
