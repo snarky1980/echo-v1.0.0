@@ -8,7 +8,7 @@ import { loadState, saveState } from './utils/storage.js';
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight, RefreshCw } from 'lucide-react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
-import LexicalEditor from './lexical/LexicalEditor.jsx';
+import SimplePillEditor from './components/SimplePillEditor.jsx';
 import AISidebar from './components/AISidebar';
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
@@ -1446,38 +1446,6 @@ function App() {
     return ranges
   }
 
-  const applyVariablesToCurrentText = (currentText, templateText, values) => {
-    if (!templateText) return currentText ?? ''
-    const safeCurrent = typeof currentText === 'string' ? currentText : ''
-    const templateParts = parseTemplateStructure(templateText)
-    const varCount = templateParts.filter(p => p.type === 'var').length
-    if (varCount === 0) return safeCurrent
-
-    if (!safeCurrent.length) {
-      return replaceVariablesWithValues(templateText, values)
-    }
-
-    const ranges = computeVarRangesInText(safeCurrent, templateText)
-    if (ranges.length !== varCount) {
-      // Unable to map confidently; preserve existing text
-      return safeCurrent
-    }
-
-    let result = ''
-    let last = 0
-    ranges.forEach(range => {
-      result += safeCurrent.slice(last, range.start)
-      const rawValue = values?.[range.name]
-      const replacement = rawValue !== undefined && rawValue !== null && String(rawValue).length
-        ? String(rawValue)
-        : `<<${range.name}>>`
-      result += replacement
-      last = range.end
-    })
-    result += safeCurrent.slice(last)
-    return result
-  }
-
   // Sync from text: Extract variable values from text areas back to Variables Editor
   const syncFromText = () => {
     console.log('🔄 Sync from text: Starting reverse synchronization...')
@@ -1632,10 +1600,10 @@ function App() {
       const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
       const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
 
-      // A2: Auto-fill with default/example values immediately
+      // A2: Auto-fill with default/example values immediately (displayed inside pills)
       setVariables(initialVars)
-      setFinalSubject(replaceVariablesWithValues(subjectTemplate, initialVars))
-      setFinalBody(replaceVariablesWithValues(bodyTemplate, initialVars))
+      setFinalSubject(subjectTemplate)
+      setFinalBody(bodyTemplate)
       manualEditRef.current = { subject: false, body: false }
     } else {
       // No template selected - clear editors
@@ -1650,22 +1618,9 @@ function App() {
   useEffect(() => {
     if (!selectedTemplate) return
 
-    const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
-    const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
-
-    if (!manualEditRef.current.subject) {
-      const updatedSubject = applyVariablesToCurrentText(finalSubject, subjectTemplate, variables)
-      if (typeof updatedSubject === 'string' && updatedSubject !== finalSubject) {
-        setFinalSubject(updatedSubject)
-      }
-    }
-
-    if (!manualEditRef.current.body) {
-      const updatedBody = applyVariablesToCurrentText(finalBody, bodyTemplate, variables)
-      if (typeof updatedBody === 'string' && updatedBody !== finalBody) {
-        setFinalBody(updatedBody)
-      }
-    }
+    // With pill-based editor, the editable text keeps placeholders (<<var>>).
+    // Variables are rendered inside pills directly, so no need to mutate the
+    // underlying text when variable values change.
   }, [variables, selectedTemplate, templateLanguage, finalSubject, finalBody])
 
   /**
@@ -1675,16 +1630,19 @@ function App() {
     let content = ''
     
     // Content selection based on requested type
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
+    const resolvedBody = replaceVariablesWithValues(finalBody, variables)
+
     switch (type) {
       case 'subject':
-        content = finalSubject
+        content = resolvedSubject
         break
       case 'body':
-        content = finalBody
+        content = resolvedBody
         break
       case 'all':
       default:
-        content = `${finalSubject}\n\n${finalBody}`
+        content = `${resolvedSubject}\n\n${resolvedBody}`
         break
     }
     
@@ -1890,13 +1848,16 @@ function App() {
   const openInOutlook = () => {
     if (debug) console.log('Opening email client with subject:', finalSubject)
     
-    if (!finalSubject && !finalBody) {
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
+    const resolvedBody = replaceVariablesWithValues(finalBody, variables)
+
+    if (!resolvedSubject && !resolvedBody) {
       alert(templateLanguage === 'fr' ? 'Veuillez d\'abord sélectionner un modèle et remplir le contenu.' : 'Please first select a template and fill in the content.')
       return
     }
     
-    const subject = finalSubject || ''
-    const body = (finalBody || '').replace(/\n/g, '\r\n')
+    const subject = resolvedSubject || ''
+    const body = (resolvedBody || '').replace(/\n/g, '\r\n')
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     
     try {
@@ -2492,15 +2453,12 @@ function App() {
                         <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
                         <span>{t.subject}</span>
                       </div>
-                      <LexicalEditor
+                      <SimplePillEditor
                         key={`subject-${selectedTemplate?.id}-${Object.keys(variables).length}`}
                         value={finalSubject}
                         onChange={(e) => { setFinalSubject(e.target.value); manualEditRef.current.subject = true; }}
                         variables={variables}
                         placeholder={getPlaceholderText()}
-                        minHeight="60px"
-                        templateOriginal={selectedTemplate?.subject?.[templateLanguage] || ''}
-                        showHighlights={true}
                       />
 
                     </div>
@@ -2511,15 +2469,12 @@ function App() {
                         <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
                         <span>{t.body}</span>
                       </div>
-                      <LexicalEditor
+                      <SimplePillEditor
                         key={`body-${selectedTemplate?.id}-${Object.keys(variables).length}`}
                         value={finalBody}
                         onChange={(e) => { setFinalBody(e.target.value); manualEditRef.current.body = true; }}
                         variables={variables}
                         placeholder={getPlaceholderText()}
-                        minHeight="250px"
-                        templateOriginal={selectedTemplate?.body?.[templateLanguage] || ''}
-                        showHighlights={true}
                       />
 
                     </div>

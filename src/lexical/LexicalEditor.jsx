@@ -3,6 +3,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { $getRoot, $createParagraphNode, $createTextNode } from 'lexical';
@@ -13,60 +14,43 @@ import PillPlugin from './plugins/PillPlugin';
 // but only if the change wasn't triggered by the editor itself.
 function UpdatePlugin({ value }) {
   const [editor] = useLexicalComposerContext();
-  const isMounted = useRef(false);
+  const previousValue = useRef(value);
 
   useEffect(() => {
-    if (!isMounted.current) {
-        isMounted.current = true;
-        // Set initial state
-        editor.update(() => {
-            const root = $getRoot();
-            root.clear();
-            const paragraph = $createParagraphNode();
-            paragraph.append($createTextNode(value || ''));
-            root.append(paragraph);
-        });
-    } else {
-        const editorState = editor.getEditorState();
-        const editorText = editorState.read(() => $getRoot().getTextContent());
-
-        if (editorText !== value) {
-            editor.update(() => {
-                const root = $getRoot();
-                root.clear();
-                const paragraph = $createParagraphNode();
-                paragraph.append($createTextNode(value));
-                root.append(paragraph);
-            });
-        }
+    // Only update if the value prop actually changed
+    if (previousValue.current === value) {
+      return;
     }
+    
+    previousValue.current = value;
+    
+    editor.update(() => {
+      const root = $getRoot();
+      root.clear();
+      const paragraph = $createParagraphNode();
+      paragraph.append($createTextNode(value || ''));
+      root.append(paragraph);
+    });
   }, [value, editor]);
 
   return null;
 }
 
-const LexicalEditor = ({ value, onChange, variables, placeholder }) => {
+function LexicalEditor({ value, onChange, variables, placeholder }) {
   const initialConfig = {
     namespace: 'LexicalEditor',
     nodes: [PillNode],
     onError: (error) => {
-      console.error(error);
+      console.error('Lexical error:', error);
     },
-    editorState: null, // Initial state is set by the UpdatePlugin
+    editorState: null,
   };
 
-  const handleChange = (editorState, editor) => {
-    // We only want to trigger onChange if the change is from user interaction.
-    // Checking if the editor has focus is a good proxy for this.
-    if (!editor.isFocused()) {
-      return;
-    }
-    
+  const handleChange = (editorState) => {
     editorState.read(() => {
       const root = $getRoot();
       const text = root.getTextContent();
       if (onChange && text !== value) {
-        // Mimic textarea event object
         onChange({ target: { value: text } });
       }
     });
@@ -78,14 +62,15 @@ const LexicalEditor = ({ value, onChange, variables, placeholder }) => {
         <RichTextPlugin
           contentEditable={<ContentEditable className="lexical-content-editable" />}
           placeholder={<div className="lexical-placeholder">{placeholder || 'Enter text...'}</div>}
+          ErrorBoundary={LexicalErrorBoundary}
         />
-        <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true} />
+        <OnChangePlugin onChange={handleChange} />
         <HistoryPlugin />
         <PillPlugin variables={variables} />
         <UpdatePlugin value={value} />
       </div>
     </LexicalComposer>
   );
-};
+}
 
 export default LexicalEditor;

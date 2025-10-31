@@ -326,6 +326,15 @@ input::-webkit-calendar-picker-indicator {
   overflow: auto;
 }
 
+.lexical-content-editable[data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+  position: absolute;
+  left: 16px;
+  top: 16px;
+}
+
 .lexical-content-editable:focus {
   outline: none;
   border-color: #7bd1ca;
