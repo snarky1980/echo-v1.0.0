@@ -14,7 +14,16 @@ export default function VariablesPopout({
   initialVariables, 
   interfaceLanguage 
 }) {
+  console.log('🔍 VariablesPopout props:', {
+    selectedTemplate: selectedTemplate?.id,
+    templatesData: !!templatesData,
+    initialVariables,
+    interfaceLanguage
+  })
+  
   const [variables, setVariables] = useState(initialVariables || {})
+  
+  console.log('🔍 VariablesPopout initialized with variables:', variables)
   const [focusedVar, setFocusedVar] = useState(null)
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncStatus, setSyncStatus] = useState(null)
@@ -27,35 +36,47 @@ export default function VariablesPopout({
     try {
       const channel = new BroadcastChannel('email-assistant-sync')
       channelRef.current = channel
+      console.log('🔍 BroadcastChannel created successfully')
 
       // Listen for messages from main window
       channel.onmessage = (event) => {
-        const message = event.data
-        if (!message || message.sender === senderIdRef.current) return
+        try {
+          const message = event.data
+          if (!message || message.sender === senderIdRef.current) return
 
-        if (message.type === 'variablesUpdated') {
-          setVariables(message.variables)
-        }
-        
-        // Handle sync completion
-        if (message.type === 'syncComplete') {
-          console.log('🔄 Received sync completion:', message)
-          setIsSyncing(false)
-          if (message.success) {
-            console.log('🔄 Updating variables with synced values:', message.variables)
-            setVariables(message.variables)
-            setSyncStatus('success')
-            setTimeout(() => setSyncStatus(null), 2000)
-          } else {
-            console.log('🔄 No changes found during sync')
-            setSyncStatus('no-changes')
-            setTimeout(() => setSyncStatus(null), 2000)
+          console.log('🔍 Received message:', message.type, message)
+
+          if (message.type === 'variablesUpdated') {
+            console.log('🔍 Updating variables from variablesUpdated:', message.variables)
+            setVariables(message.variables || {})
           }
+          
+          // Handle sync completion
+          if (message.type === 'syncComplete') {
+            console.log('🔄 Received sync completion:', message)
+            setIsSyncing(false)
+            if (message.success) {
+              console.log('🔄 Updating variables with synced values:', message.variables)
+              setVariables(message.variables || {})
+              setSyncStatus('success')
+              setTimeout(() => setSyncStatus(null), 2000)
+            } else {
+              console.log('🔄 No changes found during sync')
+              setSyncStatus('no-changes')
+              setTimeout(() => setSyncStatus(null), 2000)
+            }
+          }
+        } catch (msgError) {
+          console.error('Error processing BroadcastChannel message:', msgError)
         }
       }
 
       return () => {
-        channel.close()
+        try {
+          channel.close()
+        } catch (closeError) {
+          console.error('Error closing BroadcastChannel:', closeError)
+        }
       }
     } catch (e) {
       console.error('BroadcastChannel not available:', e)
@@ -122,18 +143,28 @@ export default function VariablesPopout({
 
   // Auto-focus first empty variable on mount
   useEffect(() => {
-    if (!selectedTemplate?.variables) return
+    if (!selectedTemplate?.variables || selectedTemplate.variables.length === 0) return
     
-    const firstEmpty = selectedTemplate.variables.find(
-      vn => !(variables[vn] || '').trim()
-    ) || selectedTemplate.variables[0]
-    
-    const el = varInputRefs.current[firstEmpty]
-    if (el && el.focus) {
-      setTimeout(() => {
-        el.focus()
-        el.select?.()
-      }, 100)
+    try {
+      const firstEmpty = selectedTemplate.variables.find(
+        vn => !(variables[vn] || '').trim()
+      ) || selectedTemplate.variables[0]
+      
+      const el = varInputRefs.current?.[firstEmpty]
+      if (el && typeof el.focus === 'function') {
+        setTimeout(() => {
+          try {
+            el.focus()
+            if (typeof el.select === 'function') {
+              el.select()
+            }
+          } catch (focusError) {
+            console.warn('Focus error:', focusError)
+          }
+        }, 100)
+      }
+    } catch (error) {
+      console.error('Auto-focus error:', error)
     }
   }, [])
 
@@ -209,9 +240,12 @@ export default function VariablesPopout({
       {/* Variables Grid */}
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
-          {selectedTemplate.variables.map((varName) => {
-            const varInfo = templatesData.variables?.[varName]
-            if (!varInfo) return null
+          {(selectedTemplate?.variables || []).map((varName) => {
+            const varInfo = templatesData?.variables?.[varName]
+            if (!varInfo) {
+              console.warn('🔍 Variable info not found for:', varName)
+              return null
+            }
 
             const currentValue = variables[varName] || ''
             const isFocused = focusedVar === varName

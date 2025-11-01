@@ -130,6 +130,12 @@ export default function VariablesPage() {
     )
   }
 
+  console.log('🔍 VariablesPage rendering with:', {
+    selectedTemplate: selectedTemplate?.id,
+    variables,
+    interfaceLanguage
+  })
+
   return (
     <VariablesPopout
       selectedTemplate={selectedTemplate}
