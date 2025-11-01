@@ -211,6 +211,82 @@ const customEditorStyles = `
   }
 `
 
+  const extractVariableValue = (text, templateText, varName) => {
+    try {
+      const varPlaceholder = `<<${varName}>>`
+      const varIndex = templateText.indexOf(varPlaceholder)
+
+      if (varIndex === -1) {
+        console.log(`🔄 Variable ${varName} not found in template`)
+        return null
+      }
+
+      const beforeText = templateText.substring(0, varIndex)
+      const beforeVarMatch = beforeText.match(/<<[^>]+>>(?!.*<<[^>]+>>)/)
+      const beforeAnchorStart = beforeVarMatch ? beforeVarMatch.index + beforeVarMatch[0].length : Math.max(0, varIndex - 50)
+      const beforeAnchor = templateText.substring(beforeAnchorStart, varIndex).trim()
+
+      const afterStart = varIndex + varPlaceholder.length
+      const afterText = templateText.substring(afterStart)
+      const afterVarMatch = afterText.match(/<<[^>]+>>/)
+      const afterAnchorEnd = afterVarMatch ? afterVarMatch.index : Math.min(afterText.length, 50)
+      const afterAnchor = templateText.substring(afterStart, afterStart + afterAnchorEnd).trim()
+
+      console.log(`🔄 Extracting ${varName} with anchors:`, {
+        before: beforeAnchor.substring(0, 30),
+        after: afterAnchor.substring(0, 30)
+      })
+
+      let startPos = 0
+      let endPos = text.length
+
+      if (beforeAnchor) {
+        const beforeIndex = text.indexOf(beforeAnchor)
+        if (beforeIndex !== -1) {
+          startPos = beforeIndex + beforeAnchor.length
+        } else {
+          const partialBefore = beforeAnchor.substring(Math.max(0, beforeAnchor.length - 20))
+          const partialIndex = text.indexOf(partialBefore)
+          if (partialIndex !== -1) {
+            startPos = partialIndex + partialBefore.length
+          } else {
+            console.log(`🔄 Could not find before anchor for ${varName}`)
+            return null
+          }
+        }
+      }
+
+      if (afterAnchor) {
+        const afterIndex = text.indexOf(afterAnchor, startPos)
+        if (afterIndex !== -1) {
+          endPos = afterIndex
+        } else {
+          const partialAfter = afterAnchor.substring(0, 20)
+          const partialIndex = text.indexOf(partialAfter, startPos)
+          if (partialIndex !== -1) {
+            endPos = partialIndex
+          } else {
+            console.log(`🔄 Could not find after anchor for ${varName}, using end of text`)
+          }
+        }
+      }
+
+      const extracted = text.substring(startPos, endPos).trim()
+
+      if (!extracted || extracted === varPlaceholder) {
+        console.log(`🔄 No value found for ${varName}`)
+        return null
+      }
+
+      console.log(`🔄 Extracted ${varName}: "${extracted.substring(0, 50)}${extracted.length > 50 ? '...' : ''}"`)
+      return extracted
+
+    } catch (error) {
+      console.warn(`🔄 Error extracting ${varName}:`, error)
+      return null
+    }
+  }
+
 // Lightweight bilingual synonyms for better recall in fuzzy search
 const SYNONYMS = {
   // FR <-> EN common domain terms
@@ -1556,7 +1632,7 @@ function App() {
   }
 
   // Sync from text: Extract variable values from text areas back to Variables Editor
-  const syncFromText = () => {
+  const syncFromText = useCallback(() => {
     console.log('🔄 Sync from text: Starting reverse synchronization...')
     console.log('🔄 Current state:', {
       selectedTemplate: selectedTemplate?.id,
@@ -1586,7 +1662,7 @@ function App() {
     if (subjectTemplate && finalSubject) {
       selectedTemplate.variables.forEach(varName => {
         if (subjectTemplate.includes(`<<${varName}>>`)) {
-          const value = extractValueFromText(finalSubject, subjectTemplate, varName)
+          const value = extractVariableValue(finalSubject, subjectTemplate, varName)
           if (value !== null) {
             console.log(`🔄 Extracted from subject - ${varName}: "${value.substring(0, 50)}..."`)
             extracted[varName] = value
@@ -1599,7 +1675,7 @@ function App() {
     if (bodyTemplate && finalBody) {
       selectedTemplate.variables.forEach(varName => {
         if (bodyTemplate.includes(`<<${varName}>>`)) {
-          const value = extractValueFromText(finalBody, bodyTemplate, varName)
+          const value = extractVariableValue(finalBody, bodyTemplate, varName)
           if (value !== null) {
             console.log(`🔄 Extracted from body - ${varName}: "${value.substring(0, 50)}..."`)
             extracted[varName] = value
@@ -1621,98 +1697,8 @@ function App() {
     console.log('🔄 No new values extracted, returning current variables')
     // Even if no extraction occurred, return current variables for popout sync
     return { success: false, variables }
-  }
+  }, [selectedTemplate, templatesData, templateLanguage, finalSubject, finalBody, variables])
   
-  // Helper function to extract a variable value from text
-  // This function attempts to find where a variable's value is in the edited text
-  // by using the surrounding literal text as anchors
-  const extractValueFromText = (text, templateText, varName) => {
-    try {
-      const varPlaceholder = `<<${varName}>>`
-      const varIndex = templateText.indexOf(varPlaceholder)
-      
-      if (varIndex === -1) {
-        console.log(`🔄 Variable ${varName} not found in template`)
-        return null
-      }
-      
-      // Strategy 1: Try to find literal text anchors around the variable
-      // Get text before the variable (up to 50 chars or previous variable)
-      const beforeText = templateText.substring(0, varIndex)
-      const beforeVarMatch = beforeText.match(/<<[^>]+>>(?!.*<<[^>]+>>)/)
-      const beforeAnchorStart = beforeVarMatch ? beforeVarMatch.index + beforeVarMatch[0].length : Math.max(0, varIndex - 50)
-      const beforeAnchor = templateText.substring(beforeAnchorStart, varIndex).trim()
-      
-      // Get text after the variable (up to 50 chars or next variable)
-      const afterStart = varIndex + varPlaceholder.length
-      const afterText = templateText.substring(afterStart)
-      const afterVarMatch = afterText.match(/<<[^>]+>>/)
-      const afterAnchorEnd = afterVarMatch ? afterVarMatch.index : Math.min(afterText.length, 50)
-      const afterAnchor = templateText.substring(afterStart, afterStart + afterAnchorEnd).trim()
-      
-      console.log(`🔄 Extracting ${varName} with anchors:`, {
-        before: beforeAnchor.substring(0, 30),
-        after: afterAnchor.substring(0, 30)
-      })
-      
-      // Find the variable value in the actual text using anchors
-      let startPos = 0
-      let endPos = text.length
-      
-      // Find start position using before anchor
-      if (beforeAnchor) {
-        const beforeIndex = text.indexOf(beforeAnchor)
-        if (beforeIndex !== -1) {
-          startPos = beforeIndex + beforeAnchor.length
-        } else {
-          // Try with partial match (first 20 chars of anchor)
-          const partialBefore = beforeAnchor.substring(Math.max(0, beforeAnchor.length - 20))
-          const partialIndex = text.indexOf(partialBefore)
-          if (partialIndex !== -1) {
-            startPos = partialIndex + partialBefore.length
-          } else {
-            console.log(`🔄 Could not find before anchor for ${varName}`)
-            return null
-          }
-        }
-      }
-      
-      // Find end position using after anchor
-      if (afterAnchor) {
-        const afterIndex = text.indexOf(afterAnchor, startPos)
-        if (afterIndex !== -1) {
-          endPos = afterIndex
-        } else {
-          // Try with partial match (first 20 chars of anchor)
-          const partialAfter = afterAnchor.substring(0, 20)
-          const partialIndex = text.indexOf(partialAfter, startPos)
-          if (partialIndex !== -1) {
-            endPos = partialIndex
-          } else {
-            console.log(`🔄 Could not find after anchor for ${varName}, using end of text`)
-            // Use end of text if no after anchor found
-          }
-        }
-      }
-      
-      // Extract and clean the value
-      const extracted = text.substring(startPos, endPos).trim()
-      
-      // Don't return empty values or the placeholder itself
-      if (!extracted || extracted === varPlaceholder) {
-        console.log(`🔄 No value found for ${varName}`)
-        return null
-      }
-      
-      console.log(`🔄 Extracted ${varName}: "${extracted.substring(0, 50)}${extracted.length > 50 ? '...' : ''}"`)
-      return extracted
-      
-    } catch (error) {
-      console.warn(`🔄 Error extracting ${varName}:`, error)
-      return null
-    }
-  }
-
   // Load a selected template
   useEffect(() => {
     if (selectedTemplate) {
@@ -1743,14 +1729,26 @@ function App() {
     }
   }, [selectedTemplate, templateLanguage, interfaceLanguage])
 
-  // Update final text when variables change (e.g., via popout) without overwriting active manual edits
+  // When the user manually edits the subject/body, automatically try to reverse sync the values back into variables
   useEffect(() => {
     if (!selectedTemplate) return
+    if (!manualEditRef.current.subject && !manualEditRef.current.body) return
 
-    // With pill-based editor, the editable text keeps placeholders (<<var>>).
-    // Variables are rendered inside pills directly, so no need to mutate the
-    // underlying text when variable values change.
-  }, [variables, selectedTemplate, templateLanguage, finalSubject, finalBody])
+    const debounce = setTimeout(() => {
+      console.log('🔄 Detected manual text edits, attempting automatic reverse sync...')
+      const result = syncFromText()
+
+      if (result.success) {
+        console.log('🔄 Auto reverse sync succeeded; manual edit flags reset')
+      } else {
+        console.log('🔄 Auto reverse sync completed without new values; manual edit flags reset')
+      }
+
+      manualEditRef.current = { subject: false, body: false }
+    }, 220)
+
+    return () => clearTimeout(debounce)
+  }, [selectedTemplate, templateLanguage, finalSubject, finalBody, syncFromText])
 
   /**
    * GRANULAR COPY FUNCTION
@@ -3032,6 +3030,7 @@ function App() {
                   if (!varInfo) return null
                   
                   const currentValue = variables[varName] || ''
+                  const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
                   
                   return (
                     <div key={varName} className="rounded-[10px] p-3 transition-all duration-200" style={{ 
@@ -3047,7 +3046,7 @@ function App() {
                     }}>
                       <div className="bg-white rounded-[8px] p-4 border" style={{ border: '1px solid rgba(190, 210, 140, 0.4)' }}>
                         <div className="mb-2 flex items-start justify-between gap-3">
-                          <label className="text-[14px] font-semibold text-gray-900 flex-1 leading-tight">
+                          <label htmlFor={sanitizedVarId} className="text-[14px] font-semibold text-gray-900 flex-1 leading-tight">
                             {varInfo?.description?.[interfaceLanguage] || varName}
                           </label>
                           <div className="shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
@@ -3065,8 +3064,8 @@ function App() {
                         </div>
                         <textarea
                           ref={el => { if (el) varInputRefs.current[varName] = el }}
-                          id={`var-${varName}`}
-                          name={`var-${varName}`}
+                          id={sanitizedVarId}
+                          name={sanitizedVarId}
                           value={currentValue}
                           onChange={(e) => {
                             const newValue = e.target.value

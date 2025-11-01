@@ -287,6 +287,7 @@ export default function VariablesPopout({
 
             const currentValue = variables[varName] || ''
             const isFocused = focusedVar === varName
+            const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
 
             return (
               <div
@@ -307,7 +308,7 @@ export default function VariablesPopout({
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   {/* Label and buttons */}
                   <div className="mb-2 flex items-start justify-between gap-3">
-                    <label className="text-sm font-semibold text-gray-900 flex-1 leading-tight">
+                    <label htmlFor={sanitizedVarId} className="text-sm font-semibold text-gray-900 flex-1 leading-tight">
                       {varInfo.description?.[interfaceLanguage] || varName}
                     </label>
                     <div className="shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
@@ -331,6 +332,8 @@ export default function VariablesPopout({
                   {/* Input field */}
                   <textarea
                     ref={el => { if (el) varInputRefs.current[varName] = el }}
+                    id={sanitizedVarId}
+                    name={sanitizedVarId}
                     value={currentValue}
                     onChange={(e) => updateVariable(varName, e.target.value)}
                     onFocus={() => setFocusedVar(varName)}

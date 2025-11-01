@@ -77,15 +77,15 @@
           </div>
           <div class="flex" style="flex-wrap:wrap;">
             <div class="grow">
-              <label style="font-size:11px;font-weight:600;color:#475569;">Catégorie</label>
+              <label for="ai-cat" style="font-size:11px;font-weight:600;color:#475569;">Catégorie</label>
               <select id="ai-cat"></select>
             </div>
             <div class="grow">
-              <label style="font-size:11px;font-weight:600;color:#475569;">Modèle</label>
+              <label for="ai-tpl" style="font-size:11px;font-weight:600;color:#475569;">Modèle</label>
               <select id="ai-tpl"></select>
             </div>
             <div style="min-width:140px;">
-              <label style="font-size:11px;font-weight:600;color:#475569;">Action IA</label>
+              <label for="ai-action" style="font-size:11px;font-weight:600;color:#475569;">Action IA</label>
               <select id="ai-action">
                 <option value="polish">Polir</option>
                 <option value="concise">Rendre concis</option>
@@ -99,11 +99,11 @@
           <div class="vars-grid" id="ai-vars"></div>
           <div class="flex" style="flex-direction:column; gap:8px;">
             <div>
-              <label style="font-size:11px;font-weight:600;color:#475569;">Sujet</label>
+              <label for="ai-subject" style="font-size:11px;font-weight:600;color:#475569;">Sujet</label>
               <input id="ai-subject" placeholder="Sujet" />
             </div>
             <div>
-              <label style="font-size:11px;font-weight:600;color:#475569;">Corps</label>
+              <label for="ai-body" style="font-size:11px;font-weight:600;color:#475569;">Corps</label>
               <textarea id="ai-body" rows="6" placeholder="Corps du courriel"></textarea>
             </div>
           </div>
@@ -222,7 +222,8 @@
     (tpl.variables||[]).forEach(vn=>{
       const meta = data.variables[vn];
       const wrap=document.createElement('div'); wrap.className='var-item';
-      wrap.innerHTML = `<label>${escapeHtml(vn)}</label><input data-var="${vn}" placeholder="${meta?escapeHtml(meta.example||''):''}" />`;
+      const inputId = `ai-var-${sanitizeId(vn)}`;
+      wrap.innerHTML = `<label for="${inputId}">${escapeHtml(vn)}</label><input id="${inputId}" name="${inputId}" data-var="${escapeHtml(vn)}" placeholder="${meta?escapeHtml(meta.example||''):''}" />`;
       const inp=wrap.querySelector('input');
       inp.addEventListener('input', onChange);
       grid.appendChild(wrap);
@@ -269,4 +270,5 @@
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
   function escapeReg(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+  function sanitizeId(s){ return String(s).replace(/[^a-z0-9_-]/gi,'-'); }
 })();
