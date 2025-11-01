@@ -36,14 +36,17 @@ export default function VariablesPage() {
           if (template) {
             setSelectedTemplate(template)
             
-            // Initialize variables as empty - let sync mechanism populate with current values
+            // Initialize variables with examples as fallback, sync will override with current values
             const initialVars = {}
-            if (template.variables) {
+            if (template.variables && data.variables) {
               template.variables.forEach(varName => {
-                initialVars[varName] = '' // Start empty, sync will populate
+                const varInfo = data.variables[varName]
+                // Use example as fallback, but sync will update with actual current values
+                initialVars[varName] = varInfo?.example || ''
               })
             }
             setVariables(initialVars)
+            console.log('📋 Variables page initialized with fallback values:', initialVars)
           }
         }
       } catch (error) {
@@ -55,25 +58,45 @@ export default function VariablesPage() {
 
     loadData()
 
-    // Listen for variable updates from main window via BroadcastChannel
+    // Setup BroadcastChannel with small delay to ensure proper initialization
     let channel
-    try {
-      channel = new BroadcastChannel('email-assistant-sync')
-      channel.onmessage = (event) => {
-        const data = event.data
-        if (data.type === 'variablesUpdated') {
-          console.log('📋 Variables page received variablesUpdated:', data.variables)
-          setVariables(data.variables)
+    const setupChannel = () => {
+      try {
+        channel = new BroadcastChannel('email-assistant-sync')
+        console.log('📋 Variables page BroadcastChannel connected')
+        
+        channel.onmessage = (event) => {
+          const data = event.data
+          if (data.type === 'variablesUpdated') {
+            console.log('📋 Variables page received variablesUpdated:', data.variables)
+            setVariables(data.variables)
+          }
+          // Also handle sync completion in case popout and page are both open
+          if (data.type === 'syncComplete' && data.success) {
+            console.log('📋 Variables page received syncComplete:', data.variables)
+            setVariables(data.variables)
+          }
         }
-        // Also handle sync completion in case popout and page are both open
-        if (data.type === 'syncComplete' && data.success) {
-          console.log('📋 Variables page received syncComplete:', data.variables)
-          setVariables(data.variables)
-        }
+        
+        // Send ready signal to main window after a small delay
+        setTimeout(() => {
+          if (channel) {
+            try {
+              channel.postMessage({ type: 'popoutReady', timestamp: Date.now() })
+              console.log('📋 Sent popout ready signal to main window')
+            } catch (e) {
+              console.error('Failed to send ready signal:', e)
+            }
+          }
+        }, 200)
+        
+      } catch (e) {
+        console.error('BroadcastChannel not available:', e)
       }
-    } catch (e) {
-      console.error('BroadcastChannel not available:', e)
     }
+    
+    // Setup channel with delay
+    setTimeout(setupChannel, 100)
 
     return () => {
       if (channel) channel.close()

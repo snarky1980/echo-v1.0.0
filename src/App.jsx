@@ -719,10 +719,10 @@ function App() {
           return
         }
 
-        if (msg.type === 'popoutOpened') {
-          console.log('🔄 Popout opened, extracting current values from text...')
+        if (msg.type === 'popoutOpened' || msg.type === 'popoutReady') {
+          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, extracting current values from text...`)
           
-          // Instead of sending old variables, sync from current text first
+          // Extract current values from text and send to popout
           setTimeout(() => {
             const syncResult = syncFromText()
             const currentVars = syncResult.success ? syncResult.variables : variables
@@ -739,7 +739,7 @@ function App() {
             } catch (e) {
               console.error('Failed to send variables snapshot to popout:', e)
             }
-          }, 50) // Small delay to ensure consistency
+          }, msg.type === 'popoutReady' ? 100 : 50) // Longer delay for ready signal
           return
         }
         
