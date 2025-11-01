@@ -36,14 +36,11 @@ export default function VariablesPage() {
           if (template) {
             setSelectedTemplate(template)
             
-            // Initialize variables with examples
+            // Initialize variables as empty - let sync mechanism populate with current values
             const initialVars = {}
-            if (template.variables && data.variables) {
+            if (template.variables) {
               template.variables.forEach(varName => {
-                const varInfo = data.variables[varName]
-                if (varInfo) {
-                  initialVars[varName] = varInfo.example || ''
-                }
+                initialVars[varName] = '' // Start empty, sync will populate
               })
             }
             setVariables(initialVars)
@@ -63,8 +60,15 @@ export default function VariablesPage() {
     try {
       channel = new BroadcastChannel('email-assistant-sync')
       channel.onmessage = (event) => {
-        if (event.data.type === 'variablesUpdated') {
-          setVariables(event.data.variables)
+        const data = event.data
+        if (data.type === 'variablesUpdated') {
+          console.log('📋 Variables page received variablesUpdated:', data.variables)
+          setVariables(data.variables)
+        }
+        // Also handle sync completion in case popout and page are both open
+        if (data.type === 'syncComplete' && data.success) {
+          console.log('📋 Variables page received syncComplete:', data.variables)
+          setVariables(data.variables)
         }
       }
     } catch (e) {

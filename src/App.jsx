@@ -720,17 +720,26 @@ function App() {
         }
 
         if (msg.type === 'popoutOpened') {
-          try {
-            channel.postMessage({
-              type: 'variablesUpdated',
-              variables,
-              templateId: selectedTemplate?.id || null,
-              templateLanguage,
-              sender: popoutSenderIdRef.current
-            })
-          } catch (e) {
-            console.error('Failed to send variables snapshot to popout:', e)
-          }
+          console.log('🔄 Popout opened, extracting current values from text...')
+          
+          // Instead of sending old variables, sync from current text first
+          setTimeout(() => {
+            const syncResult = syncFromText()
+            const currentVars = syncResult.success ? syncResult.variables : variables
+            
+            try {
+              channel.postMessage({
+                type: 'variablesUpdated',
+                variables: currentVars,
+                templateId: selectedTemplate?.id || null,
+                templateLanguage,
+                sender: popoutSenderIdRef.current
+              })
+              console.log('🔄 Sent current variables to popout:', currentVars)
+            } catch (e) {
+              console.error('Failed to send variables snapshot to popout:', e)
+            }
+          }, 50) // Small delay to ensure consistency
           return
         }
         
