@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Edit3, X, RefreshCw } from 'lucide-react'
+import { Edit3, X, RotateCcw } from 'lucide-react'
 
 /**
  * Standalone Variables Editor Popout Window
@@ -25,12 +25,38 @@ export default function VariablesPopout({
   
   console.log('🔍 VariablesPopout initialized with variables:', variables)
   const [focusedVar, setFocusedVar] = useState(null)
-  const [isSyncing, setIsSyncing] = useState(false)
-  const [syncStatus, setSyncStatus] = useState(null)
   const channelRef = useRef(null)
   const senderIdRef = useRef(Math.random().toString(36).slice(2))
   const retryIntervalRef = useRef(null)
   const varInputRefs = useRef({})
+  const focusedVarRef = useRef(focusedVar)
+
+  useEffect(() => {
+    focusedVarRef.current = focusedVar
+  }, [focusedVar])
+
+  const notifyFocusChange = (varName, broadcast = true) => {
+    const next = varName ?? null
+    const previous = focusedVarRef.current ?? null
+    if (previous === next) {
+      if (!broadcast) return
+    } else {
+      focusedVarRef.current = next
+      setFocusedVar(next)
+    }
+
+    if (!broadcast || !channelRef.current) return
+
+    try {
+      channelRef.current.postMessage({
+        type: 'focusedVar',
+        varName: next,
+        sender: senderIdRef.current
+      })
+    } catch (e) {
+      console.error('Failed to send focus update:', e)
+    }
+  }
 
   // Initialize BroadcastChannel for syncing with main window
   useEffect(() => {
@@ -47,6 +73,11 @@ export default function VariablesPopout({
 
           console.log('🔍 Received message:', message.type, message)
 
+          if (message.type === 'focusedVar') {
+            notifyFocusChange(message.varName ?? null, false)
+            return
+          }
+
           if (message.type === 'variablesUpdated') {
             console.log('🔍 Updating variables from variablesUpdated:', message.variables)
             setVariables(message.variables || {})
@@ -54,24 +85,15 @@ export default function VariablesPopout({
             if (retryIntervalRef.current) {
               clearInterval(retryIntervalRef.current)
               retryIntervalRef.current = null
-              setIsSyncing(false)
             }
           }
           
           // Handle sync completion
           if (message.type === 'syncComplete') {
             console.log('🔄 Received sync completion:', message)
-            setIsSyncing(false)
-            if (message.success) {
-              console.log('🔄 Updating variables with synced values:', message.variables)
-              setVariables(message.variables || {})
-              setSyncStatus('success')
-              setTimeout(() => setSyncStatus(null), 2000)
-            } else {
-              console.log('🔄 No changes found during sync')
-              setSyncStatus('no-changes')
-              setTimeout(() => setSyncStatus(null), 2000)
-            }
+            const nextVariables = message.variables || {}
+            console.log('🔄 Applying sync result variables:', nextVariables)
+            setVariables(nextVariables)
             // Stop retrying initial sync if any
             if (retryIntervalRef.current) {
               clearInterval(retryIntervalRef.current)
@@ -105,7 +127,6 @@ export default function VariablesPopout({
     let attempts = 0
     const maxAttempts = 6
     const intervalMs = 150
-    setIsSyncing(true)
     const sendSyncRequest = () => {
       attempts += 1
       try {
@@ -122,7 +143,6 @@ export default function VariablesPopout({
       if (attempts >= maxAttempts) {
         clearInterval(retryIntervalRef.current)
         retryIntervalRef.current = null
-        setIsSyncing(false)
         console.warn('🔄 Initial sync attempts exhausted; falling back to initial variables')
         return
       }
@@ -158,27 +178,60 @@ export default function VariablesPopout({
       }
     }
   }
-  
-  // Request sync from text areas in main window
-  const handleSyncFromText = () => {
+
+  const removeVariable = (varName) => {
+    const newVariables = { ...variables, [varName]: '' }
+    setVariables(newVariables)
+
     if (!channelRef.current) return
-    
-    setIsSyncing(true)
-    setSyncStatus(null)
-    
+
     try {
       channelRef.current.postMessage({
-        type: 'syncFromText',
+        type: 'variableChanged',
+        varName,
+        value: '',
+        allVariables: newVariables,
+        sender: senderIdRef.current
+      })
+
+      channelRef.current.postMessage({
+        type: 'variableRemoved',
+        varName,
+        allVariables: newVariables,
         sender: senderIdRef.current
       })
     } catch (e) {
-      console.error('Failed to request sync:', e)
-      setIsSyncing(false)
-      setSyncStatus('error')
-      setTimeout(() => setSyncStatus(null), 2000)
+      console.error('Failed to send variable removal:', e)
     }
   }
 
+  const reinitializeVariable = (varName) => {
+    const exampleValue = templatesData?.variables?.[varName]?.example || ''
+    const newVariables = { ...variables, [varName]: exampleValue }
+    setVariables(newVariables)
+
+    if (!channelRef.current) return
+
+    try {
+      channelRef.current.postMessage({
+        type: 'variableChanged',
+        varName,
+        value: exampleValue,
+        allVariables: newVariables,
+        sender: senderIdRef.current
+      })
+
+      channelRef.current.postMessage({
+        type: 'variableReinitialized',
+        varName,
+        value: exampleValue,
+        sender: senderIdRef.current
+      })
+    } catch (e) {
+      console.error('Failed to send variable reinitialization:', e)
+    }
+  }
+  
   // Auto-focus first empty variable on mount
   useEffect(() => {
     if (!selectedTemplate?.variables || selectedTemplate.variables.length === 0) return
@@ -216,24 +269,14 @@ export default function VariablesPopout({
 
   const t = interfaceLanguage === 'fr' ? {
     title: 'Modifier les variables',
-    resetExample: 'Remettre l\'exemple',
-    clear: 'Effacer',
-    close: 'Fermer',
-    syncFromText: 'Synchroniser depuis le texte',
-    syncing: 'Synchronisation...',
-    syncSuccess: 'Synchronis\u00e9 !',
-    syncNoChanges: 'Aucun changement',
-    syncError: 'Erreur'
+    reinitialize: 'Réinitialiser',
+    clear: 'Supprimer',
+    close: 'Fermer'
   } : {
     title: 'Edit Variables',
-    resetExample: 'Reset to example',
-    clear: 'Clear',
-    close: 'Close',
-    syncFromText: 'Sync from text',
-    syncing: 'Syncing...',
-    syncSuccess: 'Synced!',
-    syncNoChanges: 'No changes',
-    syncError: 'Error'
+    reinitialize: 'Reinitialize',
+    clear: 'Delete',
+    close: 'Close'
   }
 
   return (
@@ -251,19 +294,6 @@ export default function VariablesPopout({
             <Edit3 className="h-5 w-5 mr-2 text-white" />
             <h1 className="text-lg font-bold text-white">{t.title}</h1>
           </div>
-          
-          {/* Sync from text button */}
-          <button
-            onClick={handleSyncFromText}
-            disabled={isSyncing}
-            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title={t.syncFromText}
-          >
-            <RefreshCw className={`h-4 w-4 text-white ${isSyncing ? 'animate-spin' : ''}`} />
-            <span className="text-sm font-semibold text-white">
-              {isSyncing ? t.syncing : syncStatus === 'success' ? t.syncSuccess : syncStatus === 'no-changes' ? t.syncNoChanges : syncStatus === 'error' ? t.syncError : t.syncFromText}
-            </span>
-          </button>
         </div>
         
         <button
@@ -313,16 +343,17 @@ export default function VariablesPopout({
                     </label>
                     <div className="shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
                       <button
-                        className="text-xs px-2 py-0.5 rounded border border-gray-300 text-teal-700 hover:bg-teal-50"
-                        title={t.resetExample}
-                        onClick={() => updateVariable(varName, varInfo.example || '')}
+                        className="text-xs px-2 py-0.5 rounded border border-gray-300 text-teal-700 hover:bg-teal-50 flex items-center gap-1"
+                        title={t.reinitialize}
+                        onClick={() => reinitializeVariable(varName)}
                       >
-                        Ex.
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        {t.reinitialize}
                       </button>
                       <button
                         className="text-xs px-2 py-0.5 rounded border border-gray-300 text-red-700 hover:bg-red-50"
                         title={t.clear}
-                        onClick={() => updateVariable(varName, '')}
+                        onClick={() => removeVariable(varName)}
                       >
                         X
                       </button>
@@ -336,8 +367,8 @@ export default function VariablesPopout({
                     name={sanitizedVarId}
                     value={currentValue}
                     onChange={(e) => updateVariable(varName, e.target.value)}
-                    onFocus={() => setFocusedVar(varName)}
-                    onBlur={() => setFocusedVar(prev => prev === varName ? null : prev)}
+                    onFocus={() => notifyFocusChange(varName)}
+                    onBlur={() => notifyFocusChange(null)}
                     onKeyDown={(e) => {
                       // Tab or Enter to next field
                       if (e.key === 'Tab' || (e.key === 'Enter' && !e.shiftKey)) {

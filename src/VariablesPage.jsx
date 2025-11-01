@@ -45,8 +45,27 @@ export default function VariablesPage() {
                 initialVars[varName] = varInfo?.example || ''
               })
             }
-            setVariables(initialVars)
-            console.log('📋 Variables page initialized with fallback values:', initialVars)
+            let hydratedVars = { ...initialVars }
+            try {
+              const stored = localStorage.getItem('ea_pending_popout_snapshot')
+              if (stored) {
+                const parsed = JSON.parse(stored)
+                if (parsed && (!parsed.templateId || parsed.templateId === templateId) && (!parsed.templateLanguage || parsed.templateLanguage === lang)) {
+                  hydratedVars = { ...initialVars, ...(parsed.variables || {}) }
+                  console.log('📋 Hydrated popout variables from pending snapshot:', hydratedVars)
+                }
+              }
+            } catch (hydrateError) {
+              console.warn('📋 Unable to hydrate pending popout snapshot:', hydrateError)
+            }
+
+            setVariables(hydratedVars)
+            console.log('📋 Variables page initialized with fallback values:', hydratedVars)
+            try {
+              localStorage.removeItem('ea_pending_popout_snapshot')
+            } catch (cleanupError) {
+              console.warn('📋 Unable to clear pending popout snapshot:', cleanupError)
+            }
           }
         }
       } catch (error) {

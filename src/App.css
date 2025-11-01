@@ -314,6 +314,13 @@ input::-webkit-calendar-picker-indicator {
   box-shadow: inset 0 0 0 2px rgba(12, 74, 110, 0.25);
 }
 
+.var-pill.focused {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.4);
+  background-color: #dbeafe;
+  color: #0c4a6e;
+}
+
 /* Lexical editor styles */
 .lexical-content-editable {
   min-height: 150px;
@@ -331,6 +338,11 @@ input::-webkit-calendar-picker-indicator {
   overflow: auto;
 }
 
+.lexical-content-editable--compact {
+  min-height: 52px;
+  padding: 10px 14px;
+}
+
 .lexical-content-editable[data-placeholder]:empty:before {
   content: attr(data-placeholder);
   color: #94a3b8;
@@ -338,6 +350,11 @@ input::-webkit-calendar-picker-indicator {
   position: absolute;
   left: 16px;
   top: 16px;
+}
+
+.lexical-content-editable--compact[data-placeholder]:empty:before {
+  left: 14px;
+  top: 10px;
 }
 
 .lexical-content-editable:focus {

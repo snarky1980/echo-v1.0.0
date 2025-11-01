@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import Fuse from 'fuse.js'
 import { loadState, saveState } from './utils/storage.js';
 // Deploy marker: 2025-10-16T07:31Z
-import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight, RefreshCw } from 'lucide-react'
+import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight } from 'lucide-react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
 import SimplePillEditor from './components/SimplePillEditor.jsx';
@@ -211,81 +211,171 @@ const customEditorStyles = `
   }
 `
 
-  const extractVariableValue = (text, templateText, varName) => {
-    try {
-      const varPlaceholder = `<<${varName}>>`
-      const varIndex = templateText.indexOf(varPlaceholder)
+const normalizeForMatching = (value = '') => {
+  if (!value) return { normalized: '', indexMap: [0] }
+  const indexMap = []
+  let normalized = ''
+  let normalizedIndex = 0
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i]
+    if (char === '\r') continue
+    indexMap[normalizedIndex] = i
+    normalized += char
+    normalizedIndex++
+  }
+  indexMap[normalizedIndex] = value.length
+  return { normalized, indexMap }
+}
 
-      if (varIndex === -1) {
-        console.log(`🔄 Variable ${varName} not found in template`)
-        return null
-      }
+const extractVariablesFromTemplate = (text = '', templateText = '', variableNames = []) => {
+  if (!text || !templateText || !Array.isArray(variableNames) || !variableNames.length) return {}
 
-      const beforeText = templateText.substring(0, varIndex)
-      const beforeVarMatch = beforeText.match(/<<[^>]+>>(?!.*<<[^>]+>>)/)
-      const beforeAnchorStart = beforeVarMatch ? beforeVarMatch.index + beforeVarMatch[0].length : Math.max(0, varIndex - 50)
-      const beforeAnchor = templateText.substring(beforeAnchorStart, varIndex).trim()
+  const { normalized: normalizedText, indexMap } = normalizeForMatching(text)
+  const normalizedTemplate = templateText.replace(/\r/g, '')
+  const ranges = computeVarRangesInText(normalizedText, normalizedTemplate)
+  if (!ranges.length) return {}
 
-      const afterStart = varIndex + varPlaceholder.length
-      const afterText = templateText.substring(afterStart)
-      const afterVarMatch = afterText.match(/<<[^>]+>>/)
-      const afterAnchorEnd = afterVarMatch ? afterVarMatch.index : Math.min(afterText.length, 50)
-      const afterAnchor = templateText.substring(afterStart, afterStart + afterAnchorEnd).trim()
+  const validVariables = new Set(variableNames)
+  const result = {}
 
-      console.log(`🔄 Extracting ${varName} with anchors:`, {
-        before: beforeAnchor.substring(0, 30),
-        after: afterAnchor.substring(0, 30)
-      })
+  ranges.forEach(({ start, end, name }) => {
+    if (!validVariables.has(name)) return
+    const realStart = indexMap[start] ?? 0
+    const realEnd = indexMap[end] ?? text.length
+    const value = text.substring(realStart, realEnd).trim()
+    if (value && value !== `<<${name}>>`) {
+      result[name] = value
+    }
+  })
 
-      let startPos = 0
-      let endPos = text.length
+  return result
+}
 
-      if (beforeAnchor) {
-        const beforeIndex = text.indexOf(beforeAnchor)
-        if (beforeIndex !== -1) {
-          startPos = beforeIndex + beforeAnchor.length
-        } else {
-          const partialBefore = beforeAnchor.substring(Math.max(0, beforeAnchor.length - 20))
-          const partialIndex = text.indexOf(partialBefore)
-          if (partialIndex !== -1) {
-            startPos = partialIndex + partialBefore.length
-          } else {
-            console.log(`🔄 Could not find before anchor for ${varName}`)
-            return null
-          }
-        }
-      }
+const extractVariableWithAnchors = (text = '', templateText = '', varName = '') => {
+  if (!text || !templateText || !varName) return null
+  const varPlaceholder = `<<${varName}>>`
+  const varIndex = templateText.indexOf(varPlaceholder)
+  if (varIndex === -1) return null
 
-      if (afterAnchor) {
-        const afterIndex = text.indexOf(afterAnchor, startPos)
-        if (afterIndex !== -1) {
-          endPos = afterIndex
-        } else {
-          const partialAfter = afterAnchor.substring(0, 20)
-          const partialIndex = text.indexOf(partialAfter, startPos)
-          if (partialIndex !== -1) {
-            endPos = partialIndex
-          } else {
-            console.log(`🔄 Could not find after anchor for ${varName}, using end of text`)
-          }
-        }
-      }
+  const beforeSegments = templateText.substring(0, varIndex).split(/<<[^>]+>>/)
+  const beforeAnchor = beforeSegments[beforeSegments.length - 1] || ''
 
-      const extracted = text.substring(startPos, endPos).trim()
+  const afterStart = varIndex + varPlaceholder.length
+  const afterSegments = templateText.substring(afterStart).split(/<<[^>]+>>/)
+  const afterAnchor = afterSegments[0] || ''
 
-      if (!extracted || extracted === varPlaceholder) {
-        console.log(`🔄 No value found for ${varName}`)
-        return null
-      }
+  let startPos = 0
+  let endPos = text.length
 
-      console.log(`🔄 Extracted ${varName}: "${extracted.substring(0, 50)}${extracted.length > 50 ? '...' : ''}"`)
-      return extracted
-
-    } catch (error) {
-      console.warn(`🔄 Error extracting ${varName}:`, error)
-      return null
+  if (beforeAnchor) {
+    const beforeIndex = text.lastIndexOf(beforeAnchor)
+    if (beforeIndex !== -1) {
+      startPos = beforeIndex + beforeAnchor.length
+    } else {
+      const trimmed = beforeAnchor.trim()
+      if (!trimmed) return null
+      const approx = text.toLowerCase().lastIndexOf(trimmed.toLowerCase())
+      if (approx === -1) return null
+      startPos = approx + trimmed.length
     }
   }
+
+  if (afterAnchor) {
+    const afterIndex = text.indexOf(afterAnchor, startPos)
+    if (afterIndex !== -1) {
+      endPos = afterIndex
+    } else {
+      const trimmed = afterAnchor.trim()
+      if (trimmed) {
+        const approx = text.toLowerCase().indexOf(trimmed.toLowerCase(), startPos)
+        if (approx !== -1) {
+          endPos = approx
+        }
+      }
+    }
+  }
+
+  const extracted = text.substring(startPos, endPos).trim()
+  if (!extracted || extracted === varPlaceholder) return null
+  return extracted
+}
+
+const escapeRegExp = (value = '') => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const cleanupWhitespace = (text = '') => text
+  .replace(/[ \t]{2,}/g, ' ')
+  .replace(/\s+([,.;:!?])/g, '$1')
+  .replace(/[ \t]+\n/g, '\n')
+  .replace(/\n[ \t]+/g, '\n')
+  .replace(/\n{3,}/g, '\n\n')
+
+const removeVariablePlaceholderFromText = (text = '', varName = '') => {
+  if (!text || !varName) return text
+  const placeholder = `<<${varName}>>`
+  if (!text.includes(placeholder)) return text
+
+  const pattern = new RegExp(`\\s*${escapeRegExp(placeholder)}\\s*`, 'g')
+  const updated = text.replace(pattern, (match) => {
+    if (match.includes('\n')) {
+      const hasLeading = /^\s*\n/.test(match)
+      const hasTrailing = /\n\s*$/.test(match)
+      if (hasLeading && hasTrailing) return '\n\n'
+      if (hasLeading || hasTrailing) return '\n'
+    }
+    return ' '
+  })
+
+  return cleanupWhitespace(updated)
+}
+
+const ensurePlaceholderInText = (text = '', templateText = '', varName = '') => {
+  if (!templateText || !varName) return text || ''
+  const placeholder = `<<${varName}>>`
+  const source = text || ''
+  if (source.includes(placeholder)) return source
+
+  const varIndex = templateText.indexOf(placeholder)
+  if (varIndex === -1) return source
+
+  const beforeSegments = templateText.substring(0, varIndex).split(/<<[^>]+>>/)
+  const beforeAnchor = beforeSegments[beforeSegments.length - 1] || ''
+  const afterSegments = templateText.substring(varIndex + placeholder.length).split(/<<[^>]+>>/)
+  const afterAnchor = afterSegments[0] || ''
+
+  let insertPos = source.length
+
+  if (afterAnchor) {
+    const afterIdx = source.indexOf(afterAnchor)
+    if (afterIdx !== -1) {
+      insertPos = afterIdx
+    }
+  }
+
+  if (insertPos === source.length && beforeAnchor) {
+    const beforeIdx = source.lastIndexOf(beforeAnchor)
+    if (beforeIdx !== -1) {
+      insertPos = beforeIdx + beforeAnchor.length
+    }
+  }
+
+  let working = source
+  if (insertPos === working.length && !beforeAnchor && !afterAnchor && working.length > 0 && !/\n$/.test(working)) {
+    working += '\n'
+    insertPos = working.length
+  }
+
+  const charBefore = insertPos > 0 ? working[insertPos - 1] : ''
+  const charAfter = insertPos < working.length ? working[insertPos] : ''
+  const needsSpaceBefore = charBefore && !/[\s([\n]/.test(charBefore)
+  const needsSpaceAfter = charAfter && !/[\s,.;:!?)/\]]/.test(charAfter)
+
+  let insertion = placeholder
+  if (needsSpaceBefore) insertion = ` ${insertion}`
+  if (needsSpaceAfter) insertion = `${insertion} `
+
+  const updated = working.slice(0, insertPos) + insertion + working.slice(insertPos)
+  return cleanupWhitespace(updated)
+}
 
 // Lightweight bilingual synonyms for better recall in fuzzy search
 const SYNONYMS = {
@@ -448,6 +538,20 @@ function App() {
   const [finalSubject, setFinalSubject] = useState('') // Final editable version
   const [finalBody, setFinalBody] = useState('') // Final editable version
   const [variables, setVariables] = useState(savedState.variables || {})
+
+  const variablesRef = useRef(variables)
+  const finalSubjectRef = useRef(finalSubject)
+  const finalBodyRef = useRef(finalBody)
+  const selectedTemplateRef = useRef(selectedTemplate)
+  const templateLanguageRef = useRef(templateLanguage)
+  const syncFromTextRef = useRef(null)
+  const focusFromPopoutRef = useRef(false)
+
+  useEffect(() => { variablesRef.current = variables }, [variables])
+  useEffect(() => { finalSubjectRef.current = finalSubject }, [finalSubject])
+  useEffect(() => { finalBodyRef.current = finalBody }, [finalBody])
+  useEffect(() => { selectedTemplateRef.current = selectedTemplate }, [selectedTemplate])
+  useEffect(() => { templateLanguageRef.current = templateLanguage }, [templateLanguage])
   const [favorites, setFavorites] = useState(savedState.favorites || [])
   const [favoritesOnly, setFavoritesOnly] = useState(savedState.favoritesOnly || false)
   const [copySuccess, setCopySuccess] = useState(false)
@@ -490,6 +594,7 @@ function App() {
   const varsSenderIdRef = useRef(Math.random().toString(36).slice(2))
   const popoutChannelRef = useRef(null)
   const popoutSenderIdRef = useRef(Math.random().toString(36).slice(2))
+  const pendingPopoutSnapshotRef = useRef(null)
   const varsRemoteUpdateRef = useRef(false)
   const manualEditRef = useRef({ subject: false, body: false })
   const pendingTemplateIdRef = useRef(null)
@@ -791,69 +896,121 @@ function App() {
         
         // Handle variable changes from popout
         if (msg.type === 'variableChanged' && msg.allVariables) {
-          setVariables(msg.allVariables)
+          varsRemoteUpdateRef.current = true
+          const next = { ...msg.allVariables }
+          variablesRef.current = next
+          setVariables(next)
+          return
+        }
+
+        if (msg.type === 'variableRemoved' && msg.varName) {
+          const { varName } = msg
+          varsRemoteUpdateRef.current = true
+          const next = msg.allVariables
+            ? { ...msg.allVariables }
+            : { ...variablesRef.current, [varName]: '' }
+          variablesRef.current = next
+          setVariables(next)
+
+          if (varName) {
+            setFinalSubject(prev => {
+              const base = typeof prev === 'string' ? prev : finalSubjectRef.current || ''
+              const updated = removeVariablePlaceholderFromText(base, varName)
+              finalSubjectRef.current = updated
+              return updated
+            })
+            setFinalBody(prev => {
+              const base = typeof prev === 'string' ? prev : finalBodyRef.current || ''
+              const updated = removeVariablePlaceholderFromText(base, varName)
+              finalBodyRef.current = updated
+              return updated
+            })
+          }
+          return
+        }
+
+        if (msg.type === 'variableReinitialized' && msg.varName) {
+          const { varName, value = '' } = msg
+          varsRemoteUpdateRef.current = true
+          setVariables(prev => {
+            const base = prev || {}
+            const next = { ...base, [varName]: value }
+            variablesRef.current = next
+            return next
+          })
+
+          const latestTemplate = selectedTemplateRef.current
+          const latestLanguage = templateLanguageRef.current || templateLanguage
+          const subjectTemplate = latestTemplate?.subject?.[latestLanguage] || ''
+          const bodyTemplate = latestTemplate?.body?.[latestLanguage] || ''
+
+          if (subjectTemplate.includes(`<<${varName}>>`)) {
+            setFinalSubject(prev => {
+              const base = typeof prev === 'string' ? prev : finalSubjectRef.current || ''
+              const updated = ensurePlaceholderInText(base, subjectTemplate, varName)
+              finalSubjectRef.current = updated
+              return updated
+            })
+          }
+
+          if (bodyTemplate.includes(`<<${varName}>>`)) {
+            setFinalBody(prev => {
+              const base = typeof prev === 'string' ? prev : finalBodyRef.current || ''
+              const updated = ensurePlaceholderInText(base, bodyTemplate, varName)
+              finalBodyRef.current = updated
+              return updated
+            })
+          }
+
+          return
+        }
+
+        if (msg.type === 'focusedVar') {
+          focusFromPopoutRef.current = true
+          setFocusedVar(msg.varName ?? null)
           return
         }
 
         if (msg.type === 'popoutOpened' || msg.type === 'popoutReady') {
-          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, force-extracting current values from text...`)
-          
-          // Force extraction with more aggressive approach
+          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, preparing fresh variables snapshot...`)
+
           setTimeout(() => {
-            // Always try to extract from current text, regardless of sync success
-            let extractedVars = {}
-            
-            if (selectedTemplate && templatesData) {
-              console.log('🔄 Force extraction - current text:', {
-                subject: finalSubject?.substring(0, 100),
-                body: finalBody?.substring(0, 100)
-              })
-              
-              // Force extract from both subject and body
-              const subjectTemplate = selectedTemplate.subject?.[templateLanguage] || ''
-              const bodyTemplate = selectedTemplate.body?.[templateLanguage] || ''
-              
-              selectedTemplate.variables?.forEach(varName => {
-                // Try extracting from subject first
-                if (subjectTemplate.includes(`<<${varName}>>`)) {
-                  const extracted = extractValueFromText(finalSubject, subjectTemplate, varName)
-                  if (extracted !== null && extracted.trim()) {
-                    extractedVars[varName] = extracted
-                    console.log(`🔄 Force extracted from subject - ${varName}: "${extracted.substring(0, 30)}..."`)
-                  }
-                }
-                
-                // Try extracting from body if not found in subject or if different
-                if (bodyTemplate.includes(`<<${varName}>>`)) {
-                  const extracted = extractValueFromText(finalBody, bodyTemplate, varName)
-                  if (extracted !== null && extracted.trim()) {
-                    // Only use body extraction if we don't have subject value or if it's different
-                    if (!extractedVars[varName] || extractedVars[varName] !== extracted) {
-                      extractedVars[varName] = extracted
-                      console.log(`🔄 Force extracted from body - ${varName}: "${extracted.substring(0, 30)}..."`)
-                    }
-                  }
-                }
-              })
+            let latestVariables = null
+            try {
+              const runSync = syncFromTextRef.current
+              const syncResult = typeof runSync === 'function' ? runSync() : null
+              if (syncResult?.variables) {
+                latestVariables = { ...syncResult.variables }
+              }
+            } catch (syncError) {
+              console.error('Failed to extract variables while preparing popout snapshot:', syncError)
             }
-            
-            // Merge with current variables, preferring extracted values
-            const finalVars = { ...variables, ...extractedVars }
-            console.log('🔄 Final variables for popout:', finalVars)
-            
+
+            if (!latestVariables && pendingPopoutSnapshotRef.current) {
+              latestVariables = { ...pendingPopoutSnapshotRef.current }
+            }
+
+            if (!latestVariables) {
+              latestVariables = { ...variablesRef.current }
+            }
+
+            pendingPopoutSnapshotRef.current = null
+
+            console.log('🔄 Prepared variables for popout:', latestVariables)
+
             try {
               channel.postMessage({
                 type: 'variablesUpdated',
-                variables: finalVars,
-                templateId: selectedTemplate?.id || null,
-                templateLanguage,
+                variables: latestVariables,
+                templateId: selectedTemplateRef.current?.id || null,
+                templateLanguage: templateLanguageRef.current || templateLanguage,
                 sender: popoutSenderIdRef.current
               })
-              console.log('🔄 Sent force-extracted variables to popout')
+              console.log('🔄 Sent refreshed variables to popout')
             } catch (e) {
               console.error('Failed to send variables snapshot to popout:', e)
             }
-          }, 100)
+          }, 60)
           return
         }
         
@@ -863,7 +1020,8 @@ function App() {
           
           // Use a small delay to ensure all state is ready
           setTimeout(() => {
-            const result = syncFromText()
+            const runSync = syncFromTextRef.current
+            const result = typeof runSync === 'function' ? runSync() : { success: false, updated: false, variables: { ...variablesRef.current } }
             
             // Send back the result
             try {
@@ -871,6 +1029,7 @@ function App() {
               channel.postMessage({
                 type: 'syncComplete',
                 success: result.success,
+                updated: result.updated,
                 variables: result.variables,
                 sender: popoutSenderIdRef.current
               })
@@ -937,15 +1096,31 @@ function App() {
   // Emit focused variable changes immediately for real-time visual feedback
   useEffect(() => {
     // Primary: BroadcastChannel for immediate sync
-    if (canUseBC) {
+    if (focusFromPopoutRef.current) {
+      focusFromPopoutRef.current = false
+    } else if (canUseBC) {
       const ch = varsChannelRef.current
       if (ch) {
-        try { ch.postMessage({ type: 'update', focusedVar, sender: varsSenderIdRef.current }) } catch {}
+        try {
+          ch.postMessage({ type: 'update', focusedVar, sender: varsSenderIdRef.current })
+        } catch {}
+      }
+
+      const popoutChannel = popoutChannelRef.current
+      if (popoutChannel) {
+        try {
+          popoutChannel.postMessage({
+            type: 'focusedVar',
+            varName: focusedVar ?? null,
+            sender: popoutSenderIdRef.current
+          })
+        } catch {}
       }
     }
     
     // Fallback: localStorage with minimal delay
     const timeoutId = setTimeout(() => {
+      if (focusFromPopoutRef.current) return
       try {
         localStorage.setItem('ea_focused_var', JSON.stringify({ 
           focusedVar, 
@@ -1644,60 +1819,94 @@ function App() {
     
     if (!selectedTemplate || !templatesData) {
       console.log('🔄 No template selected or templates data unavailable')
-      return { success: false, variables }
+      return { success: false, updated: false, variables: { ...variables } }
     }
 
-    const extracted = {}
-    
-    // Get the template text for the current language
+  const extracted = {}
+
     const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
     const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
-    
+
     console.log('🔄 Templates:', {
       subjectTemplate: subjectTemplate?.substring(0, 100) + '...',
       bodyTemplate: bodyTemplate?.substring(0, 100) + '...'
     })
-    
-    // Process subject - extract from finalSubject
+
     if (subjectTemplate && finalSubject) {
-      selectedTemplate.variables.forEach(varName => {
-        if (subjectTemplate.includes(`<<${varName}>>`)) {
-          const value = extractVariableValue(finalSubject, subjectTemplate, varName)
-          if (value !== null) {
-            console.log(`🔄 Extracted from subject - ${varName}: "${value.substring(0, 50)}..."`)
-            extracted[varName] = value
-          }
-        }
+      const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, selectedTemplate.variables)
+      Object.entries(subjectValues).forEach(([name, value]) => {
+        console.log(`🔄 Extracted from subject - ${name}: "${value.substring(0, 50)}..."`)
+        extracted[name] = value
       })
     }
-    
-    // Process body - extract from finalBody
+
     if (bodyTemplate && finalBody) {
-      selectedTemplate.variables.forEach(varName => {
-        if (bodyTemplate.includes(`<<${varName}>>`)) {
-          const value = extractVariableValue(finalBody, bodyTemplate, varName)
-          if (value !== null) {
-            console.log(`🔄 Extracted from body - ${varName}: "${value.substring(0, 50)}..."`)
-            extracted[varName] = value
-          }
+      const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, selectedTemplate.variables)
+      Object.entries(bodyValues).forEach(([name, value]) => {
+        console.log(`🔄 Extracted from body - ${name}: "${value.substring(0, 50)}..."`)
+        // Only overwrite if we don't have a subject value already
+        if (!extracted[name]) {
+          extracted[name] = value
         }
       })
     }
-    
+
+    // Fallback to anchor-based extraction for any variables we still couldn't resolve
+    selectedTemplate.variables.forEach(varName => {
+      if (extracted[varName]) return
+      let fallback = null
+
+      if (subjectTemplate && subjectTemplate.includes(`<<${varName}>>`)) {
+        fallback = extractVariableWithAnchors(finalSubject, subjectTemplate, varName)
+      }
+
+      if (!fallback && bodyTemplate && bodyTemplate.includes(`<<${varName}>>`)) {
+        fallback = extractVariableWithAnchors(finalBody, bodyTemplate, varName)
+      }
+
+      if (fallback) {
+        console.log(`🔄 Fallback extracted - ${varName}: "${fallback.substring(0, 50)}..."`)
+        extracted[varName] = fallback
+      }
+    })
+
+    // Detect deletions: if previous value no longer appears anywhere, clear it explicitly
+    selectedTemplate.variables.forEach(varName => {
+      if (Object.prototype.hasOwnProperty.call(extracted, varName)) return
+      const previousValue = (variables[varName] ?? '').trim()
+      if (!previousValue) return
+
+      const stillInSubject = finalSubject?.includes(previousValue)
+      const stillInBody = finalBody?.includes(previousValue)
+
+      if (!stillInSubject && !stillInBody) {
+        console.log(`🔄 Detected removal of ${varName}; clearing value`)
+        extracted[varName] = ''
+      }
+    })
+
     console.log('🔄 Final extracted values:', extracted)
     
     // Update variables state and return merged result
-    if (Object.keys(extracted).length > 0) {
-      const mergedVariables = { ...variables, ...extracted }
-      setVariables(mergedVariables)
-      console.log('🔄 Variables updated successfully, returning:', mergedVariables)
-      return { success: true, variables: mergedVariables }
+    const extractedEntries = Object.entries(extracted)
+    const hasUpdates = extractedEntries.some(([name, value]) => (variables[name] ?? '') !== value)
+    const nextVariables = hasUpdates ? { ...variables, ...extracted } : { ...variables }
+
+    if (hasUpdates) {
+      console.log('🔄 Variables updated successfully, returning:', nextVariables)
+      variablesRef.current = nextVariables
+      setVariables(nextVariables)
+    } else {
+      console.log('🔄 No new values extracted; sending current variables snapshot')
+      variablesRef.current = nextVariables
     }
 
-    console.log('🔄 No new values extracted, returning current variables')
-    // Even if no extraction occurred, return current variables for popout sync
-    return { success: false, variables }
+    return { success: true, updated: hasUpdates, variables: nextVariables }
   }, [selectedTemplate, templatesData, templateLanguage, finalSubject, finalBody, variables])
+
+    useEffect(() => {
+      syncFromTextRef.current = syncFromText
+    }, [syncFromText])
   
   // Load a selected template
   useEffect(() => {
@@ -1738,10 +1947,12 @@ function App() {
       console.log('🔄 Detected manual text edits, attempting automatic reverse sync...')
       const result = syncFromText()
 
-      if (result.success) {
-        console.log('🔄 Auto reverse sync succeeded; manual edit flags reset')
-      } else {
+      if (result.success && result.updated) {
+        console.log('🔄 Auto reverse sync extracted new values; manual edit flags reset')
+      } else if (result.success) {
         console.log('🔄 Auto reverse sync completed without new values; manual edit flags reset')
+      } else {
+        console.log('🔄 Auto reverse sync skipped (template unavailable); manual edit flags reset')
       }
 
       manualEditRef.current = { subject: false, body: false }
@@ -1953,21 +2164,30 @@ function App() {
   }
 
   const confirmReset = () => {
-    if (selectedTemplate) {
-      const initialVars = {}
-      selectedTemplate.variables.forEach(varName => {
-        const varInfo = templatesData.variables[varName]
-        if (varInfo) {
-          initialVars[varName] = varInfo.example || ''
-        }
-      })
-      setVariables(initialVars)
-      
-      const subjectWithVars = replaceVariables(selectedTemplate.subject[templateLanguage] || '')
-      const bodyWithVars = replaceVariables(selectedTemplate.body[templateLanguage] || '')
-      setFinalSubject(subjectWithVars)
-      setFinalBody(bodyWithVars)
+    if (!selectedTemplate || !templatesData?.variables) {
+      setShowResetWarning(false)
+      return
     }
+
+    const initialVars = {}
+    selectedTemplate.variables.forEach(varName => {
+      const varInfo = templatesData.variables?.[varName]
+      initialVars[varName] = varInfo?.example || ''
+    })
+
+    variablesRef.current = initialVars
+    setVariables(initialVars)
+
+    const subjectTemplate = selectedTemplate.subject?.[templateLanguage] || ''
+    const bodyTemplate = selectedTemplate.body?.[templateLanguage] || ''
+
+    finalSubjectRef.current = subjectTemplate
+    finalBodyRef.current = bodyTemplate
+    setFinalSubject(subjectTemplate)
+    setFinalBody(bodyTemplate)
+
+    manualEditRef.current = { subject: false, body: false }
+    setFocusedVar(null)
     setShowResetWarning(false)
   }
 
@@ -2500,6 +2720,36 @@ function App() {
                           <>
                             <Button
                               onClick={() => {
+                                let preparedSnapshot = null
+                                try {
+                                  const runSync = syncFromTextRef.current
+                                  if (typeof runSync === 'function') {
+                                    const result = runSync()
+                                    if (result?.variables) {
+                                      preparedSnapshot = { ...result.variables }
+                                    }
+                                  }
+                                } catch (syncError) {
+                                  console.error('Failed to extract variables before opening popout:', syncError)
+                                }
+
+                                if (!preparedSnapshot) {
+                                  preparedSnapshot = { ...variablesRef.current }
+                                }
+
+                                pendingPopoutSnapshotRef.current = preparedSnapshot
+
+                                try {
+                                  localStorage.setItem('ea_pending_popout_snapshot', JSON.stringify({
+                                    variables: preparedSnapshot,
+                                    templateId: selectedTemplate?.id || null,
+                                    templateLanguage,
+                                    timestamp: Date.now()
+                                  }))
+                                } catch (storageError) {
+                                  console.warn('Unable to persist pending popout snapshot:', storageError)
+                                }
+
                                 // Open variables in new popout window
                                 const url = new URL(window.location.href)
                                 url.searchParams.set('varsOnly', '1')
@@ -2569,6 +2819,11 @@ function App() {
                         variables={variables}
                         placeholder={getPlaceholderText()}
                         onVariablesChange={handleInlineVariableChange}
+                        focusedVarName={focusedVar}
+                        onFocusedVarChange={(varName) => {
+                          setFocusedVar(varName || null)
+                        }}
+                        variant="compact"
                       />
 
                     </div>
@@ -2586,6 +2841,10 @@ function App() {
                         variables={variables}
                         placeholder={getPlaceholderText()}
                         onVariablesChange={handleInlineVariableChange}
+                        focusedVarName={focusedVar}
+                        onFocusedVarChange={(varName) => {
+                          setFocusedVar(varName || null)
+                        }}
                       />
 
                     </div>
@@ -2945,20 +3204,6 @@ function App() {
                     onMouseDown={(e)=> e.stopPropagation()}
                   >
                     <RotateCcw className="h-4 w-4 mr-1" /> {t.reset}
-                  </Button>
-                  <Button
-                    onClick={syncFromText}
-                    variant="outline"
-                    size="sm"
-                    className="border-2 text-[#0369a1] hover:bg-[#e0f2fe]"
-                    style={{ borderColor: '#0369a1', borderRadius: 10, background: '#fff' }}
-                    title={interfaceLanguage==='fr'
-                      ? 'Synchroniser depuis le texte\n\nExtrait les valeurs des variables depuis les zones de texte modifiées et les synchronise avec les champs du Variables Editor.'
-                      : 'Sync from text\n\nExtracts variable values from the edited text areas and syncs them to the Variables Editor fields.'
-                    }
-                    onMouseDown={(e)=> e.stopPropagation()}
-                  >
-                    <RefreshCw className="h-4 w-4 mr-1" /> {interfaceLanguage==='fr'?'Synchro':'Sync'}
                   </Button>
                   <Button
                     onClick={() => {
