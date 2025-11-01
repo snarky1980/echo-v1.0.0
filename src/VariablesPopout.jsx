@@ -29,6 +29,7 @@ export default function VariablesPopout({
   const [syncStatus, setSyncStatus] = useState(null)
   const channelRef = useRef(null)
   const senderIdRef = useRef(Math.random().toString(36).slice(2))
+  const retryIntervalRef = useRef(null)
   const varInputRefs = useRef({})
 
   // Initialize BroadcastChannel for syncing with main window
@@ -49,6 +50,12 @@ export default function VariablesPopout({
           if (message.type === 'variablesUpdated') {
             console.log('🔍 Updating variables from variablesUpdated:', message.variables)
             setVariables(message.variables || {})
+            // Stop retrying initial sync if any
+            if (retryIntervalRef.current) {
+              clearInterval(retryIntervalRef.current)
+              retryIntervalRef.current = null
+              setIsSyncing(false)
+            }
           }
           
           // Handle sync completion
@@ -64,6 +71,11 @@ export default function VariablesPopout({
               console.log('🔄 No changes found during sync')
               setSyncStatus('no-changes')
               setTimeout(() => setSyncStatus(null), 2000)
+            }
+            // Stop retrying initial sync if any
+            if (retryIntervalRef.current) {
+              clearInterval(retryIntervalRef.current)
+              retryIntervalRef.current = null
             }
           }
         } catch (msgError) {
@@ -86,18 +98,44 @@ export default function VariablesPopout({
   // Request one-time sync from main window on mount so popout reflects current editor content
   useEffect(() => {
     if (!channelRef.current) return
-    
     // Add a small delay to ensure main window's BroadcastChannel handler is ready
-    const timeoutId = setTimeout(() => {
+    // Implement a retry loop so we robustly request syncFromText until the
+    // main window responds (or we give up after a few attempts). This helps
+    // in cases where handlers are not yet ready due to timing/race conditions.
+    let attempts = 0
+    const maxAttempts = 6
+    const intervalMs = 150
+    setIsSyncing(true)
+    const sendSyncRequest = () => {
+      attempts += 1
       try {
-        console.log('🔄 Requesting initial sync from main window...')
+        console.log(`🔄 Requesting initial sync from main window (attempt ${attempts})`)
         channelRef.current.postMessage({ type: 'syncFromText', sender: senderIdRef.current })
       } catch (e) {
         console.error('Failed to request initial syncFromText:', e)
       }
-    }, 100) // Small delay to ensure proper initialization
-    
-    return () => clearTimeout(timeoutId)
+    }
+
+    // Start immediately after a short delay
+    const initialTimeout = setTimeout(() => sendSyncRequest(), 80)
+    retryIntervalRef.current = setInterval(() => {
+      if (attempts >= maxAttempts) {
+        clearInterval(retryIntervalRef.current)
+        retryIntervalRef.current = null
+        setIsSyncing(false)
+        console.warn('🔄 Initial sync attempts exhausted; falling back to initial variables')
+        return
+      }
+      sendSyncRequest()
+    }, intervalMs)
+
+    return () => {
+      clearTimeout(initialTimeout)
+      if (retryIntervalRef.current) {
+        clearInterval(retryIntervalRef.current)
+        retryIntervalRef.current = null
+      }
+    }
   }, [])
 
   // Sync variable changes to main window

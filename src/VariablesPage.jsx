@@ -78,8 +78,8 @@ export default function VariablesPage() {
           }
         }
         
-        // Send ready signal to main window after a small delay
-        setTimeout(() => {
+        // Send ready signal to main window immediately and with retries
+        const sendReady = () => {
           if (channel) {
             try {
               channel.postMessage({ type: 'popoutReady', timestamp: Date.now() })
@@ -88,7 +88,13 @@ export default function VariablesPage() {
               console.error('Failed to send ready signal:', e)
             }
           }
-        }, 200)
+        }
+        
+        // Send immediately
+        setTimeout(sendReady, 50)
+        // Send again after a delay in case first was missed
+        setTimeout(sendReady, 300)
+        setTimeout(sendReady, 600)
         
       } catch (e) {
         console.error('BroadcastChannel not available:', e)

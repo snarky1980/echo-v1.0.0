@@ -720,26 +720,64 @@ function App() {
         }
 
         if (msg.type === 'popoutOpened' || msg.type === 'popoutReady') {
-          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, extracting current values from text...`)
+          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, force-extracting current values from text...`)
           
-          // Extract current values from text and send to popout
+          // Force extraction with more aggressive approach
           setTimeout(() => {
-            const syncResult = syncFromText()
-            const currentVars = syncResult.success ? syncResult.variables : variables
+            // Always try to extract from current text, regardless of sync success
+            let extractedVars = {}
+            
+            if (selectedTemplate && templatesData) {
+              console.log('🔄 Force extraction - current text:', {
+                subject: finalSubject?.substring(0, 100),
+                body: finalBody?.substring(0, 100)
+              })
+              
+              // Force extract from both subject and body
+              const subjectTemplate = selectedTemplate.subject?.[templateLanguage] || ''
+              const bodyTemplate = selectedTemplate.body?.[templateLanguage] || ''
+              
+              selectedTemplate.variables?.forEach(varName => {
+                // Try extracting from subject first
+                if (subjectTemplate.includes(`<<${varName}>>`)) {
+                  const extracted = extractValueFromText(finalSubject, subjectTemplate, varName)
+                  if (extracted !== null && extracted.trim()) {
+                    extractedVars[varName] = extracted
+                    console.log(`🔄 Force extracted from subject - ${varName}: "${extracted.substring(0, 30)}..."`)
+                  }
+                }
+                
+                // Try extracting from body if not found in subject or if different
+                if (bodyTemplate.includes(`<<${varName}>>`)) {
+                  const extracted = extractValueFromText(finalBody, bodyTemplate, varName)
+                  if (extracted !== null && extracted.trim()) {
+                    // Only use body extraction if we don't have subject value or if it's different
+                    if (!extractedVars[varName] || extractedVars[varName] !== extracted) {
+                      extractedVars[varName] = extracted
+                      console.log(`🔄 Force extracted from body - ${varName}: "${extracted.substring(0, 30)}..."`)
+                    }
+                  }
+                }
+              })
+            }
+            
+            // Merge with current variables, preferring extracted values
+            const finalVars = { ...variables, ...extractedVars }
+            console.log('🔄 Final variables for popout:', finalVars)
             
             try {
               channel.postMessage({
                 type: 'variablesUpdated',
-                variables: currentVars,
+                variables: finalVars,
                 templateId: selectedTemplate?.id || null,
                 templateLanguage,
                 sender: popoutSenderIdRef.current
               })
-              console.log('🔄 Sent current variables to popout:', currentVars)
+              console.log('🔄 Sent force-extracted variables to popout')
             } catch (e) {
               console.error('Failed to send variables snapshot to popout:', e)
             }
-          }, msg.type === 'popoutReady' ? 100 : 50) // Longer delay for ready signal
+          }, 100)
           return
         }
         
