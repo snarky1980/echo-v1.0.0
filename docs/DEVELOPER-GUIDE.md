@@ -280,6 +280,36 @@ When modifying `HighlightingEditor.jsx`:
 5. Update this guide with new features
 6. Test mobile/touch interactions
 
+## HelpCenter Component (Support overlay)
+
+### Location
+- **File:** `src/components/HelpCenter.jsx`
+- **Rendered from:** `App.jsx` when `showHelpCenter` is true (header help button).
+
+### Props
+- `language` (`"fr" | "en"`) – controls which translation bundle is used.
+- `onClose` (`() => void`) – invoked when the overlay background, close button, or `Escape` is triggered.
+- `supportEmail` (`string`) – email target for the primary CTA (defaults to Translation Bureau address).
+- `mailSubject` (`string`) – localized subject for the `mailto:` URL.
+
+### Behaviour
+- Locks background scrolling while open (`document.body.style.overflow = 'hidden'`).
+- Focuses the close button on mount for accessibility, and restores the previous overflow value on unmount.
+- Wraps content in a `ScrollArea` capped at 70vh so long FAQs stay scrollable without altering layout.
+- Uses color tokens already present in the canonical palette (teal/mint/sage) and keeps borders subtle to respect the UI freeze constraints.
+
+### Customising content
+- All copy lives in the local `translations` object (`fr`, `en`). Each section (quickStart, faq, troubleshooting, resources, contact) can be updated independently.
+- Resource links currently point to GitHub documents plus the offline `help.html`. Update labels/URLs to suit internal documentation if mirrors change.
+
+### Support email override
+- The app reads `import.meta.env.VITE_SUPPORT_EMAIL` once at boot. Provide a value (via `.env`, CI secret, or command line export) to change the address used by the contact button.
+- If the variable is absent or blank, the helper falls back to `translationbureau@tpsgc-pwgsc.gc.ca`.
+
+### Extensibility ideas
+- To add analytics (e.g., log which section users open), wrap individual sections with callbacks and emit events before closing the overlay.
+- For richer formatting (accordion, tabs), consider migrating the translations to structured data (e.g., `faq: [{question, answer, links}]`) which the renderer can map onto Radix accordions.
+
 ## Resources
 
 - [MDN: contentEditable](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable)

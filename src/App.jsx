@@ -5,11 +5,12 @@ import { createPortal } from 'react-dom'
 import Fuse from 'fuse.js'
 import { loadState, saveState } from './utils/storage.js';
 // Deploy marker: 2025-10-16T07:31Z
-import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight } from 'lucide-react'
+import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight, LifeBuoy } from 'lucide-react'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
 import SimplePillEditor from './components/SimplePillEditor.jsx';
 import AISidebar from './components/AISidebar';
+import HelpCenter from './components/HelpCenter.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select.jsx'
@@ -556,6 +557,7 @@ function App() {
   const [favoritesOnly, setFavoritesOnly] = useState(savedState.favoritesOnly || false)
   const [copySuccess, setCopySuccess] = useState(false)
   const [showVariablePopup, setShowVariablePopup] = useState(false)
+  const [showHelpCenter, setShowHelpCenter] = useState(false)
   const [showAIPanel, setShowAIPanel] = useState(false)
   const [preferPopout, setPreferPopout] = useState(() => {
     try { return localStorage.getItem('ea_prefer_popout') === 'true' } catch { return false }
@@ -564,6 +566,19 @@ function App() {
     const saved = localStorage.getItem('ea_show_highlights')
     return saved === null ? true : saved === 'true'
   })
+  const supportEmail = useMemo(() => {
+    try {
+      const envEmail = import.meta?.env?.VITE_SUPPORT_EMAIL
+      if (typeof envEmail === 'string') {
+        const trimmed = envEmail.trim()
+        if (trimmed) return trimmed
+      }
+    } catch {}
+    return 'translationbureau@tpsgc-pwgsc.gc.ca'
+  }, [])
+  const helpMailSubject = useMemo(() => (
+    interfaceLanguage === 'fr' ? 'Assistance Email Assistant v8' : 'Email Assistant v8 support'
+  ), [interfaceLanguage])
   const [leftWidth, setLeftWidth] = useState(() => {
     const saved = Number(localStorage.getItem('ea_left_width'))
     return Number.isFinite(saved) && saved >= 340 && saved <= 680 ? saved : 480
@@ -2295,6 +2310,14 @@ function App() {
         
         {/* Main content */}
         <div className="flex items-center justify-between relative">
+          <Button
+            onClick={() => setShowHelpCenter(true)}
+            className="absolute right-6 top-6 inline-flex items-center gap-2 rounded-full bg-[#145a64] px-3 py-1.5 text-sm font-semibold text-white/95 shadow-md transition-all duration-200 hover:bg-[#0f2c33] hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f2c33]"
+            title={interfaceLanguage === 'fr' ? 'Ouvrir le centre d\'aide' : 'Open help centre'}
+          >
+            <LifeBuoy className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline-block">{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
+          </Button>
           {/* Left side: Logo + Title with 2in margin */}
           <div className="flex items-center space-x-6" style={{ marginLeft: '2in' }}>
             {/* Large navy circle with mail icon */}
@@ -2315,7 +2338,7 @@ function App() {
             </div>
           </div>
           
-          {/* Right side: Language selector - Pure Teal */}
+          {/* Right side: Language selector */}
           <div className="flex items-center space-x-3 px-4 py-3 shadow-xl" style={{ backgroundColor: 'var(--primary)', borderRadius: 'calc(var(--radius) + 8px)' }}>
             <Globe className="h-8 w-8 text-white" />
             <span className="font-bold text-base text-white">{t.interfaceLanguage}</span>
@@ -3465,6 +3488,15 @@ function App() {
           </div>
         </div>,
         document.body
+      )}
+
+      {showHelpCenter && (
+        <HelpCenter
+          language={interfaceLanguage}
+          onClose={() => setShowHelpCenter(false)}
+          supportEmail={supportEmail}
+          mailSubject={helpMailSubject}
+        />
       )}
 
       {/* Slide-over AI panel */}

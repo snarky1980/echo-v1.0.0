@@ -285,3 +285,49 @@ All changes are well-documented, reversible, and maintain code quality standards
 ---
 
 **End of Document**
+
+---
+
+## Update (November 2025) – Help Centre & Support Contact
+
+### Overview
+
+To accompany the synchronization work above, we introduced a bilingual in-app help centre that consolidates quick-start steps, the most common troubleshooting actions, and direct support contact.
+
+### New UI Component
+
+- **File:** `src/components/HelpCenter.jsx`
+- **Purpose:** Renders a modal overlay with:
+  - quick-start checklist for selecting templates, editing variables, and copying results;
+  - FAQ covering popout pinning, instant synchronization, and reset behavior;
+  - troubleshooting cards for Outlook launches, template loading, and BroadcastChannel edge cases;
+  - resource links (README, implementation notes, developer guide, offline help);
+  - mailto-driven contact button with a fallback address.
+- **Accessibility:** Locks page scroll, focuses the close button on open, and closes on `Escape`.
+
+### Integration in `App.jsx`
+
+- Adds a new **Aide / Help** button to the canonical header. It respects the mint/teal palette with a subtle outline pill.
+- Maintains symmetry with the interface language selector and remains available on small screens (wraps under the selector when needed).
+- Tracks state via `showHelpCenter` and memoizes:
+  - `supportEmail` — takes `import.meta.env.VITE_SUPPORT_EMAIL` if present, otherwise defaults to `translationbureau@tpsgc-pwgsc.gc.ca`.
+  - `helpMailSubject` — localized subject line for the support email.
+- Renders `<HelpCenter>` at the end of the component tree so it can stack above the variables popout and AI panel.
+
+### Support Email Override
+
+- Introduces optional environment variable `VITE_SUPPORT_EMAIL` to customize the `mailto:` target without changing code.
+- Default fallback remains the Translation Bureau email noted above.
+
+### Files Modified / Added (incremental to sections above)
+
+| File | Purpose |
+| --- | --- |
+| `src/components/HelpCenter.jsx` | New modal component for FAQ, troubleshooting, and contact options. |
+| `src/App.jsx` | Imports & renders the help centre, adds header button, memoizes support email, and wires localization. |
+
+### QA Notes
+
+- Opening the help centre pauses background scrolling but keeps the variables popout state intact when it closes.
+- The contact button uses `window.open('mailto:…')` so browsers that block pop-ups still open the default mail client.
+- Content is fully bilingual and pulls from existing docs to minimize drift.

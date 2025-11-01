@@ -125,3 +125,31 @@ Validation warns about duplicate IDs, unknown categories, missing variables, and
 
 Tip: Keep the main app open at `/` while editing in `/admin.html` to preview changes after updating the JSON file and reloading.
 # Deployment fix
+
+## In-app help centre (FR/EN)
+
+- Un bouton **Aide / Help** apparaît désormais dans la bannière principale à droite du sélecteur de langue.
+- Le centre d'aide s'ouvre dans une fenêtre superposée et reste au-dessus des autres panneaux (y compris le popup Variables) jusqu'à ce que vous le fermiez.
+- Le contenu est entièrement bilingue et couvre :
+  - un parcours de prise en main rapide ;
+  - une FAQ axée sur la synchronisation des variables et le bouton Outlook ;
+  - une liste de dépannage pas-à-pas pour les problèmes courants ;
+  - des liens directs vers la documentation du dépôt (README, notes d'implantation, guide développeur, aide hors ligne).
+- Le bouton « Nous écrire / Contact support » ouvre votre agent de messagerie par défaut avec un sujet prérempli.
+
+### Modifier l'adresse de support
+
+- Par défaut, l’adresse utilisée est `translationbureau@tpsgc-pwgsc.gc.ca`.
+- Vous pouvez la remplacer sans toucher au code en définissant la variable d’environnement **`VITE_SUPPORT_EMAIL`** avant de lancer le build Vite :
+
+```bash
+VITE_SUPPORT_EMAIL="mon-equipe@exemple.gc.ca" npm run dev
+```
+
+- Lors du déploiement (CI ou GitHub Pages), ajoutez la même variable dans l’environnement où la commande `npm run build` est exécutée.
+
+## Support rapide
+
+- Les sections **FAQ**, **Dépannage**, et **Ressources** du centre d’aide compilent les réponses issues de `TROUBLESHOOTING.md`, `IMPLEMENTATION_CHANGES.md`, et `docs/DEVELOPER-GUIDE.md`.
+- Le bouton **Réinitialiser** rappelé dans la FAQ restaure les exemples du modèle, y compris les valeurs du popup Variables.
+- Le centre d’aide documente aussi le nouvel état d’**épingle** du popup, la synchronisation immédiate à l’ouverture et les gestes-clavier utiles.

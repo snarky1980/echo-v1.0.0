@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Edit3, X, RotateCcw } from 'lucide-react'
+import { Edit3, X, RotateCcw, Pin, PinOff } from 'lucide-react'
 
 /**
  * Standalone Variables Editor Popout Window
@@ -22,6 +22,13 @@ export default function VariablesPopout({
   })
   
   const [variables, setVariables] = useState(initialVariables || {})
+  const [isPinned, setIsPinned] = useState(() => {
+    try {
+      return localStorage.getItem('ea_popout_pinned') === 'true'
+    } catch {
+      return false
+    }
+  })
   
   console.log('🔍 VariablesPopout initialized with variables:', variables)
   const [focusedVar, setFocusedVar] = useState(null)
@@ -34,6 +41,58 @@ export default function VariablesPopout({
   useEffect(() => {
     focusedVarRef.current = focusedVar
   }, [focusedVar])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ea_popout_pinned', String(isPinned))
+    } catch (err) {
+      console.warn('Failed to persist popout pin state:', err)
+    }
+    if (isPinned) {
+      window.focus()
+    }
+  }, [isPinned])
+
+  useEffect(() => {
+    if (!isPinned) return
+
+    let focusThrottle = false
+
+    const refocus = () => {
+      if (!isPinned || focusThrottle) return
+      focusThrottle = true
+      requestAnimationFrame(() => {
+        try { window.focus() } catch {}
+        setTimeout(() => { focusThrottle = false }, 120)
+      })
+    }
+
+    const handleBlur = () => {
+      setTimeout(refocus, 0)
+    }
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        refocus()
+      }
+    }
+
+    window.addEventListener('blur', handleBlur)
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    const intervalId = setInterval(() => {
+      if (!isPinned) return
+      if (document.visibilityState === 'hidden') {
+        refocus()
+      }
+    }, 3000)
+
+    return () => {
+      window.removeEventListener('blur', handleBlur)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      clearInterval(intervalId)
+    }
+  }, [isPinned])
 
   const notifyFocusChange = (varName, broadcast = true) => {
     const next = varName ?? null
@@ -271,12 +330,14 @@ export default function VariablesPopout({
     title: 'Modifier les variables',
     reinitialize: 'Réinitialiser',
     clear: 'Supprimer',
-    close: 'Fermer'
+    close: 'Fermer',
+    pin: ({ pinned }) => pinned ? 'Épinglé • cette fenêtre reste devant' : 'Épingler cette fenêtre'
   } : {
     title: 'Edit Variables',
     reinitialize: 'Reinitialize',
     clear: 'Delete',
-    close: 'Close'
+    close: 'Close',
+    pin: ({ pinned }) => pinned ? 'Pinned • window stays on top' : 'Pin this window'
   }
 
   return (
@@ -295,14 +356,23 @@ export default function VariablesPopout({
             <h1 className="text-lg font-bold text-white">{t.title}</h1>
           </div>
         </div>
-        
-        <button
-          onClick={() => window.close()}
-          className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
-          title={t.close}
-        >
-          <X className="h-5 w-5" />
-        </button>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsPinned((prev) => !prev)}
+            className={`rounded-lg p-2 transition-colors ${isPinned ? 'bg-white/20 text-white' : 'text-white hover:bg-white/20'}`}
+            title={t.pin({ pinned: isPinned })}
+          >
+            {isPinned ? <Pin className="h-5 w-5" /> : <PinOff className="h-5 w-5" />}
+          </button>
+          <button
+            onClick={() => window.close()}
+            className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+            title={t.close}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Variables Grid */}
