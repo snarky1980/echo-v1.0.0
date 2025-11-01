@@ -65,30 +65,35 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     }
   }, [value, variables, isFocused]);
 
-  // Extract plain text from the editor
+  // Extract placeholder-based text from the editor, skipping pill display values
   const extractText = () => {
     if (!editorRef.current) return '';
-    
-    let text = '';
-    const walker = document.createTreeWalker(
-      editorRef.current,
-      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-      null,
-      false
-    );
 
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        text += node.textContent;
-      } else if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('var-pill')) {
-        const varName = node.getAttribute('data-var');
-        const value = node.getAttribute('data-value');
-        text += value || `<<${varName}>>`;
-      }
-    }
+    const pieces = [];
 
-    return text;
+    const traverse = (node) => {
+      node.childNodes.forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE) {
+          const parentElement = child.parentElement;
+          if (parentElement && parentElement.closest('.var-pill')) {
+            return;
+          }
+          pieces.push(child.textContent ?? '');
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          const element = child;
+          if (element.classList.contains('var-pill')) {
+            const varName = element.getAttribute('data-var');
+            const placeholder = element.getAttribute('data-value') || (varName ? `<<${varName}>>` : '');
+            pieces.push(placeholder);
+          } else {
+            traverse(element);
+          }
+        }
+      });
+    };
+
+    traverse(editorRef.current);
+    return pieces.join('');
   };
 
   const handleInput = () => {

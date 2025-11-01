@@ -2467,24 +2467,6 @@ function App() {
 	                          {t.variables}
 	                        </Button>
                             
-                            <Button
-                              onClick={() => {
-                                // Fill placeholders with variable values
-                                const subjectWithVars = replaceVariables(selectedTemplate.subject[templateLanguage] || '')
-                                const bodyWithVars = replaceVariables(selectedTemplate.body[templateLanguage] || '')
-                                setFinalSubject(subjectWithVars)
-                                setFinalBody(bodyWithVars)
-                                manualEditRef.current = { subject: false, body: false }
-                              }}
-                              size="sm"
-                              className="shadow-soft"
-                              variant="outline" 
-                              style={{ background: '#fff', color: '#145a64', borderColor: 'rgba(20,90,100,0.35)' }}
-                              title="Replace placeholders with variable values"
-                            >
-                              <Edit3 className="h-4 w-4 mr-2" />
-                              Fill Variables
-                            </Button>
                           </>
 	                      )}
                         {/* IA trigger: opens hidden AI panel - Sage accent */}
