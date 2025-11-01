@@ -737,19 +737,24 @@ function App() {
         // Handle sync request from popout
         if (msg.type === 'syncFromText') {
           console.log('🔄 Received syncFromText request from popout')
-          const result = syncFromText()
           
-          // Send back the result
-          try {
-            channel.postMessage({
-              type: 'syncComplete',
-              success: result.success,
-              variables: result.variables,
-              sender: popoutSenderIdRef.current
-            })
-          } catch (e) {
-            console.error('Failed to send sync result:', e)
-          }
+          // Use a small delay to ensure all state is ready
+          setTimeout(() => {
+            const result = syncFromText()
+            
+            // Send back the result
+            try {
+              console.log('🔄 Sending sync result back to popout:', result)
+              channel.postMessage({
+                type: 'syncComplete',
+                success: result.success,
+                variables: result.variables,
+                sender: popoutSenderIdRef.current
+              })
+            } catch (e) {
+              console.error('Failed to send sync result:', e)
+            }
+          }, 50) // Small delay to ensure state consistency
         }
       }
       
@@ -1506,6 +1511,13 @@ function App() {
   // Sync from text: Extract variable values from text areas back to Variables Editor
   const syncFromText = () => {
     console.log('🔄 Sync from text: Starting reverse synchronization...')
+    console.log('🔄 Current state:', {
+      selectedTemplate: selectedTemplate?.id,
+      templateLanguage,
+      finalSubject: finalSubject?.substring(0, 100) + '...',
+      finalBody: finalBody?.substring(0, 100) + '...',
+      currentVariables: variables
+    })
     
     if (!selectedTemplate || !templatesData) {
       console.log('🔄 No template selected or templates data unavailable')
@@ -1518,12 +1530,20 @@ function App() {
     const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
     const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
     
+    console.log('🔄 Templates:', {
+      subjectTemplate: subjectTemplate?.substring(0, 100) + '...',
+      bodyTemplate: bodyTemplate?.substring(0, 100) + '...'
+    })
+    
     // Process subject - extract from finalSubject
     if (subjectTemplate && finalSubject) {
       selectedTemplate.variables.forEach(varName => {
         if (subjectTemplate.includes(`<<${varName}>>`)) {
           const value = extractValueFromText(finalSubject, subjectTemplate, varName)
-          if (value !== null) extracted[varName] = value
+          if (value !== null) {
+            console.log(`🔄 Extracted from subject - ${varName}: "${value.substring(0, 50)}..."`)
+            extracted[varName] = value
+          }
         }
       })
     }
@@ -1533,22 +1553,26 @@ function App() {
       selectedTemplate.variables.forEach(varName => {
         if (bodyTemplate.includes(`<<${varName}>>`)) {
           const value = extractValueFromText(finalBody, bodyTemplate, varName)
-          if (value !== null) extracted[varName] = value
+          if (value !== null) {
+            console.log(`🔄 Extracted from body - ${varName}: "${value.substring(0, 50)}..."`)
+            extracted[varName] = value
+          }
         }
       })
     }
     
-    console.log('🔄 Extracted values:', extracted)
+    console.log('🔄 Final extracted values:', extracted)
     
-    // Update variables state
+    // Update variables state and return merged result
     if (Object.keys(extracted).length > 0) {
       const mergedVariables = { ...variables, ...extracted }
       setVariables(mergedVariables)
-      console.log('🔄 Variables updated successfully')
+      console.log('🔄 Variables updated successfully, returning:', mergedVariables)
       return { success: true, variables: mergedVariables }
     }
 
-    console.log('🔄 No values extracted')
+    console.log('🔄 No new values extracted, returning current variables')
+    // Even if no extraction occurred, return current variables for popout sync
     return { success: false, variables }
   }
   

@@ -39,12 +39,15 @@ export default function VariablesPopout({
         
         // Handle sync completion
         if (message.type === 'syncComplete') {
+          console.log('🔄 Received sync completion:', message)
           setIsSyncing(false)
           if (message.success) {
+            console.log('🔄 Updating variables with synced values:', message.variables)
             setVariables(message.variables)
             setSyncStatus('success')
             setTimeout(() => setSyncStatus(null), 2000)
           } else {
+            console.log('🔄 No changes found during sync')
             setSyncStatus('no-changes')
             setTimeout(() => setSyncStatus(null), 2000)
           }
@@ -62,11 +65,18 @@ export default function VariablesPopout({
   // Request one-time sync from main window on mount so popout reflects current editor content
   useEffect(() => {
     if (!channelRef.current) return
-    try {
-  channelRef.current.postMessage({ type: 'syncFromText', sender: senderIdRef.current })
-    } catch (e) {
-      console.error('Failed to request initial syncFromText:', e)
-    }
+    
+    // Add a small delay to ensure main window's BroadcastChannel handler is ready
+    const timeoutId = setTimeout(() => {
+      try {
+        console.log('🔄 Requesting initial sync from main window...')
+        channelRef.current.postMessage({ type: 'syncFromText', sender: senderIdRef.current })
+      } catch (e) {
+        console.error('Failed to request initial syncFromText:', e)
+      }
+    }, 100) // Small delay to ensure proper initialization
+    
+    return () => clearTimeout(timeoutId)
   }, [])
 
   // Sync variable changes to main window
