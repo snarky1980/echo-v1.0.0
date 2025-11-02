@@ -122,6 +122,9 @@
   }
 }
 
+/* Headings: approximate Cabinet Grotesk with Space Grotesk fallback until licensed font is provided */
+
+
 /* Variable highlighting for email content */
 .variable-highlight {
   background-color: #fef3c7 !important;

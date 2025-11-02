@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Simple wordmark + waves symbol; replace with provided official assets when available -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 180">
+  <defs>
+    <style>
+      .navy{fill:#1B263B}
+    </style>
+  </defs>
+  <!-- Waves mark at left -->
+  <g transform="translate(40 90)" class="navy">
+    <circle cx="0" cy="0" r="72" fill="none" stroke="#1B263B" stroke-width="10"/>
+    <path d="M-38 -50 q12 50 0 100" fill="none" stroke="#1B263B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M-20 -56 q12 56 0 112" fill="none" stroke="#1B263B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M0 -60 q12 60 0 120" fill="none" stroke="#1B263B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M20 -56 q-12 56 0 112" fill="none" stroke="#1B263B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M38 -50 q-12 50 0 100" fill="none" stroke="#1B263B" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Wordmark ECHO -->
+  <g class="navy" font-family="Cabinet Grotesk, Inter, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Arial, sans-serif" font-weight="700" font-size="112">
+    <text x="120" y="125">ECHO</text>
+  </g>
+</svg>

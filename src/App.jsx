@@ -22,6 +22,8 @@ import './App.css'
 const customEditorStyles = `
   /* Translation Bureau Brand Colors - EXACT MATCH from original design */
   :root {
+    /* ECHO brand additions */
+    
     --tb-teal: #059669;         /* Emerald-600 - Main teal */
     --tb-teal-light: #10b981;   /* Emerald-500 - Light teal */
     --tb-teal-dark: #047857;    /* Emerald-700 - Dark teal */
@@ -2467,7 +2469,7 @@ function App() {
       ) : (
         !varsOnlyMode && <>
       {/* Exact banner from attached design */}
-      <header className="w-full mx-auto max-w-none page-wrap py-4 relative z-50 sticky top-0 border-b" style={{ backgroundColor: '#ffffff', borderColor: 'var(--tb-mint)' }}>
+  <header className="w-full mx-auto max-w-none page-wrap py-4 relative z-50 sticky top-0 border-b" style={{ backgroundColor: '#ffffff', borderColor: 'var(--tb-mint)' }}>
         {/* Decorative pills and lines - EXACT positions from design */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           {/* Top row of pills */}
@@ -2500,12 +2502,12 @@ function App() {
   <div className="flex items-start justify-between relative">
           {/* Left side: Logo + Title with 2in margin */}
           <div className="flex items-center space-x-6" style={{ marginLeft: '2in' }}>
-            {/* Large navy circle with mail icon */}
-            <div className="relative">
-              <div className="p-6" style={{ backgroundColor: 'var(--tb-navy)', borderRadius: '56px' }}>
-                <Mail className="text-white" style={{ width: '60px', height: '60px' }} />
-              </div>
-            </div>
+                {/* Large navy circle with mail icon */}
+                <div className="relative">
+                  <div className="p-6" style={{ backgroundColor: 'var(--tb-navy)', borderRadius: '56px' }}>
+                    <Mail className="text-white" style={{ width: '60px', height: '60px' }} />
+                  </div>
+                </div>
             
             {/* Title and subtitle */}
             <div>
