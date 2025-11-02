@@ -574,7 +574,7 @@ function App() {
         if (trimmed) return trimmed
       }
     } catch {}
-    return 'translationbureau@tpsgc-pwgsc.gc.ca'
+    return 'jskennedy80@gmail.com'
   }, [])
   const helpMailSubject = useMemo(() => (
     interfaceLanguage === 'fr' ? 'Assistance Email Assistant v8' : 'Email Assistant v8 support'
@@ -2310,14 +2310,6 @@ function App() {
         
         {/* Main content */}
         <div className="flex items-center justify-between relative">
-          <Button
-            onClick={() => setShowHelpCenter(true)}
-            className="absolute right-6 top-6 inline-flex items-center gap-2 rounded-full bg-[#145a64] px-3 py-1.5 text-sm font-semibold text-white/95 shadow-md transition-all duration-200 hover:bg-[#0f2c33] hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f2c33]"
-            title={interfaceLanguage === 'fr' ? 'Ouvrir le centre d\'aide' : 'Open help centre'}
-          >
-            <LifeBuoy className="h-4 w-4" aria-hidden="true" />
-            <span className="hidden sm:inline-block">{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
-          </Button>
           {/* Left side: Logo + Title with 2in margin */}
           <div className="flex items-center space-x-6" style={{ marginLeft: '2in' }}>
             {/* Large navy circle with mail icon */}
@@ -3489,6 +3481,16 @@ function App() {
         </div>,
         document.body
       )}
+
+      {/* Discreet help button at bottom right */}
+      <Button
+        onClick={() => setShowHelpCenter(true)}
+        className="fixed bottom-6 right-6 z-20 inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200/60 px-3 py-2 text-sm font-medium text-slate-500 shadow-lg transition-all duration-300 hover:bg-white hover:text-[#145a64] hover:shadow-xl hover:border-[#bfe7e3] hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#145a64]"
+        title={interfaceLanguage === 'fr' ? 'Ouvrir le centre d\'aide' : 'Open help centre'}
+      >
+        <LifeBuoy className="h-4 w-4" aria-hidden="true" />
+        <span className="hidden sm:inline-block">{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
+      </Button>
 
       {showHelpCenter && (
         <HelpCenter

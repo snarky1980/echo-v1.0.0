@@ -78,7 +78,7 @@ const translations = {
     },
     contact: {
       heading: 'Besoin d\'un coup de main ?',
-      description: 'L\'équipe du Bureau de la traduction peut vous assister pour les comptes, les modèles ou la synchronisation.',
+      description: 'Nous pouvons vous assister pour les comptes, les modèles ou la synchronisation.',
       button: 'Nous écrire',
       extra: (email) => `Ou écrivez-nous directement à ${email}.`,
       close: 'Fermer le centre d\'aide'
@@ -178,7 +178,7 @@ function SectionHeader({ icon: Icon, title, description }) {
   )
 }
 
-export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'translationbureau@tpsgc-pwgsc.gc.ca', mailSubject = 'Email Assistant v8 – Support' }) {
+export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'jskennedy80@gmail.com', mailSubject = 'Email Assistant v8 – Support' }) {
   const strings = useMemo(() => translations[language] || translations.fr, [language])
   const closeBtnRef = useRef(null)
 
@@ -222,7 +222,7 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 't
         aria-modal="true"
         aria-labelledby="help-centre-title"
         className="relative z-10 flex w-full max-w-4xl flex-col border-0 bg-white/95 shadow-2xl"
-        style={{ borderRadius: '18px', maxHeight: '88vh' }}
+        style={{ borderRadius: '18px', height: '88vh', maxHeight: '88vh' }}
       >
         <CardHeader className="flex flex-row items-start justify-between gap-4 pb-3">
           <div>
@@ -245,8 +245,8 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 't
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        <CardContent className="flex-1 overflow-hidden pt-0">
-          <ScrollArea className="h-full pr-2">
+        <CardContent className="flex-1 pt-0" style={{ minHeight: 0 }}>
+          <ScrollArea className="h-full w-full pr-2">
             <div className="space-y-8 pb-4">
               <section>
                 <SectionHeader
