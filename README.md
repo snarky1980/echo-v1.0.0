@@ -126,6 +126,8 @@ Validation warns about duplicate IDs, unknown categories, missing variables, and
 Tip: Keep the main app open at `/` while editing in `/admin.html` to preview changes after updating the JSON file and reloading.
 # Deployment fix
 
+- Les déploiements sont maintenant gérés automatiquement par le workflow GitHub Actions `Deploy to GitHub Pages`. Évitez de lancer `npm run deploy` tant que le workflow est en cours, sinon GitHub rejette le second déploiement comme déjà en cours.
+
 ## In-app help centre (FR/EN)
 
 - Un bouton **Aide / Help** apparaît désormais dans la bannière principale à droite du sélecteur de langue.
