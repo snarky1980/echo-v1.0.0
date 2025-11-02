@@ -35,7 +35,7 @@
         position: sticky; top: 0; z-index: 10;
         display: flex; align-items: center; gap: 12px; padding: 12px 16px;
         border-bottom: 1px solid var(--border);
-        background: rgba(255,255,255,0.8); backdrop-filter: blur(8px);
+        background: rgba(255,255,255,0.8); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
       }
       .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; }
       .topbar .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tb-teal); box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
@@ -107,6 +107,66 @@
   .ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; padding: 10px 12px; border-radius: 10px; }
   .status-bar { display:flex; align-items:center; justify-content:space-between; gap: 12px; }
   .status-actions { display:flex; align-items:center; gap:8px; }
+  
+  /* Utility classes */
+  .cursor-pointer { cursor: pointer; }
+  .hidden-display { display: none; }
+  .warnings-notice { display: none; margin: 12px 16px; }
+  .notice-toast { 
+    display: none; 
+    position: fixed; 
+    top: 12px; 
+    right: 12px; 
+    z-index: 1000;
+    background: #111827; 
+    color: #fff; 
+    padding: 10px 12px; 
+    border-radius: 10px; 
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1); 
+    font-weight: 600; 
+    font-size: 14px; 
+    max-width: 60vw;
+  }
+  .flex-gap { display: flex; gap: 8px; align-items: center; }
+  
+  /* Modal styles */
+  .modal-overlay { 
+    display: none; 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.35); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center;
+  }
+  .modal-card { 
+    background: white; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    box-shadow: 0 10px 40px rgba(2,6,23,0.2); 
+    width: min(640px, 92vw); 
+    max-height: 80vh; 
+    display: flex; 
+    flex-direction: column;
+  }
+  .modal-header { 
+    padding: 12px 14px; 
+    border-bottom: 1px solid var(--border); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+  }
+  .modal-body { padding: 12px; overflow: auto; }
+  .modal-actions { 
+    padding: 12px; 
+    border-top: 1px solid var(--border); 
+    display: flex; 
+    gap: 8px; 
+    justify-content: flex-end;
+  }
+  .view-section { display: none; }
+  
       @media (max-width: 1000px){ .container { grid-template-columns: 1fr; } .row, .row-3, .split { grid-template-columns: 1fr; } }
     </style>
   </head>
@@ -123,27 +183,24 @@
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
   <button id="btn-import">Importer JSON</button>
-  <label id="file-input-label" for="file-input" class="btn" style="cursor:pointer;">Choisir un fichier…</label>
+  <label id="file-input-label" for="file-input" class="btn cursor-pointer">Choisir un fichier…</label>
   <input id="file-input" class="hidden-input" type="file" accept=".json,application/json" />
       <button id="btn-export" class="primary">Exporter JSON</button>
       <button id="btn-reset" class="warning" title="Revenir au fichier d'origine (efface le brouillon local)">Réinitialiser</button>
     <button id="btn-github" title="Publier le JSON dans le dépôt GitHub (commit)">Publier sur GitHub</button>
   <a href="./admin-excel.html" title="Assistant Excel"><button>Assistant Excel</button></a>
-    <button id="btn-replace-repo" style="display:none" title="Mode dev uniquement – Écrit complete_email_templates.json et recharge">Remplacer fichier du dépôt</button>
+    <button id="btn-replace-repo" class="hidden-display" title="Mode dev uniquement – Écrit complete_email_templates.json et recharge">Remplacer fichier du dépôt</button>
       <button id="btn-help">Aide</button>
     </header>
 
-    <div id="warnings" style="display:none; margin: 12px 16px;"></div>
-    <div id="notice" style="display:none; position: fixed; top: 12px; right: 12px; z-index: 1000;
-      background: #111827; color: #fff; padding: 10px 12px; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      border: 1px solid rgba(255,255,255,0.1); font-weight: 600; font-size: 14px; max-width: 60vw;
-    "></div>
+    <div id="warnings" class="warnings-notice"></div>
+    <div id="notice" class="notice-toast"></div>
 
     <div class="container">
       <!-- Sidebar: templates list -->
       <aside class="panel" id="sidebar">
         <div class="head"><strong>Modèles</strong>
-          <div style="display:flex; gap:8px; align-items:center;">
+          <div class="flex-gap">
             <button id="btn-bulk-import">Import (lot)</button>
             <button id="btn-new-template" class="primary">Nouveau</button>
           </div>
@@ -151,9 +208,9 @@
         <div class="body">
           <div class="search">
             <input id="search" placeholder="Rechercher…" />
-            <select id="filter-category"><option value="all">Toutes</option></select>
+            <select id="filter-category" title="Filtre par catégorie"><option value="all">Toutes</option></select>
           </div>
-          <input id="bulk-file" class="hidden-input" type="file" accept=".csv,.json,.ndjson,application/json,text/csv,text/plain" />
+          <input id="bulk-file" class="hidden-input" type="file" accept=".csv,.json,.ndjson,application/json,text/csv,text/plain" title="Importer fichiers en lot" />
           <div class="list" id="template-list"></div>
         </div>
       </aside>
@@ -175,22 +232,22 @@
         </div>
         <div class="body">
           <section id="view-templates" class="form"></section>
-          <section id="view-variables" class="form" style="display:none"></section>
-          <section id="view-metadata" class="form" style="display:none"></section>
+          <section id="view-variables" class="form view-section"></section>
+          <section id="view-metadata" class="form view-section"></section>
         </div>
       </main>
     </div>
 
         <!-- Lightweight modal for previews -->
-        <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:1000; align-items:center; justify-content:center;">
-          <div id="modal-card" style="background:white; border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 40px rgba(2,6,23,0.2); width:min(640px, 92vw); max-height:80vh; display:flex; flex-direction:column;">
-            <div style="padding:12px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+        <div id="modal" class="modal-overlay">
+          <div id="modal-card" class="modal-card">
+            <div class="modal-header">
               <strong id="modal-title">Aperçu</strong>
               <button id="modal-close" aria-label="Fermer">✕</button>
             </div>
-            <div id="modal-body" style="padding:12px; overflow:auto;">
+            <div id="modal-body" class="modal-body">
             </div>
-            <div id="modal-actions" style="padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; justify-content:flex-end;">
+            <div id="modal-actions" class="modal-actions">
               <button id="modal-cancel">Annuler</button>
               <button id="modal-confirm" class="primary">Confirmer</button>
             </div>
