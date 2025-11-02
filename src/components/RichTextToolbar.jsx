@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Bold, Italic, Underline, List, ListOrdered, Type, Minus } from 'lucide-react';
+import { Bold, Italic, Underline, Type, AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react';
 import { Button } from './ui/button.jsx';
 
 const FONT_SIZE_OPTIONS = [
@@ -105,8 +105,45 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
     if (disabled) return;
 
     try {
+      // For block-level commands, ensure the selection is not inside a var-pill
+      const isBlockCommand = (
+        command === 'insertUnorderedList' ||
+        command === 'insertOrderedList' ||
+        command === 'justifyLeft' ||
+        command === 'justifyCenter' ||
+        command === 'justifyRight' ||
+        command === 'justifyFull'
+      );
+
+      if (isBlockCommand) {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          const anchorNode = range.startContainer;
+          let el = anchorNode.nodeType === Node.ELEMENT_NODE
+            ? anchorNode
+            : anchorNode.parentElement;
+          let pill = null;
+          if (el && el.closest) {
+            pill = el.closest('.var-pill');
+          }
+
+          if (pill) {
+            // If caret is inside a pill, move it just after the pill so block command can apply
+            const afterRange = document.createRange();
+            afterRange.setStartAfter(pill);
+            afterRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(afterRange);
+          }
+        }
+      }
+
+      // Execute command immediately while we still have selection
       document.execCommand(command, false, value);
       updateFormatState();
+      
+      // Then notify parent
       onCommand?.(command, value);
       
       // Trigger input event on the contentEditable element to sync with React state
@@ -185,8 +222,7 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
   return (
     <div 
       ref={toolbarRef}
-      className={`flex items-center gap-1 p-2 bg-slate-50 border border-slate-200 rounded-lg ${className}`}
-      onMouseDown={(e) => e.preventDefault()} // Prevent losing focus from editor
+      className={`flex items-center gap-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-lg ${className}`}
     >
       {/* Text Formatting */}
       <div className="flex items-center gap-1 pr-2 border-r border-slate-300">
@@ -194,68 +230,96 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
           type="button"
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 ${activeFormats.bold ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900'}`}
+          className={`h-9 w-9 p-0 ${activeFormats.bold ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => executeCommand('bold')}
           title="Bold (Ctrl+B)"
         >
-          <Bold className="h-4 w-4" />
+          <Bold className="h-5 w-5" />
         </Button>
         
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 ${activeFormats.italic ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900'}`}
+          className={`h-9 w-9 p-0 ${activeFormats.italic ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => executeCommand('italic')}
           title="Italic (Ctrl+I)"
         >
-          <Italic className="h-4 w-4" />
+          <Italic className="h-5 w-5" />
         </Button>
         
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className={`h-8 w-8 p-0 ${activeFormats.underline ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900'}`}
+          className={`h-9 w-9 p-0 ${activeFormats.underline ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => executeCommand('underline')}
           title="Underline (Ctrl+U)"
         >
-          <Underline className="h-4 w-4" />
+          <Underline className="h-5 w-5" />
         </Button>
       </div>
 
-      {/* Lists */}
+      {/* Lists removed by request */}
+
+      {/* Alignment */}
       <div className="flex items-center gap-1 pr-2 border-r border-slate-300">
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0 text-slate-600 hover:text-slate-900"
-          onClick={() => executeCommand('insertUnorderedList')}
-          title="Bullet List"
+          className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('justifyLeft')}
+          title="Align Left"
         >
-          <List className="h-4 w-4" />
+          <AlignLeft className="h-5 w-5" />
         </Button>
-        
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0 text-slate-600 hover:text-slate-900"
-          onClick={() => executeCommand('insertOrderedList')}
-          title="Numbered List"
+          className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('justifyCenter')}
+          title="Align Center"
         >
-          <ListOrdered className="h-4 w-4" />
+          <AlignCenter className="h-5 w-5" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('justifyRight')}
+          title="Align Right"
+        >
+          <AlignRight className="h-5 w-5" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('justifyFull')}
+          title="Justify"
+        >
+          <AlignJustify className="h-5 w-5" />
         </Button>
       </div>
 
       {/* Font Size */}
       <div className="flex items-center gap-2">
-        <Type className="h-4 w-4 text-slate-600" />
+        <Type className="h-5 w-5 text-slate-600" />
         <select
           value={fontSize}
           onChange={(e) => handleFontSizeChange(e.target.value)}
-          className="text-sm border border-slate-300 rounded px-2 py-1 bg-white"
+          className="text-sm border border-slate-300 rounded px-3 py-1.5 bg-white cursor-pointer hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
           title="Font Size"
         >
           {FONT_SIZE_OPTIONS.map(size => (
@@ -266,19 +330,7 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
         </select>
       </div>
 
-      {/* Separator */}
-      <div className="flex items-center gap-1 pl-2 border-l border-slate-300">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 text-slate-600 hover:text-slate-900"
-          onClick={() => executeCommand('insertHorizontalRule')}
-          title="Insert Line"
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-      </div>
+      {/* Separator removed by request */}
     </div>
   );
 };

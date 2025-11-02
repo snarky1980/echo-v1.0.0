@@ -304,6 +304,23 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
   };
 
+  // Auto-select pill content on mouse down to enable quick overwrite (match body editor)
+  const handleMouseDown = (event) => {
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const pillElement = target.closest?.('.var-pill');
+    if (pillElement && editorRef.current.contains(pillElement)) {
+      // Prevent the native caret placement so we can select all
+      event.preventDefault();
+      selectEntirePill(pillElement);
+      const varName = pillElement.getAttribute('data-var') || null;
+      emitFocusedVarChange(varName);
+      applyFocusedPill(varName);
+    }
+  };
+
   const handlePaste = (event) => {
     if (!editorRef.current) return;
 
@@ -407,6 +424,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       onInput={handleInput}
       onFocus={handleFocus}
       onBlur={handleBlur}
+      onMouseDown={handleMouseDown}
       onPaste={handlePaste}
       onKeyDown={handleKeyDown}
       suppressContentEditableWarning

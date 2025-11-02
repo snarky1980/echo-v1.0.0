@@ -129,6 +129,7 @@ Tip: Keep the main app open at `/` while editing in `/admin.html` to preview cha
 ## In-app help centre (FR/EN)
 
 - Un bouton **Aide / Help** apparaît désormais dans la bannière principale à droite du sélecteur de langue.
+- Le bouton est compact afin de ne pas augmenter la hauteur de la bannière. Il remplace l’ancienne version en pied de page.
 - Le centre d'aide s'ouvre dans une fenêtre superposée et reste au-dessus des autres panneaux (y compris le popup Variables) jusqu'à ce que vous le fermiez.
 - Le contenu est entièrement bilingue et couvre :
   - un parcours de prise en main rapide ;
@@ -153,3 +154,8 @@ VITE_SUPPORT_EMAIL="mon-equipe@exemple.gc.ca" npm run dev
 - Les sections **FAQ**, **Dépannage**, et **Ressources** du centre d’aide compilent les réponses issues de `TROUBLESHOOTING.md`, `IMPLEMENTATION_CHANGES.md`, et `docs/DEVELOPER-GUIDE.md`.
 - Le bouton **Réinitialiser** rappelé dans la FAQ restaure les exemples du modèle, y compris les valeurs du popup Variables.
 - Le centre d’aide documente aussi le nouvel état d’**épingle** du popup, la synchronisation immédiate à l’ouverture et les gestes-clavier utiles.
+
+## Saisie rapide dans l’objet (FR) / Fast subject editing (EN)
+
+- Cliquer sur une pastille (variable) dans l’objet sélectionne désormais tout son contenu, comme dans le corps du message. Cela facilite le remplacement immédiat.
+- Le comportement s’applique aux pastilles vides et remplies; l’éditeur maintient la mise au point visuelle sur la pastille active.

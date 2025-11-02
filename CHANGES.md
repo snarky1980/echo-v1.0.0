@@ -3,6 +3,8 @@
 ## 2025-11-02 – ECHO branding, contact workflow, and editor polish
 
 ### Highlights
+- Help button returned to the header (beneath the teal language selector) and made smaller; footer variant removed to keep the main banner height unchanged.
+- Subject editor pills now auto-select on click (same behavior as body editor) for quick overwrite; caret no longer lands inside an empty pill.
 - Rebranded the application header and document title to **ECHO**, with localized subtitles “Studio de modèles interactifs” (FR) and “Interactive Template Studio” (EN).
 - Refined the help button styling so it remains visible on the teal language panel while staying compact and unobtrusive.
 - Resolved the pill-editing limitation in both the subject (`SimplePillEditor`) and body (`RichTextPillEditor`) editors by only auto-selecting placeholders when they are empty, preserving user text while retaining the quick “type-to-replace” behaviour for fresh pills.

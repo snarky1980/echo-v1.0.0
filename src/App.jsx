@@ -492,7 +492,7 @@ function expandQuery(q) {
 // Interface texts by language - moved outside component to avoid TDZ issues
 const interfaceTexts = {
   fr: {
-  title: 'ECHO',
+  title: 'echo',
     subtitle: 'Studio de modèles interactifs',
     selectTemplate: 'Sélectionnez un modèle',
     templatesCount: `modèles disponibles`,
@@ -531,7 +531,7 @@ const interfaceTexts = {
     confirm: 'Confirmer'
   },
   en: {
-  title: 'ECHO',
+  title: 'echo',
     subtitle: 'Interactive Template Studio',
     selectTemplate: 'Select a template',
     templatesCount: `templates available`,
@@ -2511,20 +2511,21 @@ function App() {
             
             {/* Title and subtitle */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--tb-navy)' }}>
+              <h1 className="echo-title tracking-tight" style={{ color: 'var(--tb-navy)' }}>
                 {t.title}
               </h1>
-              <p className="text-xl md:text-2xl font-semibold" style={{ color: '#1f8a99' }}>
+              <p className="font-semibold" style={{ color: '#1f8a99', fontSize: '100%' }}>
                 {t.subtitle}
               </p>
             </div>
           </div>
           
-          {/* Right side: Interface language selector + help */}
-          <div
-            className="flex w-full max-w-xs flex-col gap-3 px-4 py-4 shadow-xl"
-            style={{ backgroundColor: 'var(--primary)', borderRadius: 'calc(var(--radius) + 8px)' }}
-          >
+          {/* Right side: Column with teal selector and subtle help below */}
+          <div className="flex flex-col items-end">
+            <div
+              className="flex w-full max-w-xs flex-col gap-3 px-4 py-4 shadow-xl"
+              style={{ backgroundColor: 'var(--primary)', borderRadius: 'calc(var(--radius) + 8px)' }}
+            >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Globe className="h-8 w-8 text-white" />
@@ -2559,13 +2560,16 @@ function App() {
                 </button>
               </div>
             </div>
+            </div>
+            {/* Subtle Help button just underneath the teal area (smaller) */}
             <Button
               onClick={() => setShowHelpCenter(true)}
-              className="self-end inline-flex items-center gap-2 rounded-lg border border-white/25 bg-transparent px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/90 transition-all duration-200 hover:border-white/40 hover:text-white"
+              variant="outline"
+              className="mt-1 inline-flex items-center gap-1 rounded-[8px] border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-slate-600 hover:text-slate-800 hover:border-slate-300"
               title={interfaceLanguage === 'fr' ? "Ouvrir le centre d'aide" : 'Open help centre'}
-              style={{ boxShadow: 'none', letterSpacing: '0.06em' }}
+              style={{ boxShadow: 'none', lineHeight: 1 }}
             >
-              <LifeBuoy className="h-3.5 w-3.5 text-white/80" aria-hidden="true" />
+              <LifeBuoy className="h-3 w-3 text-slate-500" aria-hidden="true" />
               <span>{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
             </Button>
           </div>
@@ -3220,6 +3224,8 @@ function App() {
           {/* Removed permanent AI sidebar; optional slide-over below */}
         </div>
       </main>
+
+      {/* Footer Help button removed per request */}
         </>
       )}
 

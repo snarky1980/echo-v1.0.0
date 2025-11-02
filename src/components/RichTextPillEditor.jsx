@@ -448,23 +448,47 @@ const RichTextPillEditor = React.forwardRef(({
     }
   };
 
+  // Auto-select pill content on mouse down to enable quick overwrite
+  const handleMouseDown = (event) => {
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const pillElement = target.closest?.('.var-pill');
+    if (pillElement && editorRef.current.contains(pillElement)) {
+      // Prevent the native caret placement so we can select all
+      event.preventDefault();
+      selectEntirePill(pillElement);
+      const varName = pillElement.getAttribute('data-var') || null;
+      emitFocusedVarChange(varName);
+      applyFocusedPill(varName);
+    }
+  };
+
   // Handle rich text commands
   const handleRichTextCommand = useCallback((command, value) => {
-    // Ensure editor has focus for commands to work properly
-    if (editorRef.current && !isFocused) {
-      editorRef.current.focus();
+    const editor = editorRef.current;
+    if (!editor) {
+      return;
     }
-    
+
+    // If the command came from a control that may have moved focus (like <select>),
+    // ensure the editor regains focus and the previous selection is restored.
+    if (document.activeElement !== editor) {
+      editor.focus();
+    }
+
+    // Nothing to execute here; toolbar already applied the change. Just notify parent.
     onRichTextCommand?.(command, value);
     
     // Trigger input event to sync with React state
     setTimeout(() => {
-      if (editorRef.current) {
+      if (editor) {
         const event = new Event('input', { bubbles: true });
-        editorRef.current.dispatchEvent(event);
+        editor.dispatchEvent(event);
       }
     }, 10);
-  }, [onRichTextCommand, isFocused]);
+  }, [onRichTextCommand]);
 
   // Update editor when value changes - IDENTICAL to SimplePillEditor
   useEffect(() => {
@@ -601,6 +625,7 @@ const RichTextPillEditor = React.forwardRef(({
         onInput={handleInput}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onMouseDown={handleMouseDown}
         onPaste={handlePaste}
         onKeyDown={handleKeyDown}
         suppressContentEditableWarning
