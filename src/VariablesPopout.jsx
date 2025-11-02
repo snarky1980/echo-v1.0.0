@@ -437,7 +437,14 @@ export default function VariablesPopout({
                     name={sanitizedVarId}
                     value={currentValue}
                     onChange={(e) => updateVariable(varName, e.target.value)}
-                    onFocus={() => notifyFocusChange(varName)}
+                    onFocus={(e) => {
+                      notifyFocusChange(varName)
+                      requestAnimationFrame(() => {
+                        try {
+                          e.target.select()
+                        } catch {}
+                      })
+                    }}
                     onBlur={() => notifyFocusChange(null)}
                     onKeyDown={(e) => {
                       // Tab or Enter to next field

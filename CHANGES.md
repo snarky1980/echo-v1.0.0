@@ -1,5 +1,22 @@
 # Changes Made to Email Assistant v8
 
+## 2025-11-02 – ECHO branding, contact workflow, and editor polish
+
+### Highlights
+- Rebranded the application header and document title to **ECHO**, with localized subtitles “Studio de modèles interactifs” (FR) and “Interactive Template Studio” (EN).
+- Refined the help button styling so it remains visible on the teal language panel while staying compact and unobtrusive.
+- Resolved the pill-editing limitation in both the subject (`SimplePillEditor`) and body (`RichTextPillEditor`) editors by only auto-selecting placeholders when they are empty, preserving user text while retaining the quick “type-to-replace” behaviour for fresh pills.
+- Introduced an embedded contact form inside the help centre with four request types (support, glitch, improvement, template submission). Submissions post to FormSubmit by default and can be redirected via `VITE_SUPPORT_FORM_ENDPOINT`.
+- Updated the help centre copy to reference ECHO, added context-specific form copy, and surfaced inline validation + success feedback.
+- Added environment-driven support email resolution to keep outgoing notifications configurable without code changes.
+- Replaced the favicon with the shared `lumen-logo.svg` asset for consistent branding across environments.
+
+### Deployment/Config notes
+- Ensure `.env` (or the deployment environment) provides `VITE_SUPPORT_EMAIL` for reply-to handling. Optional `VITE_SUPPORT_FORM_ENDPOINT` can point to an internal form handler; if omitted, the app falls back to FormSubmit using the support email.
+- After pulling these changes, run `npm install` (if dependencies changed) and `npm exec vite build` before `npm run deploy` to publish to GitHub Pages.
+
+---
+
 ## Overview
 This document describes the modifications made to implement the text editing and synchronization features as specified in the requirements.
 

@@ -1,14 +1,16 @@
-import React, { useEffect, useMemo, useRef } from 'react'
-import { LifeBuoy, Lightbulb, BookOpen, AlertTriangle, MessageCircle, ExternalLink, Mail, X } from 'lucide-react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { LifeBuoy, Lightbulb, BookOpen, AlertTriangle, MessageCircle, ExternalLink, Mail, X, CheckCircle2, Loader2 } from 'lucide-react'
 import { Button } from './ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card.jsx'
 import { ScrollArea } from './ui/scroll-area.jsx'
 import { Separator } from './ui/separator.jsx'
+import { Input } from './ui/input.jsx'
+import { Textarea } from './ui/textarea.jsx'
 
 const translations = {
   fr: {
     title: 'Centre d\'aide',
-    subtitle: 'Réponses express pour Email Assistant v8',
+  subtitle: 'Réponses express pour ECHO',
     quickStart: {
       heading: 'Prise en main rapide',
       description: 'Suivez ces étapes pour générer un courriel prêt à envoyer en moins d\'une minute.',
@@ -78,15 +80,68 @@ const translations = {
     },
     contact: {
       heading: 'Besoin d\'un coup de main ?',
-      description: 'Nous pouvons vous assister pour les comptes, les modèles ou la synchronisation.',
-      button: 'Nous écrire',
-      extra: (email) => `Ou écrivez-nous directement à ${email}.`,
+      description: 'Choisissez ce qui décrit le mieux votre demande et envoyez-nous un court message.',
+      options: [
+        {
+          value: 'support',
+          label: 'Support',
+          helper: 'Accès, permissions ou fonctionnement général',
+          messageLabel: 'Décrivez la situation',
+          placeholder: 'Expliquez ce dont vous avez besoin, les personnes impliquées et les échéances.'
+        },
+        {
+          value: 'glitch',
+          label: 'Glitch / bogue',
+          helper: 'Fonctionnalité en panne ou comportement étrange',
+          messageLabel: 'Que s\'est-il produit ?',
+          placeholder: 'Ajoutez les étapes pour reproduire, le navigateur utilisé et tout message d\'erreur.'
+        },
+        {
+          value: 'improvement',
+          label: 'Amélioration / idée',
+          helper: 'Partagez une idée ou une optimisation pour ECHO',
+          messageLabel: 'Quelle est votre suggestion ?',
+          placeholder: 'Décrivez l\'amélioration souhaitée et l\'impact attendu.'
+        },
+        {
+          value: 'template',
+          label: 'Soumettre un modèle',
+          helper: 'Envoyez un modèle à réviser ou à publier',
+          messageLabel: 'Présentez votre modèle',
+          placeholder: 'Résumé, ton, contexte d\'utilisation et points à surveiller.',
+          extraField: {
+            label: 'Lien vers le fichier ou SharePoint (facultatif)',
+            placeholder: 'Collez un lien vers Teams, OneDrive ou SharePoint.'
+          }
+        }
+      ],
+      form: {
+        nameLabel: 'Nom complet',
+  namePlaceholder: 'Ex. Jeanne Tremblay',
+        emailLabel: 'Courriel professionnel',
+  emailPlaceholder: 'prenom.nom@canada.ca',
+        messageLabelFallback: 'Message',
+        optional: '(facultatif)',
+        submit: 'Envoyer la demande',
+        submitting: 'Envoi en cours…',
+        successTitle: 'Merci !',
+        successMessage: 'Votre message a été transmis à l\'équipe. Nous vous répondrons sous deux jours ouvrables.',
+        sendAnother: 'Envoyer une autre demande',
+  errorTitle: 'Oups…',
+        errorMessage: (email) => `Impossible d\'envoyer pour le moment. Réessayez plus tard ou écrivez-nous à ${email}.`,
+        validation: {
+          nameRequired: 'Indiquez votre nom.',
+          emailRequired: 'Entrez un courriel valide.',
+          messageRequired: 'Merci d\'ajouter quelques détails.'
+        },
+        extraHelp: 'Pour les soumissions de modèles, joignez un lien accessible si possible.'
+      },
       close: 'Fermer le centre d\'aide'
     }
   },
   en: {
     title: 'Help Centre',
-    subtitle: 'Get answers fast for Email Assistant v8',
+    subtitle: 'Get answers fast for ECHO',
     quickStart: {
       heading: 'Quick start',
       description: 'Follow these steps to produce a ready-to-send message in under a minute.',
@@ -155,10 +210,63 @@ const translations = {
       ]
     },
     contact: {
-      heading: 'Still need a hand?',
-      description: 'The Translation Bureau team can help with accounts, templates, or synchronization questions.',
-      button: 'Contact support',
-      extra: (email) => `Or email us directly at ${email}.`,
+      heading: 'Need something else?',
+      description: 'Pick the option that fits best and send us a quick note.',
+      options: [
+        {
+          value: 'support',
+          label: 'Support',
+          helper: 'Access, permissions, or general guidance',
+          messageLabel: 'Tell us what you need',
+          placeholder: 'Share the context, people involved, and any deadlines.'
+        },
+        {
+          value: 'glitch',
+          label: 'Glitch',
+          helper: 'Broken feature or unexpected behaviour',
+          messageLabel: 'What happened?',
+          placeholder: 'List the steps to reproduce, browser used, and any error messages.'
+        },
+        {
+          value: 'improvement',
+          label: 'Improvement / suggestion',
+          helper: 'Share an idea to make ECHO better',
+          messageLabel: 'What would you improve?',
+          placeholder: 'Describe the enhancement and the impact you expect.'
+        },
+        {
+          value: 'template',
+          label: 'Submit a template',
+          helper: 'Send a template for review or publication',
+          messageLabel: 'Describe your template',
+          placeholder: 'Summarize tone, audience, context, and any review notes.',
+          extraField: {
+            label: 'Link to files or SharePoint (optional)',
+            placeholder: 'Paste a Teams, OneDrive, or SharePoint link.'
+          }
+        }
+      ],
+      form: {
+        nameLabel: 'Full name',
+  namePlaceholder: 'e.g. Jordan Lee',
+        emailLabel: 'Work email',
+  emailPlaceholder: 'firstname.lastname@canada.ca',
+        messageLabelFallback: 'Message',
+        optional: '(optional)',
+        submit: 'Send request',
+        submitting: 'Sending…',
+        successTitle: 'Thanks!',
+        successMessage: 'Your message is on its way. We usually respond within two business days.',
+        sendAnother: 'Send another request',
+  errorTitle: 'Uh-oh…',
+        errorMessage: (email) => `We couldn\'t send your message. Try again later or reach us at ${email}.`,
+        validation: {
+          nameRequired: 'Please share your name.',
+          emailRequired: 'Enter a valid email address.',
+          messageRequired: 'Add a few details so we can help.'
+        },
+        extraHelp: 'For template submissions, include a link we can open if possible.'
+      },
       close: 'Close help centre'
     }
   }
@@ -178,9 +286,34 @@ function SectionHeader({ icon: Icon, title, description }) {
   )
 }
 
-export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'jskennedy80@gmail.com', mailSubject = 'Email Assistant v8 – Support' }) {
+export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'jskennedy80@gmail.com', contactEndpoint }) {
   const strings = useMemo(() => translations[language] || translations.fr, [language])
+  const contactOptions = strings.contact?.options || []
   const closeBtnRef = useRef(null)
+  const [formData, setFormData] = useState(() => ({
+    category: contactOptions[0]?.value || 'support',
+    name: '',
+    email: '',
+    message: '',
+    extra: ''
+  }))
+  const [status, setStatus] = useState('idle')
+  const [errors, setErrors] = useState({})
+
+  const submissionUrl = contactEndpoint || `https://formsubmit.co/ajax/${encodeURIComponent(supportEmail)}`
+  const selectedCategory = contactOptions.find((option) => option.value === formData.category) || contactOptions[0] || null
+  const isSubmitting = status === 'submitting'
+  const feedbackMessage = status === 'success'
+    ? strings.contact.form.successMessage
+    : status === 'error'
+      ? strings.contact.form.errorMessage(supportEmail)
+      : ''
+
+  useEffect(() => {
+    if (!selectedCategory && contactOptions[0]) {
+      setFormData((prev) => ({ ...prev, category: contactOptions[0].value }))
+    }
+  }, [selectedCategory, contactOptions])
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -204,10 +337,97 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
     }
   }, [onClose])
 
-  const handleContact = () => {
-    const subject = encodeURIComponent(mailSubject)
-    const mailto = `mailto:${supportEmail}?subject=${subject}`
-    window.open(mailto, '_blank', 'noopener,noreferrer')
+  const handleCategorySelect = (value) => {
+    setFormData((prev) => ({ ...prev, category: value }))
+    if (status !== 'idle') {
+      setStatus('idle')
+    }
+  }
+
+  const handleFieldChange = (field) => (event) => {
+    const value = event.target.value
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    setErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+    if (status !== 'idle') {
+      setStatus('idle')
+    }
+  }
+
+  const resetAfterSuccess = () => {
+    setStatus('idle')
+    setErrors({})
+    setFormData((prev) => ({
+      ...prev,
+      message: '',
+      extra: ''
+    }))
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (isSubmitting) return
+
+    const validationErrors = {}
+    if (!formData.name.trim()) {
+      validationErrors.name = strings.contact.form.validation.nameRequired
+    }
+    const emailValue = formData.email.trim()
+    if (!emailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      validationErrors.email = strings.contact.form.validation.emailRequired
+    }
+    if (!formData.message.trim()) {
+      validationErrors.message = strings.contact.form.validation.messageRequired
+    }
+
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors)
+      return
+    }
+
+    setStatus('submitting')
+
+    try {
+      const payload = {
+        category: formData.category,
+        categoryLabel: selectedCategory?.label || formData.category,
+        name: formData.name.trim(),
+        email: emailValue,
+        message: formData.message.trim(),
+        extra: formData.extra.trim(),
+        language,
+        submittedAt: new Date().toISOString(),
+        product: 'ECHO'
+      }
+
+      const response = await fetch(submissionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        throw new Error(`Unexpected status ${response.status}`)
+      }
+
+      setStatus('success')
+      setErrors({})
+      setFormData((prev) => ({
+        ...prev,
+        message: '',
+        extra: ''
+      }))
+    } catch (error) {
+      console.error('Contact form submission failed:', error)
+      setStatus('error')
+    }
   }
 
   return (
@@ -323,23 +543,129 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
               <Separator className="bg-[#e6eef5]" />
 
               <section className="rounded-2xl border border-[#bfe7e3] bg-[#f5fffb] p-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 text-[#145a64]">
-                      <Mail className="h-5 w-5" aria-hidden="true" />
-                      <h3 className="text-lg font-semibold">{strings.contact.heading}</h3>
-                    </div>
-                    <p className="mt-2 text-sm text-slate-700">{strings.contact.description}</p>
-                    <p className="mt-1 text-xs text-slate-500">{strings.contact.extra(supportEmail)}</p>
+                <div className="flex items-center gap-2 text-[#145a64]">
+                  <Mail className="h-5 w-5" aria-hidden="true" />
+                  <h3 className="text-lg font-semibold">{strings.contact.heading}</h3>
+                </div>
+                <p className="mt-2 text-sm text-slate-700">{strings.contact.description}</p>
+
+                <form onSubmit={handleSubmit} className="mt-4 space-y-5" noValidate>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {contactOptions.map((option) => {
+                      const isActive = formData.category === option.value
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={`group flex flex-col rounded-xl border px-3 py-3 text-left transition-all duration-200 ${isActive ? 'border-[#1f8a99] bg-white shadow-md' : 'border-transparent bg-white/60 hover:border-[#bfe7e3] hover:bg-white'}`}
+                          aria-pressed={isActive}
+                          onClick={() => handleCategorySelect(option.value)}
+                        >
+                          <span className="font-semibold text-[#0f4c55]">{option.label}</span>
+                          <span className="mt-1 text-xs text-slate-600">{option.helper}</span>
+                        </button>
+                      )
+                    })}
                   </div>
-                  <div className="flex flex-col gap-2 md:items-end">
-                    <Button
-                      onClick={handleContact}
-                      className="bg-[#1f8a99] text-white hover:bg-[#166f7b]"
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                      <span>{strings.contact.form.nameLabel}</span>
+                      <Input
+                        value={formData.name}
+                        onChange={handleFieldChange('name')}
+                        placeholder={strings.contact.form.namePlaceholder}
+                        aria-invalid={Boolean(errors.name)}
+                      />
+                      {errors.name ? (
+                        <span className="text-xs font-normal text-red-600">{errors.name}</span>
+                      ) : null}
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                      <span>{strings.contact.form.emailLabel}</span>
+                      <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={handleFieldChange('email')}
+                        placeholder={strings.contact.form.emailPlaceholder}
+                        aria-invalid={Boolean(errors.email)}
+                      />
+                      {errors.email ? (
+                        <span className="text-xs font-normal text-red-600">{errors.email}</span>
+                      ) : null}
+                    </label>
+                  </div>
+
+                  <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                    <span>{selectedCategory?.messageLabel || strings.contact.form.messageLabelFallback}</span>
+                    <Textarea
+                      value={formData.message}
+                      onChange={handleFieldChange('message')}
+                      placeholder={selectedCategory?.placeholder || ''}
+                      rows={5}
+                      aria-invalid={Boolean(errors.message)}
+                    />
+                    {errors.message ? (
+                      <span className="text-xs font-normal text-red-600">{errors.message}</span>
+                    ) : null}
+                  </label>
+
+                  {selectedCategory?.extraField ? (
+                    <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                      <span>
+                        {selectedCategory.extraField.label}{' '}
+                        <span className="font-normal text-slate-500">{strings.contact.form.optional}</span>
+                      </span>
+                      <Input
+                        value={formData.extra}
+                        onChange={handleFieldChange('extra')}
+                        placeholder={selectedCategory.extraField.placeholder}
+                      />
+                    </label>
+                  ) : null}
+
+                  {selectedCategory?.extraField && strings.contact.form.extraHelp ? (
+                    <p className="text-xs text-slate-500">{strings.contact.form.extraHelp}</p>
+                  ) : null}
+
+                  {feedbackMessage ? (
+                    <div
+                      className={`flex items-start gap-3 rounded-lg border p-3 text-sm ${status === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-red-200 bg-red-50 text-red-700'}`}
                     >
-                      {strings.contact.button}
+                      {status === 'success' ? (
+                        <CheckCircle2 className="mt-0.5 h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <AlertTriangle className="mt-0.5 h-4 w-4" aria-hidden="true" />
+                      )}
+                      <div>
+                        <p className="font-semibold">
+                          {status === 'success' ? strings.contact.form.successTitle : strings.contact.form.errorTitle}
+                        </p>
+                        <p className="mt-1">{feedbackMessage}</p>
+                        {status === 'success' ? (
+                          <button
+                            type="button"
+                            onClick={resetAfterSuccess}
+                            className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#166f7b] hover:text-[#0f4c55]"
+                          >
+                            {strings.contact.form.sendAnother}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <Button
+                      type="submit"
+                      className="inline-flex items-center gap-2 bg-[#1f8a99] px-5 py-2 text-white hover:bg-[#166f7b]"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+                      <span>{isSubmitting ? strings.contact.form.submitting : strings.contact.form.submit}</span>
                     </Button>
                     <Button
+                      type="button"
                       variant="ghost"
                       onClick={onClose}
                       className="text-[#145a64] hover:bg-[#f0fbfb]"
@@ -347,7 +673,7 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
                       {strings.contact.close}
                     </Button>
                   </div>
-                </div>
+                </form>
               </section>
             </div>
           </ScrollArea>

@@ -9,6 +9,7 @@ import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, 
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
 import SimplePillEditor from './components/SimplePillEditor.jsx';
+import RichTextPillEditor from './components/RichTextPillEditor.jsx';
 import AISidebar from './components/AISidebar';
 import HelpCenter from './components/HelpCenter.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.jsx'
@@ -228,6 +229,66 @@ const normalizeForMatching = (value = '') => {
   return { normalized, indexMap }
 }
 
+// Helper function to strip rich text formatting while preserving variable pills
+const stripRichTextForSync = (htmlText = '') => {
+  if (!htmlText) return ''
+  
+  // Create a temporary div to parse HTML
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlText
+  
+  // Process nodes to extract plain text while preserving variable pills
+  const processNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node.textContent || ''
+    }
+    
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      // Handle variable pills - convert back to placeholder
+      if (node.hasAttribute('data-var')) {
+        const varName = node.getAttribute('data-var')
+        return `<<${varName}>>`
+      }
+      
+      // Handle line breaks
+      if (node.tagName === 'BR') {
+        return '\n'
+      }
+      
+      // Handle block elements - add line breaks
+      if (['DIV', 'P', 'SECTION', 'ARTICLE', 'HEADER', 'FOOTER', 'ASIDE', 'NAV', 
+           'UL', 'OL', 'LI', 'PRE', 'BLOCKQUOTE', 'TABLE', 'TBODY', 'THEAD', 
+           'TFOOT', 'TR', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HR'].includes(node.tagName)) {
+        let content = ''
+        for (const child of node.childNodes) {
+          content += processNode(child)
+        }
+        // Add line break after block elements (except if it's the last element)
+        if (node.tagName !== 'DIV' || node.nextSibling) {
+          content += '\n'
+        }
+        return content
+      }
+      
+      // Handle inline elements - just extract text content
+      let content = ''
+      for (const child of node.childNodes) {
+        content += processNode(child)
+      }
+      return content
+    }
+    
+    return ''
+  }
+  
+  let plainText = processNode(tempDiv)
+  
+  // Clean up extra line breaks
+  plainText = plainText.replace(/\n\n+/g, '\n\n').replace(/^\n+|\n+$/g, '')
+  
+  return plainText
+}
+
 const extractVariablesFromTemplate = (text = '', templateText = '', variableNames = []) => {
   if (!text || !templateText || !Array.isArray(variableNames) || !variableNames.length) return {}
 
@@ -429,8 +490,8 @@ function expandQuery(q) {
 // Interface texts by language - moved outside component to avoid TDZ issues
 const interfaceTexts = {
   fr: {
-    title: 'Assistant pour rédaction de courriels aux clients',
-    subtitle: 'Bureau de la traduction',
+  title: 'ECHO',
+    subtitle: 'Studio de modèles interactifs',
     selectTemplate: 'Sélectionnez un modèle',
     templatesCount: `modèles disponibles`,
   searchPlaceholder: 'Rechercher un modèle...',
@@ -468,8 +529,8 @@ const interfaceTexts = {
     confirm: 'Confirmer'
   },
   en: {
-    title: 'Email Writing Assistant for Clients',
-    subtitle: 'Translation Bureau',
+  title: 'ECHO',
+    subtitle: 'Interactive Template Studio',
     selectTemplate: 'Select a template',
     templatesCount: `templates available`,
   searchPlaceholder: 'Search for a template...',
@@ -543,6 +604,7 @@ function App() {
   const variablesRef = useRef(variables)
   const finalSubjectRef = useRef(finalSubject)
   const finalBodyRef = useRef(finalBody)
+  const bodyEditorRef = useRef(null)
   const selectedTemplateRef = useRef(selectedTemplate)
   const templateLanguageRef = useRef(templateLanguage)
   const syncFromTextRef = useRef(null)
@@ -576,9 +638,15 @@ function App() {
     } catch {}
     return 'jskennedy80@gmail.com'
   }, [])
-  const helpMailSubject = useMemo(() => (
-    interfaceLanguage === 'fr' ? 'Assistance Email Assistant v8' : 'Email Assistant v8 support'
-  ), [interfaceLanguage])
+  const supportFormEndpoint = useMemo(() => {
+    try {
+      const endpoint = import.meta?.env?.VITE_SUPPORT_FORM_ENDPOINT
+      if (typeof endpoint === 'string' && endpoint.trim().length) {
+        return endpoint.trim()
+      }
+    } catch {}
+    return null
+  }, [])
   const [leftWidth, setLeftWidth] = useState(() => {
     const saved = Number(localStorage.getItem('ea_left_width'))
     return Number.isFinite(saved) && saved >= 340 && saved <= 680 ? saved : 480
@@ -1762,6 +1830,67 @@ function App() {
     return result
   }
 
+  // Enhanced function to handle rich text HTML content
+  const replaceVariablesInHTML = (htmlText, values, fallbackPlainText = '') => {
+    if (!htmlText) {
+      return { html: '', text: fallbackPlainText || '' }
+    }
+
+    const ensureHtmlString = (input = '') => {
+      const raw = String(input ?? '')
+      if (!raw.trim()) return ''
+      if (/[<>&]/.test(raw) && /<\/?[a-z]/i.test(raw)) {
+        return raw
+      }
+      return String(raw)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/\r\n|\r/g, '\n')
+        .replace(/\n/g, '<br>')
+    }
+
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = ensureHtmlString(htmlText)
+
+    // Remove technical attributes we don't need in exported HTML
+    wrapper.querySelectorAll('br[data-line-break]').forEach((node) => {
+      node.removeAttribute('data-line-break')
+    })
+
+    const cssEscape = (value = '') => {
+      try {
+        if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+          return CSS.escape(value)
+        }
+      } catch {}
+      return String(value).replace(/[^a-zA-Z0-9_-]/g, (char) => `\\${char}`)
+    }
+
+    Object.entries(values || {}).forEach(([varName, value]) => {
+      const nodes = wrapper.querySelectorAll(`[data-var="${cssEscape(varName)}"]`)
+      nodes.forEach((node) => {
+        const replacementValue = value !== undefined && value !== null && String(value).length
+          ? String(value)
+          : `<<${varName}>>`
+        const textNode = document.createTextNode(replacementValue)
+        node.replaceWith(textNode)
+      })
+    })
+
+    const htmlResult = wrapper.innerHTML
+
+    if (fallbackPlainText) {
+      return { html: htmlResult, text: fallbackPlainText }
+    }
+
+    const plainText = wrapper.innerText.replace(/\r\n/g, '\n')
+
+    return { html: htmlResult, text: plainText }
+  }
+
   // Replace variables in text using current state
   const replaceVariables = (text) => replaceVariablesWithValues(text, variables)
 
@@ -1848,7 +1977,9 @@ function App() {
     })
 
     if (subjectTemplate && finalSubject) {
-      const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, selectedTemplate.variables)
+      // Strip rich text formatting while preserving variable pills for sync
+      const plainSubject = stripRichTextForSync(finalSubject)
+      const subjectValues = extractVariablesFromTemplate(plainSubject, subjectTemplate, selectedTemplate.variables)
       Object.entries(subjectValues).forEach(([name, value]) => {
         console.log(`🔄 Extracted from subject - ${name}: "${value.substring(0, 50)}..."`)
         extracted[name] = value
@@ -1856,7 +1987,9 @@ function App() {
     }
 
     if (bodyTemplate && finalBody) {
-      const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, selectedTemplate.variables)
+      // Strip rich text formatting while preserving variable pills for sync
+      const plainBody = stripRichTextForSync(finalBody)
+      const bodyValues = extractVariablesFromTemplate(plainBody, bodyTemplate, selectedTemplate.variables)
       Object.entries(bodyValues).forEach(([name, value]) => {
         console.log(`🔄 Extracted from body - ${name}: "${value.substring(0, 50)}..."`)
         // Only overwrite if we don't have a subject value already
@@ -1872,11 +2005,13 @@ function App() {
       let fallback = null
 
       if (subjectTemplate && subjectTemplate.includes(`<<${varName}>>`)) {
-        fallback = extractVariableWithAnchors(finalSubject, subjectTemplate, varName)
+        const plainSubject = stripRichTextForSync(finalSubject)
+        fallback = extractVariableWithAnchors(plainSubject, subjectTemplate, varName)
       }
 
       if (!fallback && bodyTemplate && bodyTemplate.includes(`<<${varName}>>`)) {
-        fallback = extractVariableWithAnchors(finalBody, bodyTemplate, varName)
+        const plainBody = stripRichTextForSync(finalBody)
+        fallback = extractVariableWithAnchors(plainBody, bodyTemplate, varName)
       }
 
       if (fallback) {
@@ -1891,8 +2026,12 @@ function App() {
       const previousValue = (variables[varName] ?? '').trim()
       if (!previousValue) return
 
-      const stillInSubject = finalSubject?.includes(previousValue)
-      const stillInBody = finalBody?.includes(previousValue)
+      // Check both original and plain text versions for rich text compatibility
+      const plainSubject = stripRichTextForSync(finalSubject)
+      const plainBody = stripRichTextForSync(finalBody)
+      
+      const stillInSubject = finalSubject?.includes(previousValue) || plainSubject?.includes(previousValue)
+      const stillInBody = finalBody?.includes(previousValue) || plainBody?.includes(previousValue)
 
       if (!stillInSubject && !stillInBody) {
         console.log(`🔄 Detected removal of ${varName}; clearing value`)
@@ -1977,44 +2116,71 @@ function App() {
   }, [selectedTemplate, templateLanguage, finalSubject, finalBody, syncFromText])
 
   /**
-   * GRANULAR COPY FUNCTION
+   * ENHANCED COPY FUNCTION - Supports both HTML and plain text
    */
   const copyToClipboard = async (type = 'all') => {
-    let content = ''
+    let htmlContent = ''
+    let textContent = ''
     
     // Content selection based on requested type
     const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
-    const resolvedBody = replaceVariablesWithValues(finalBody, variables)
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables)
+    const bodyHtmlSource = bodyEditorRef.current?.getHtml?.() ?? finalBody
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText)
+
+    const toSimpleHtml = (plain = '') => String(plain ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/\r\n|\r/g, '\n')
+      .replace(/\n/g, '<br>')
 
     switch (type) {
       case 'subject':
-        content = resolvedSubject
+        htmlContent = toSimpleHtml(resolvedSubject)
+        textContent = resolvedSubject
         break
       case 'body':
-        content = resolvedBody
+        htmlContent = bodyResult.html
+        textContent = bodyResult.text
         break
       case 'all':
       default:
-        content = `${resolvedSubject}\n\n${resolvedBody}`
+        htmlContent = `<div><strong>Subject:</strong> ${toSimpleHtml(resolvedSubject)}</div><br><div>${bodyResult.html}</div>`
+        textContent = `${resolvedSubject}\n\n${bodyResult.text}`
         break
     }
     
     try {
-      // Modern and secure method (HTTPS required)
+      // Modern clipboard API with both HTML and plain text
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(content)
+        const clipboardItem = new ClipboardItem({
+          'text/html': new Blob([htmlContent], { type: 'text/html' }),
+          'text/plain': new Blob([textContent], { type: 'text/plain' })
+        })
+        await navigator.clipboard.write([clipboardItem])
       } else {
-        // Fallback for older browsers or non-secure contexts
-        const textArea = document.createElement('textarea')
-        textArea.value = content
-        textArea.style.position = 'fixed'
-        textArea.style.left = '-999999px'
-        textArea.style.top = '-999999px'
-        document.body.appendChild(textArea)
-        textArea.focus()
-        textArea.select()
+        // Fallback - create a temporary div with both HTML and text
+        const tempDiv = document.createElement('div')
+        tempDiv.innerHTML = htmlContent
+        tempDiv.style.position = 'fixed'
+        tempDiv.style.left = '-999999px'
+        tempDiv.style.top = '-999999px'
+        document.body.appendChild(tempDiv)
+        
+        // Select the content
+        const range = document.createRange()
+        range.selectNodeContents(tempDiv)
+        const selection = window.getSelection()
+        selection.removeAllRanges()
+        selection.addRange(range)
+        
+        // Copy and cleanup
         document.execCommand('copy')
-        textArea.remove()
+        selection.removeAllRanges()
+        document.body.removeChild(tempDiv)
       }
       
       // Visual success feedback (2 seconds)
@@ -2022,8 +2188,28 @@ function App() {
       setTimeout(() => setCopySuccess(false), 2000)
     } catch (error) {
       console.error('Copy error:', error)
-      // Error handling with user message
-      alert('Copy error. Please select the text manually and use Ctrl+C.')
+      // Fallback to plain text only
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(textContent)
+        } else {
+          const textArea = document.createElement('textarea')
+          textArea.value = textContent
+          textArea.style.position = 'fixed'
+          textArea.style.left = '-999999px'
+          textArea.style.top = '-999999px'
+          document.body.appendChild(textArea)
+          textArea.focus()
+          textArea.select()
+          document.execCommand('copy')
+          textArea.remove()
+        }
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 2000)
+      } catch (fallbackError) {
+        console.error('Fallback copy error:', fallbackError)
+        alert('Copy error. Please select the text manually and use Ctrl+C.')
+      }
     }
   }
 
@@ -2211,15 +2397,17 @@ function App() {
     if (debug) console.log('Opening email client with subject:', finalSubject)
     
     const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
-    const resolvedBody = replaceVariablesWithValues(finalBody, variables)
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables)
+    const bodyHtmlSource = bodyEditorRef.current?.getHtml?.() ?? finalBody
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText)
 
-    if (!resolvedSubject && !resolvedBody) {
+    if (!resolvedSubject && !bodyResult.text) {
       alert(templateLanguage === 'fr' ? 'Veuillez d\'abord sélectionner un modèle et remplir le contenu.' : 'Please first select a template and fill in the content.')
       return
     }
     
     const subject = resolvedSubject || ''
-    const body = (resolvedBody || '').replace(/\n/g, '\r\n')
+    const body = (bodyResult.text || '').replace(/\n/g, '\r\n')
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     
     try {
@@ -2309,7 +2497,7 @@ function App() {
         </div>
         
         {/* Main content */}
-        <div className="flex items-center justify-between relative">
+  <div className="flex items-start justify-between relative">
           {/* Left side: Logo + Title with 2in margin */}
           <div className="flex items-center space-x-6" style={{ marginLeft: '2in' }}>
             {/* Large navy circle with mail icon */}
@@ -2330,38 +2518,54 @@ function App() {
             </div>
           </div>
           
-          {/* Right side: Language selector */}
-          <div className="flex items-center space-x-3 px-4 py-3 shadow-xl" style={{ backgroundColor: 'var(--primary)', borderRadius: 'calc(var(--radius) + 8px)' }}>
-            <Globe className="h-8 w-8 text-white" />
-            <span className="font-bold text-base text-white">{t.interfaceLanguage}</span>
-            <div className="flex bg-white p-1.5 shadow-lg" style={{ borderRadius: '14px' }}>
-              <button
-                onClick={() => setInterfaceLanguage('fr')}
-                className={`px-4 py-2 text-sm font-bold transition-all duration-300 transform ${
-                  interfaceLanguage === 'fr' ? 'text-white shadow-xl scale-105' : ''
-                }`}
-                style={
-                  interfaceLanguage === 'fr'
-                    ? { backgroundColor: 'var(--primary)', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
-                    : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)' }
-                }
-              >
-                FR
-              </button>
-              <button
-                onClick={() => setInterfaceLanguage('en')}
-                className={`px-4 py-2 text-sm font-bold transition-all duration-300 transform ${
-                  interfaceLanguage === 'en' ? 'text-white shadow-xl scale-105' : 'hover:scale-105'
-                }`}
-                style={
-                  interfaceLanguage === 'en'
-                    ? { backgroundColor: 'var(--primary)', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
-                    : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)' }
-                }
-              >
-                EN
-              </button>
+          {/* Right side: Interface language selector + help */}
+          <div
+            className="flex w-full max-w-xs flex-col gap-3 px-4 py-4 shadow-xl"
+            style={{ backgroundColor: 'var(--primary)', borderRadius: 'calc(var(--radius) + 8px)' }}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Globe className="h-8 w-8 text-white" />
+                <span className="font-bold text-base text-white">{t.interfaceLanguage}</span>
+              </div>
+              <div className="flex bg-white p-1.5 shadow-lg" style={{ borderRadius: '14px' }}>
+                <button
+                  onClick={() => setInterfaceLanguage('fr')}
+                  className={`px-4 py-2 text-sm font-bold transition-all duration-300 transform ${
+                    interfaceLanguage === 'fr' ? 'text-white shadow-xl scale-105' : ''
+                  }`}
+                  style={
+                    interfaceLanguage === 'fr'
+                      ? { backgroundColor: 'var(--primary)', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
+                      : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)' }
+                  }
+                >
+                  FR
+                </button>
+                <button
+                  onClick={() => setInterfaceLanguage('en')}
+                  className={`px-4 py-2 text-sm font-bold transition-all duration-300 transform ${
+                    interfaceLanguage === 'en' ? 'text-white shadow-xl scale-105' : 'hover:scale-105'
+                  }`}
+                  style={
+                    interfaceLanguage === 'en'
+                      ? { backgroundColor: 'var(--primary)', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
+                      : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)' }
+                  }
+                >
+                  EN
+                </button>
+              </div>
             </div>
+            <Button
+              onClick={() => setShowHelpCenter(true)}
+              className="self-end inline-flex items-center gap-2 rounded-lg border border-white/25 bg-transparent px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/90 transition-all duration-200 hover:border-white/40 hover:text-white"
+              title={interfaceLanguage === 'fr' ? "Ouvrir le centre d'aide" : 'Open help centre'}
+              style={{ boxShadow: 'none', letterSpacing: '0.06em' }}
+            >
+              <LifeBuoy className="h-3.5 w-3.5 text-white/80" aria-hidden="true" />
+              <span>{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -2724,7 +2928,7 @@ function App() {
               <>
                 {/* Editable version - MAIN AREA */}
                 <Card className="card-soft border-0 overflow-hidden rounded-[14px]" style={{ background: '#ffffff' }}>
-                  <CardHeader style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 56, boxShadow: 'none', borderBottom: 'none', borderTopLeftRadius: 14, borderTopRightRadius: 14, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
+                  <CardHeader style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48, boxShadow: 'none', borderBottom: 'none', borderTopLeftRadius: 14, borderTopRightRadius: 14, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
                     <CardTitle className="text-2xl font-bold text-white flex items-center justify-between">
                       <div className="flex items-center">
                         <Mail className="h-6 w-6 mr-3 text-white" />
@@ -2820,7 +3024,6 @@ function App() {
                   </CardHeader>
                   <CardContent className="p-5 space-y-5 mt-1" style={{ background: '#f6fbfb', borderRadius: 14 }}>
 
-
                     {/* Editable subject with preview highlighting */}
                     <div className="space-y-3 mt-2">
                       <div className="flex items-center gap-2 text-slate-800 font-semibold">
@@ -2849,10 +3052,11 @@ function App() {
                         <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
                         <span>{t.body}</span>
                       </div>
-                      <SimplePillEditor
+                      <RichTextPillEditor
                         key={`body-${selectedTemplate?.id}-${Object.keys(variables).length}`}
                         value={finalBody}
                         onChange={(e) => { setFinalBody(e.target.value); manualEditRef.current.body = true; }}
+                        ref={bodyEditorRef}
                         variables={variables}
                         placeholder={getPlaceholderText()}
                         onVariablesChange={handleInlineVariableChange}
@@ -2860,6 +3064,8 @@ function App() {
                         onFocusedVarChange={(varName) => {
                           setFocusedVar(varName || null)
                         }}
+                        minHeight="150px"
+                        showRichTextToolbar={true}
                       />
 
                     </div>
@@ -3482,22 +3688,12 @@ function App() {
         document.body
       )}
 
-      {/* Discreet help button at bottom right */}
-      <Button
-        onClick={() => setShowHelpCenter(true)}
-        className="fixed bottom-6 right-6 z-20 inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200/60 px-3 py-2 text-sm font-medium text-slate-500 shadow-lg transition-all duration-300 hover:bg-white hover:text-[#145a64] hover:shadow-xl hover:border-[#bfe7e3] hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#145a64]"
-        title={interfaceLanguage === 'fr' ? 'Ouvrir le centre d\'aide' : 'Open help centre'}
-      >
-        <LifeBuoy className="h-4 w-4" aria-hidden="true" />
-        <span className="hidden sm:inline-block">{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
-      </Button>
-
       {showHelpCenter && (
         <HelpCenter
           language={interfaceLanguage}
           onClose={() => setShowHelpCenter(false)}
           supportEmail={supportEmail}
-          mailSubject={helpMailSubject}
+          contactEndpoint={supportFormEndpoint}
         />
       )}
 

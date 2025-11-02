@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import RichTextToolbar from './RichTextToolbar.jsx';
 
 const escapeHtml = (input = '') =>
   String(input)
@@ -9,31 +10,9 @@ const escapeHtml = (input = '') =>
     .replace(/'/g, '&#39;');
 
 const BLOCK_ELEMENTS = new Set([
-  'DIV',
-  'P',
-  'SECTION',
-  'ARTICLE',
-  'HEADER',
-  'FOOTER',
-  'ASIDE',
-  'NAV',
-  'UL',
-  'OL',
-  'LI',
-  'PRE',
-  'BLOCKQUOTE',
-  'TABLE',
-  'TBODY',
-  'THEAD',
-  'TFOOT',
-  'TR',
-  'H1',
-  'H2',
-  'H3',
-  'H4',
-  'H5',
-  'H6',
-  'HR'
+  'DIV', 'P', 'SECTION', 'ARTICLE', 'HEADER', 'FOOTER', 'ASIDE', 'NAV',
+  'UL', 'OL', 'LI', 'PRE', 'BLOCKQUOTE', 'TABLE', 'TBODY', 'THEAD', 
+  'TFOOT', 'TR', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HR'
 ]);
 
 const convertPlainTextToHtml = (text = '') =>
@@ -41,11 +20,81 @@ const convertPlainTextToHtml = (text = '') =>
     .replace(/\r\n|\r/g, '\n')
     .replace(/\n/g, '<br data-line-break="true">');
 
+const PILL_TEMPLATE_TOKEN = '__RT_PILL_VALUE__';
+
 const escapeSelector = (value = '') => {
   if (typeof window !== 'undefined' && window.CSS?.escape) {
     return window.CSS.escape(value);
   }
   return String(value).replace(/[^a-zA-Z0-9_-]/g, (char) => `\\${char}`);
+};
+
+const createFormattingTemplate = (pill) => {
+  if (!pill) return null;
+
+  const clone = pill.cloneNode(true);
+  let placeholderInserted = false;
+
+  const walk = (node) => {
+    node.childNodes.forEach((child) => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        if (!placeholderInserted) {
+          child.textContent = PILL_TEMPLATE_TOKEN;
+          placeholderInserted = true;
+        } else {
+          child.textContent = '';
+        }
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        walk(child);
+      }
+    });
+  };
+
+  walk(clone);
+
+  if (!placeholderInserted) {
+    return null;
+  }
+
+  return clone.innerHTML;
+};
+
+const storePillTemplate = (pill) => {
+  if (!pill) return;
+  const template = createFormattingTemplate(pill);
+  if (template) {
+    pill.dataset.template = template;
+  } else {
+    delete pill.dataset.template;
+  }
+};
+
+const applyTemplateToPill = (pill, sanitizedHtml) => {
+  if (!pill) return;
+
+  const template = pill.dataset?.template;
+  if (template && template.includes(PILL_TEMPLATE_TOKEN)) {
+    const updated = template.replace(PILL_TEMPLATE_TOKEN, sanitizedHtml);
+    pill.innerHTML = updated;
+    storePillTemplate(pill);
+    return;
+  }
+
+  const singleChild = pill.childNodes.length === 1 && pill.childNodes[0].nodeType === Node.ELEMENT_NODE;
+  if (singleChild) {
+    pill.childNodes[0].innerHTML = sanitizedHtml;
+    storePillTemplate(pill);
+    return;
+  }
+
+  pill.innerHTML = sanitizedHtml;
+  storePillTemplate(pill);
+};
+
+const refreshAllPillTemplates = (editor) => {
+  if (!editor) return;
+  const pills = editor.querySelectorAll('.var-pill');
+  pills.forEach(storePillTemplate);
 };
 
 const selectEntirePill = (pill) => {
@@ -58,19 +107,54 @@ const selectEntirePill = (pill) => {
   selection.addRange(range);
 };
 
+const haveVariablesChanged = (prevVars = {}, nextVars = {}) => {
+  const prevKeys = Object.keys(prevVars);
+  const nextKeys = Object.keys(nextVars);
+
+  if (prevKeys.length !== nextKeys.length) return true;
+
+  for (const key of nextKeys) {
+    if ((prevVars[key] ?? '') !== (nextVars[key] ?? '')) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 /**
- * SimplePillEditor - A simple contentEditable editor that displays variables as styled pills
- * This is a much simpler alternative to the Lexical framework
+ * RichTextPillEditor - SimplePillEditor with rich text formatting support
+ * Uses IDENTICAL variable handling logic to SimplePillEditor
  */
-const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = 'default' }) => {
+const RichTextPillEditor = React.forwardRef(({
+  value = '',
+  onChange,
+  onFocus,
+  onBlur,
+  onVariablesChange,
+  variables = {},
+  placeholder = '',
+  className = '',
+  style = {},
+  focusedVarName = null,
+  onFocusedVarChange,
+  variant = 'default',
+  disabled = false,
+  minHeight = '120px',
+  showRichTextToolbar = true,
+  onRichTextCommand
+}, ref) => {
   const editorRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const lastSelectionVarRef = useRef(null);
+  const prevValueRef = useRef(value);
+  const prevVariablesRef = useRef(variables);
+  const hasMountedRef = useRef(false);
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
 
-  // Render the content with pills
+  // Render content with pills - IDENTICAL to SimplePillEditor
   const renderContent = (text) => {
-    if (!text) return '';
+  if (!text) return '';
     
     const regex = /<<([^>]+)>>/g;
     const parts = [];
@@ -90,7 +174,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
         parts.push(convertPlainTextToHtml(text.substring(lastIndex, match.index)));
       }
 
-      // Add the pill
+      // Add the pill - IDENTICAL to SimplePillEditor
       const pillClass = `var-pill ${isFilled ? 'filled' : 'empty'}`;
       parts.push(
         `<span class="${pillClass}" data-var="${varName}" data-value="${escapeHtml(storedValue)}" data-display="${escapeHtml(displayAttr)}" contenteditable="true" spellcheck="false">${convertPlainTextToHtml(displayValue)}</span>`
@@ -107,6 +191,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     return parts.join('');
   };
 
+  // Focus management - IDENTICAL to SimplePillEditor
   const applyFocusedPill = useCallback((varName) => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -156,21 +241,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     }
   }, [onFocusedVarChange]);
 
-  // Update the editor when value changes externally
-  useEffect(() => {
-    if (!editorRef.current || isFocused) return;
-    
-    const rendered = renderContent(value);
-    if (editorRef.current.innerHTML !== rendered) {
-      editorRef.current.innerHTML = rendered;
-    }
-  }, [value, variables, isFocused]);
-
-  useEffect(() => {
-    applyFocusedPill(focusedVarName);
-  }, [focusedVarName, variables, applyFocusedPill]);
-
-  // Extract placeholder-based text from the editor, skipping pill display values
+  // Extract text - IDENTICAL to SimplePillEditor
   const extractText = () => {
     if (!editorRef.current) return '';
 
@@ -226,8 +297,12 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     return normalized;
   };
 
+
+
+  // Handle input - IDENTICAL to SimplePillEditor
   const handleInput = () => {
     const text = extractText();
+    const html = editorRef.current?.innerHTML ?? '';
 
     const pillElements = editorRef.current?.querySelectorAll('.var-pill');
     const updates = {};
@@ -265,6 +340,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
         }
 
         updates[varName] = newValue;
+        storePillTemplate(pill);
       });
     }
 
@@ -273,11 +349,21 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     }
 
     if (onChange) {
-      onChange({ target: { value: text } });
+      onChange({ target: { value: text, htmlValue: html } });
     }
   };
 
-  const handleFocus = () => {
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      editorRef.current?.focus();
+    },
+    getHtml: () => editorRef.current?.innerHTML ?? '',
+    getPlainText: () => extractText(),
+    getEditorElement: () => editorRef.current
+  }));
+
+  // Handle focus - IDENTICAL to SimplePillEditor
+  const handleFocus = (e) => {
     setIsFocused(true);
     // Defer to allow selection to settle
     requestAnimationFrame(() => {
@@ -294,16 +380,20 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
         queueAutoSelectForPill(pillElement, varName);
       }
     });
+    onFocus?.(e);
   };
 
-  const handleBlur = () => {
+  // Handle blur - IDENTICAL to SimplePillEditor
+  const handleBlur = (e) => {
     setIsFocused(false);
     handleInput(); // Ensure final value is captured
     emitFocusedVarChange(null);
     applyFocusedPill(null);
     autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
+    onBlur?.(e);
   };
 
+  // Handle paste - IDENTICAL to SimplePillEditor
   const handlePaste = (event) => {
     if (!editorRef.current) return;
 
@@ -333,6 +423,123 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     });
   };
 
+  // Handle key down - IDENTICAL to SimplePillEditor
+  const handleKeyDown = (event) => {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    const selection = document.getSelection?.();
+    if (!selection) {
+      return;
+    }
+
+    const anchorNode = selection.anchorNode;
+    if (!anchorNode) {
+      return;
+    }
+
+    const pillElement = anchorNode.nodeType === Node.ELEMENT_NODE
+      ? anchorNode.closest?.('.var-pill')
+      : anchorNode.parentElement?.closest?.('.var-pill');
+
+    if (pillElement) {
+      event.preventDefault();
+    }
+  };
+
+  // Handle rich text commands
+  const handleRichTextCommand = useCallback((command, value) => {
+    // Ensure editor has focus for commands to work properly
+    if (editorRef.current && !isFocused) {
+      editorRef.current.focus();
+    }
+    
+    onRichTextCommand?.(command, value);
+    
+    // Trigger input event to sync with React state
+    setTimeout(() => {
+      if (editorRef.current) {
+        const event = new Event('input', { bubbles: true });
+        editorRef.current.dispatchEvent(event);
+      }
+    }, 10);
+  }, [onRichTextCommand, isFocused]);
+
+  // Update editor when value changes - IDENTICAL to SimplePillEditor
+  useEffect(() => {
+    const editor = editorRef.current;
+    const firstRun = !hasMountedRef.current;
+
+    if (!editor) {
+      prevValueRef.current = value;
+      prevVariablesRef.current = variables;
+      return;
+    }
+
+    if (isFocused) {
+      prevValueRef.current = value;
+      prevVariablesRef.current = variables;
+      hasMountedRef.current = true;
+      return;
+    }
+
+    const prevValue = prevValueRef.current;
+    const prevVars = prevVariablesRef.current;
+    const textChanged = value !== prevValue;
+    const varsChanged = haveVariablesChanged(prevVars || {}, variables || {});
+
+    if (firstRun) {
+      const rendered = renderContent(value);
+      if (editor.innerHTML !== rendered) {
+        editor.innerHTML = rendered;
+      }
+    } else if (textChanged) {
+      const rendered = renderContent(value);
+      if (editor.innerHTML !== rendered) {
+        editor.innerHTML = rendered;
+      }
+    } else if (varsChanged) {
+      const pills = editor.querySelectorAll('.var-pill');
+      pills.forEach((pill) => {
+        const varName = pill.getAttribute('data-var');
+        if (!varName) return;
+
+        const rawValue = variables?.[varName];
+        const stringValue = rawValue == null ? '' : String(rawValue);
+        const trimmed = stringValue.trim();
+        const placeholder = `<<${varName}>>`;
+        const displayValue = trimmed.length ? stringValue : placeholder;
+        const newHtml = convertPlainTextToHtml(displayValue);
+
+        applyTemplateToPill(pill, newHtml);
+        pill.setAttribute('data-display', stringValue);
+        pill.setAttribute('data-value', placeholder);
+
+        if (trimmed.length) {
+          pill.classList.add('filled');
+          pill.classList.remove('empty');
+        } else {
+          pill.classList.add('empty');
+          pill.classList.remove('filled');
+        }
+      });
+    }
+
+    hasMountedRef.current = true;
+    prevValueRef.current = value;
+    prevVariablesRef.current = variables;
+    if (firstRun || textChanged) {
+      refreshAllPillTemplates(editor);
+    }
+  }, [value, variables, isFocused]);
+
+  // Apply focused pill styling - IDENTICAL to SimplePillEditor
+  useEffect(() => {
+    applyFocusedPill(focusedVarName);
+  }, [focusedVarName, variables, applyFocusedPill]);
+
+  // Selection change handler - IDENTICAL to SimplePillEditor
   useEffect(() => {
     if (!isFocused || !editorRef.current) return;
 
@@ -375,44 +582,36 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     return () => document.removeEventListener('selectionchange', handleSelectionChange);
   }, [isFocused, emitFocusedVarChange, applyFocusedPill, queueAutoSelectForPill]);
 
-  const handleKeyDown = (event) => {
-    if (event.key !== 'Enter') {
-      return;
-    }
-
-    const selection = document.getSelection?.();
-    if (!selection) {
-      return;
-    }
-
-    const anchorNode = selection.anchorNode;
-    if (!anchorNode) {
-      return;
-    }
-
-    const pillElement = anchorNode.nodeType === Node.ELEMENT_NODE
-      ? anchorNode.closest?.('.var-pill')
-      : anchorNode.parentElement?.closest?.('.var-pill');
-
-    if (pillElement) {
-      event.preventDefault();
-    }
-  };
-
   return (
-    <div
-      ref={editorRef}
-      contentEditable
-      className={`lexical-content-editable${variant === 'compact' ? ' lexical-content-editable--compact' : ''}`}
-      onInput={handleInput}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      onPaste={handlePaste}
-      onKeyDown={handleKeyDown}
-      suppressContentEditableWarning
-      data-placeholder={placeholder}
-    />
+    <div className="relative">
+      {/* Rich Text Toolbar - Always visible when enabled */}
+      {showRichTextToolbar && (
+        <RichTextToolbar
+          onCommand={handleRichTextCommand}
+          disabled={disabled}
+          className="mb-2"
+        />
+      )}
+      
+      {/* Content Editable - Uses IDENTICAL classes to SimplePillEditor */}
+      <div
+        ref={editorRef}
+        contentEditable={!disabled}
+        className={`lexical-content-editable${variant === 'compact' ? ' lexical-content-editable--compact' : ''} ${className}`}
+        onInput={handleInput}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onPaste={handlePaste}
+        onKeyDown={handleKeyDown}
+        suppressContentEditableWarning
+        data-placeholder={placeholder}
+        style={{
+          minHeight,
+          ...style
+        }}
+      />
+    </div>
   );
-};
+});
 
-export default SimplePillEditor;
+export default RichTextPillEditor;
