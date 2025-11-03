@@ -306,6 +306,64 @@ const stripRichTextForSync = (htmlText = '') => {
   return plainText
 }
 
+// Parse template structure into text and variable parts
+const parseTemplateStructure = (tpl) => {
+  if (!tpl) return []
+  const parts = []
+  const regex = /<<([^>]+)>>/g
+  let lastIndex = 0
+  let match
+  while ((match = regex.exec(tpl)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', value: tpl.slice(lastIndex, match.index) })
+    }
+    parts.push({ type: 'var', name: match[1] })
+    lastIndex = regex.lastIndex
+  }
+  if (lastIndex < tpl.length) {
+    parts.push({ type: 'text', value: tpl.slice(lastIndex) })
+  }
+  return parts
+}
+
+// Compute variable ranges in text based on template structure
+const computeVarRangesInText = (text, tpl) => {
+  if (!tpl || typeof text !== 'string') return []
+  const parts = parseTemplateStructure(tpl)
+  if (!parts.length) return []
+  let cursor = 0
+  const ranges = []
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i]
+    if (part.type === 'text') {
+      if (!part.value) continue
+      const idx = text.indexOf(part.value, cursor)
+      if (idx === -1) return []
+      cursor = idx + part.value.length
+    } else if (part.type === 'var') {
+      const nextText = (() => {
+        for (let j = i + 1; j < parts.length; j++) {
+          if (parts[j].type === 'text' && parts[j].value) return parts[j].value
+        }
+        return null
+      })()
+      const start = cursor
+      let end
+      if (nextText) {
+        const nextIdx = text.indexOf(nextText, start)
+        end = nextIdx === -1 ? text.length : nextIdx
+      } else {
+        end = text.length
+      }
+      if (end >= start) {
+        ranges.push({ start, end, name: part.name })
+        cursor = end
+      }
+    }
+  }
+  return ranges
+}
+
 const extractVariablesFromTemplate = (text = '', templateText = '', variableNames = []) => {
   if (!text || !templateText || !Array.isArray(variableNames) || !variableNames.length) return {}
 
@@ -1909,62 +1967,6 @@ function App() {
 
   // Replace variables in text using current state
   const replaceVariables = (text) => replaceVariablesWithValues(text, variables)
-
-  const parseTemplateStructure = (tpl) => {
-    if (!tpl) return []
-    const parts = []
-    const regex = /<<([^>]+)>>/g
-    let lastIndex = 0
-    let match
-    while ((match = regex.exec(tpl)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push({ type: 'text', value: tpl.slice(lastIndex, match.index) })
-      }
-      parts.push({ type: 'var', name: match[1] })
-      lastIndex = regex.lastIndex
-    }
-    if (lastIndex < tpl.length) {
-      parts.push({ type: 'text', value: tpl.slice(lastIndex) })
-    }
-    return parts
-  }
-
-  const computeVarRangesInText = (text, tpl) => {
-    if (!tpl || typeof text !== 'string') return []
-    const parts = parseTemplateStructure(tpl)
-    if (!parts.length) return []
-    let cursor = 0
-    const ranges = []
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]
-      if (part.type === 'text') {
-        if (!part.value) continue
-        const idx = text.indexOf(part.value, cursor)
-        if (idx === -1) return []
-        cursor = idx + part.value.length
-      } else if (part.type === 'var') {
-        const nextText = (() => {
-          for (let j = i + 1; j < parts.length; j++) {
-            if (parts[j].type === 'text' && parts[j].value) return parts[j].value
-          }
-          return null
-        })()
-        const start = cursor
-        let end
-        if (nextText) {
-          const nextIdx = text.indexOf(nextText, start)
-          end = nextIdx === -1 ? text.length : nextIdx
-        } else {
-          end = text.length
-        }
-        if (end >= start) {
-          ranges.push({ start, end, name: part.name })
-          cursor = end
-        }
-      }
-    }
-    return ranges
-  }
 
   // Sync from text: Extract variable values from text areas back to Variables Editor
   const syncFromText = useCallback(() => {
