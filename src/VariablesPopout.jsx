@@ -344,10 +344,10 @@ export default function VariablesPopout({
     <div className="min-h-screen bg-white">
       {/* Header */}
       <div 
-        className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between"
+        className="sticky top-0 z-10 px-6 py-2 flex items-center justify-between"
         style={{ 
-          background: 'linear-gradient(135deg, #145a64 0%, #1a7a87 100%)',
-          borderBottom: '3px solid rgba(139, 195, 74, 0.3)'
+          background: '#2c3d50',
+          borderBottom: '3px solid rgba(163, 179, 84, 0.3)'
         }}
       >
         <div className="flex items-center gap-4">
@@ -396,10 +396,10 @@ export default function VariablesPopout({
                 style={{
                   background: isFocused
                     ? 'rgba(59, 130, 246, 0.15)'
-                    : 'rgba(200, 215, 150, 0.4)',
+                    : 'rgba(181, 175, 112, 0.4)',
                   border: isFocused
                     ? '2px solid rgba(59, 130, 246, 0.4)'
-                    : '1px solid rgba(190, 210, 140, 0.6)',
+                    : '1px solid rgba(181, 175, 112, 0.6)',
                   boxShadow: isFocused
                     ? '0 0 0 3px rgba(59, 130, 246, 0.1)'
                     : 'none'

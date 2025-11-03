@@ -27,7 +27,7 @@ const CATEGORY_BADGE_STYLES = {
   'Précisions et instructions client': { bg: '#e5f7eb', border: '#b8e9c6', text: '#1f5135' },
   'Suivi et annulation': { bg: '#ffe6f1', border: '#ffb7d6', text: '#6f2347' },
   'Sécurité et droits d\'auteur': { bg: '#fff4d8', border: '#ffd98f', text: '#6b4600' },
-  default: { bg: '#e6f0ff', border: '#c7dbff', text: '#1a365d' }
+  default: { bg: '#e6f0ff', border: '#c7dbff', text: '#8a7530' }
 }
 
 const getCategoryBadgeStyle = (category = '') => CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default
@@ -38,12 +38,12 @@ const customEditorStyles = `
   :root {
     /* ECHO brand additions */
     
-    --tb-teal: #059669;         /* Emerald-600 - Main teal */
-    --tb-teal-light: #10b981;   /* Emerald-500 - Light teal */
-    --tb-teal-dark: #047857;    /* Emerald-700 - Dark teal */
-    --tb-sage: #65a30d;         /* Lime-600 - Sage green */
-    --tb-sage-light: #84cc16;   /* Lime-500 - Light sage */
-    --tb-mint: #d9f99d;         /* Lime-200 - Mint background */
+    --tb-teal: #aca868;         /* Deeper muted gold */
+    --tb-teal-light: #aca868;   /* Muted gold - lighter */
+    --tb-teal-dark: #a69235;    /* Dark muted gold */
+    --tb-sage: #b5af70;         /* Deeper muted gold */
+    --tb-sage-light: #b5af70;   /* Muted gold - lighter */
+    --tb-mint: #fefbe8;         /* Very light gold - background */
     --tb-cream: #fefefe;        /* Clean white */
   }
 
@@ -76,7 +76,7 @@ const customEditorStyles = `
     padding: 0 0 0.05em 0; /* minimal padding for consistent underline */
   }
   mark.var-highlight.filled {
-    border-bottom-color: rgba(31, 138, 153, 0.9); /* stronger teal when filled */
+    border-bottom-color: rgba(44, 61, 80, 0.9); /* stronger navy when filled */
   }
   mark.var-highlight.empty {
     border-bottom-color: rgba(156, 163, 175, 0.8); /* gray when empty */
@@ -150,20 +150,20 @@ const customEditorStyles = `
     padding: 2px 6px;
     border-radius: 6px;
     font-weight: 600;
-    background: rgba(216, 226, 176, 0.7); /* sage */
-    color: #1a365d; /* navy text */
-    border: 1px solid rgba(163, 179, 84, 0.5);
+    background: rgba(203, 180, 74, 0.5); /* warm yellow/amber */
+    color: #8a7530; /* navy text */
+    border: 1px solid rgba(184, 162, 60, 0.5);
     font-style: normal;
   }
   mark.var-highlight.filled {
-    background: rgba(216, 226, 176, 0.9);
-    border-color: rgba(163, 179, 84, 0.8);
+    background: rgba(203, 180, 74, 0.7);
+    border-color: rgba(184, 162, 60, 0.8);
     font-weight: 700;
   }
   mark.var-highlight.empty {
-    background: rgba(216, 226, 176, 0.45);
-    border-color: rgba(163, 179, 84, 0.45);
-    color: #1a365d;
+    background: rgba(203, 180, 74, 0.35);
+    border-color: rgba(184, 162, 60, 0.45);
+    color: #8a7530;
     font-style: italic;
   }
   /* Focus assist: when a variable input is focused, outline matching marks */
@@ -520,8 +520,8 @@ const interfaceTexts = {
       'Communications générales': 'Communications générales',
       'Services spécialisés': 'Services spécialisés'
     },
-    templateLanguage: 'Langue du modèle:',
-    interfaceLanguage: 'Langue de l\'interface:',
+    templateLanguage: 'Langue du modèle',
+    interfaceLanguage: 'Langue de l\'interface',
     variables: 'Variables',
     editEmail: 'Éditez votre courriel',
     subject: 'Objet',
@@ -559,8 +559,8 @@ const interfaceTexts = {
       'Communications générales': 'General communications',
       'Services spécialisés': 'Specialized services'
     },
-    templateLanguage: 'Template language:',
-    interfaceLanguage: 'Interface language:',
+    templateLanguage: 'Template language',
+    interfaceLanguage: 'Interface language',
     variables: 'Variables',
     editEmail: 'Edit your email',
     subject: 'Subject',
@@ -2463,7 +2463,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #f8fafc, #dbeafe, #e0f2fe)' }}>
+    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #f8fafc, #fefbe8, #e0f2fe)' }}>
       {debug && (
         <div style={{ position: 'fixed', bottom: 8, left: 8, background: '#1e293b', color: '#fff', padding: '8px 12px', borderRadius: 8, fontSize: 12, zIndex: 9999, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
           <div style={{ fontWeight: 600 }}>Debug</div>
@@ -2476,93 +2476,88 @@ function App() {
       {loading ? (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1f8a99] mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'rgba(44, 61, 80, 0.9)' }}></div>
             <p className="text-gray-600">Chargement des modèles...</p>
           </div>
         </div>
       ) : (
         !varsOnlyMode && <>
       {/* Exact banner from attached design */}
-  <header className="w-full mx-auto max-w-none page-wrap relative z-50 sticky top-0 border-b" style={{ backgroundColor: '#ffffff', borderColor: 'var(--tb-mint)', maxHeight: '140px', overflow: 'hidden', paddingTop: '0.125in' }}>
+  <header className="w-full mx-auto max-w-none page-wrap relative z-50 sticky top-0 border-b" style={{ backgroundColor: '#ffffff', borderColor: 'var(--tb-sage)', maxHeight: '120px', overflow: 'hidden', paddingTop: '0.125in', paddingBottom: '0px' }}>
         {/* Decorative pills and lines - EXACT positions from design */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-          {/* Top row of pills */}
-          <div className="banner-pill" style={{ top: '-38px', left: '-190px', width: '320px', height: '112px', background: 'var(--tb-navy)', opacity: 0.93, borderRadius: '140px' }}></div>
-          <div className="banner-pill" style={{ top: '-28px', left: '250px', width: '220px', height: '90px', background: 'var(--tb-light-blue)', opacity: 0.58, borderRadius: '130px' }}></div>
-          <div className="banner-pill" style={{ top: '-20px', left: '720px', width: '260px', height: '46px', background: 'var(--tb-gray)', opacity: 0.34, borderRadius: '120px' }}></div>
-          <div className="banner-pill" style={{ top: '-10px', left: '960px', width: '360px', height: '90px', background: 'var(--tb-mint)', opacity: 0.5, borderRadius: '140px' }}></div>
-          <div className="banner-pill" style={{ top: '-40px', left: '1180px', width: '430px', height: '96px', background: 'var(--tb-navy)', opacity: 0.85, borderRadius: '120px' }}></div>
-          <div className="banner-pill" style={{ top: '-30px', left: '1740px', width: '250px', height: '104px', background: 'var(--tb-navy)', opacity: 0.88, borderRadius: '140px' }}></div>
+          {/* Top row of pills - bigger shapes, clear around logo */}
+          <div className="banner-pill" style={{ top: '-48px', left: '-220px', width: '420px', height: '140px', background: '#2c3d50', opacity: 0.82, borderRadius: '160px' }}></div>
+          <div className="banner-pill" style={{ top: '-23px', left: '720px', width: '340px', height: '115px', background: '#aca868', opacity: 0.40, borderRadius: '150px' }}></div>
+          <div className="banner-pill" style={{ top: '-83px', left: '1140px', width: '680px', height: '125px', background: '#426388', opacity: 0.30, borderRadius: '160px' }}></div>
           
-          {/* Bottom row of pills */}
-          <div className="banner-pill" style={{ top: '62px', left: '-180px', width: '300px', height: '86px', background: 'var(--tb-teal)', opacity: 0.35, borderRadius: '120px' }}></div>
-          <div className="banner-pill" style={{ top: '98px', left: '760px', width: '620px', height: '160px', background: 'var(--tb-teal)', opacity: 0.28, borderRadius: '180px' }}></div>
-          <div className="banner-pill" style={{ top: '62px', left: '1320px', width: '120px', height: '68px', background: 'var(--tb-light-blue)', opacity: 0.58, borderRadius: '100px' }}></div>
-          <div className="banner-pill" style={{ top: '74px', left: '1600px', width: '150px', height: '76px', background: 'var(--tb-mint)', opacity: 0.56, borderRadius: '110px' }}></div>
-          <div className="banner-pill" style={{ top: '-8px', left: '130px', width: '110px', height: '70px', background: 'var(--tb-light-blue)', opacity: 0.32, borderRadius: '110px' }}></div>
+          {/* Bottom row of pills - bigger shapes */}
+          <div className="banner-pill" style={{ top: '58px', left: '-200px', width: '380px', height: '110px', background: '#aca868', opacity: 0.30, borderRadius: '140px' }}></div>
+          <div className="banner-pill" style={{ top: '65px', left: '780px', width: '720px', height: '185px', background: '#aca868', opacity: 0.15, borderRadius: '200px' }}></div>
+          <div className="banner-pill" style={{ top: '85px', left: '1636px', width: '520px', height: '75px', background: '#2c3d50', opacity: 0.82, borderRadius: '130px' }}></div>
           
-          {/* Horizontal line with dot */}
-          <div className="hpill-line" style={{ left: '600px', top: '40px', height: '2px', width: '320px', background: 'var(--tb-navy)', opacity: 0.35 }}>
-            <span className="hpill-dot" style={{ top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '18px', height: '18px', background: '#ffffff', borderRadius: '9999px', boxShadow: '0 0 0 4px var(--tb-teal), 0 0 0 6px #fff', position: 'absolute' }}></span>
+          {/* Horizontal line with dot - longer and bolder, extended left by 1 inch */}
+          <div className="hpill-line" style={{ left: '472px', top: '40px', height: '3px', width: '528px', background: '#2c3d50', opacity: 0.70 }}>
+            <span className="hpill-dot" style={{ top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '18px', height: '18px', background: '#ffffff', borderRadius: '9999px', boxShadow: '0 0 0 4px #aca868', position: 'absolute' }}></span>
           </div>
           
           {/* Vertical line with dot */}
-          <div className="hpill-line" style={{ left: '1530px', top: '-44px', height: '176px', width: '2px', background: 'var(--tb-navy)', opacity: 0.5 }}>
-            <span className="hpill-dot" style={{ top: '52%', left: '50%', transform: 'translate(-50%, -50%)', width: '16px', height: '16px', background: '#ffffff', borderRadius: '9999px', boxShadow: '0 0 0 4px var(--tb-teal), 0 0 0 6px #fff', position: 'absolute' }}></span>
+          <div className="hpill-line" style={{ left: '1530px', top: '-54px', height: '176px', width: '2px', background: '#2c3d50', opacity: 0.5 }}>
+            <span className="hpill-dot" style={{ top: '52%', left: '50%', transform: 'translate(-50%, -50%)', width: '36px', height: '36px', background: '#ffffff', borderRadius: '9999px', boxShadow: '0 0 0 4px #8a7530', position: 'absolute' }}></span>
           </div>
         </div>
         
         {/* Main content */}
   <div className="flex items-start justify-between relative">
           {/* Left side: Logo + Subtitle with 2in margin */}
-          <div className="flex items-center space-x-6" style={{ marginLeft: '2in' }}>
+          <div className="flex items-center space-x-6" style={{ marginLeft: '3in' }}>
                 {/* ECHO logo SVG - 225% larger (540×270), moved up ~0.65 inch */}
-                <div className="relative" style={{ width: '540px', height: '270px', marginTop: '-0.685in', marginBottom: '0.125in', marginLeft: '-100px' }}>
+                <div className="relative" style={{ width: '270px', height: '135px', marginTop: '-0.185in', marginBottom: '2px', marginLeft: '-100px' }}>
                   <img src="/src/assets/echo-logo.svg" alt="ECHO" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
 
             {/* Subtitle only */}
-            <div className="flex flex-col justify-center" style={{ marginLeft: '-90px', marginTop: '-29px' }}>
-              <p className="font-semibold" style={{ color: '#1f8a99', fontSize: '100%', maxWidth: '22rem' }}>
+            <div className="flex flex-col justify-center" style={{ marginLeft: '-60px', marginTop: '19px' }}>
+              <p className="font-semibold" style={{ color: 'rgba(44, 61, 80, 0.9)', fontSize: '100%', maxWidth: '22rem' }}>
                 {t.subtitle}
               </p>
             </div>
           </div>
           
           {/* Right side: Column with teal selector and subtle help below */}
-          <div className="flex flex-col items-end">
+          <div className="flex flex-col items-end" style={{ marginTop: '8px' }}>
             <div
-              className="flex w-full max-w-xs flex-col gap-3 px-4 py-4 shadow-xl"
+              className="flex w-full max-w-sm flex-col gap-3 px-4 py-4 shadow-xl"
               style={{ backgroundColor: 'var(--primary)', borderRadius: 'calc(var(--radius) + 8px)' }}
             >
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-0.5">
               <div className="flex items-center gap-3">
                 <Globe className="h-8 w-8 text-white" />
-                <span className="font-bold text-base text-white">{t.interfaceLanguage}</span>
+                <span className="font-bold text-base text-white mr-[5px]">{t.interfaceLanguage}</span>
               </div>
-              <div className="flex bg-white p-1.5 shadow-lg" style={{ borderRadius: '14px' }}>
+              <div className="flex bg-white p-1 shadow-lg" style={{ borderRadius: '14px' }}>
                 <button
                   onClick={() => setInterfaceLanguage('fr')}
-                  className={`px-4 py-2 text-sm font-bold transition-all duration-300 transform ${
-                    interfaceLanguage === 'fr' ? 'text-white shadow-xl scale-105' : ''
+                  className={`px-3 py-1.5 text-sm font-bold transition-all duration-300 transform ${
+                    interfaceLanguage === 'fr' ? 'shadow-xl scale-105' : ''
                   }`}
                   style={
                     interfaceLanguage === 'fr'
-                      ? { backgroundColor: 'var(--primary)', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
-                      : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)' }
+                      ? { backgroundColor: '#2c3d50', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
+                      : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)', color: '#6b7280' }
                   }
                 >
                   FR
                 </button>
                 <button
                   onClick={() => setInterfaceLanguage('en')}
-                  className={`px-4 py-2 text-sm font-bold transition-all duration-300 transform ${
-                    interfaceLanguage === 'en' ? 'text-white shadow-xl scale-105' : 'hover:scale-105'
+                  className={`px-3 py-1.5 text-sm font-bold transition-all duration-300 transform ${
+                    interfaceLanguage === 'en' ? 'shadow-xl scale-105' : 'hover:scale-105'
                   }`}
                   style={
                     interfaceLanguage === 'en'
-                      ? { backgroundColor: 'var(--primary)', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
-                      : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)' }
+                      ? { backgroundColor: '#2c3d50', color: 'white', borderRadius: 'calc(var(--radius) + 4px)' }
+                      : { backgroundColor: 'transparent', borderRadius: 'calc(var(--radius) + 4px)', color: '#6b7280' }
                   }
                 >
                   EN
@@ -2578,10 +2573,22 @@ function App() {
   <Button
     onClick={() => setShowHelpCenter(true)}
     variant="outline"
-    className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 border-[#1f8a99] bg-white px-4 py-3 text-sm font-semibold tracking-wide text-[#1f8a99] shadow-lg hover:bg-[#1f8a99] hover:text-white transition-all"
+    className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all"
+    style={{ borderColor: 'rgba(44, 61, 80, 0.5)', color: '#2c3d50' }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = 'rgba(44, 61, 80, 0.9)';
+      e.currentTarget.style.color = 'white';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = 'white';
+      e.currentTarget.style.color = '#2c3d50';
+    }}
     title={interfaceLanguage === 'fr' ? "Ouvrir le centre d'aide" : 'Open help centre'}
   >
-    <LifeBuoy className="h-5 w-5" aria-hidden="true" />
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <text x="12" y="16" fontSize="12" fill="currentColor" stroke="none" textAnchor="middle" fontWeight="bold">?</text>
+    </svg>
     <span>{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
   </Button>
 
@@ -2612,10 +2619,10 @@ function App() {
       <Button
         variant="outline"
         className="font-semibold border-2"
-        style={{ borderColor: '#bfe7e3', borderRadius: 12 }}
+        style={{ borderColor: '#2c3d50', borderRadius: 12 }}
         onClick={() => { setShowMobileTemplates(true); setTimeout(() => searchRef.current?.focus(), 0) }}
       >
-        <FileText className="h-4 w-4 mr-2 text-[#1f8a99]" />
+        <FileText className="h-4 w-4 mr-2 text-[#2c3d50]" />
         Templates
       </Button>
     </div>
@@ -2654,12 +2661,12 @@ function App() {
                     })
                   }}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}
-                  className={`px-3 py-1 text-sm font-bold rounded-md transition-all duration-200 border ${favoritesOnly ? 'bg-[#f0fbfb] text-[#145a64] border-[#bfe7e3]' : 'bg-white text-[#145a64] border-[#bfe7e3]'} flex items-center gap-2`}
+                  className={`px-3 py-1 text-sm font-bold rounded-md transition-all duration-200 border ${favoritesOnly ? 'bg-[#aca868]/20 text-[#2c3d50] border-[#aca868]' : 'bg-white text-[#2c3d50] border-[#2c3d50]'} flex items-center gap-2`}
                   title={t.showFavoritesOnly}
                   aria-pressed={favoritesOnly}
                   aria-live="polite"
                 >
-                  <span className={`text-base transition-all duration-150 ${favoritesOnly ? 'text-[#f5c542] scale-110' : 'text-gray-300 scale-100'}`}>★</span>
+                  <span className={`text-base transition-all duration-150 ${favoritesOnly ? 'text-[#aca868] scale-110' : 'text-gray-300 scale-100'}`}>★</span>
                   {favoritesOnly ? `${t.favorites} (${favorites.length || 0})` : t.favorites}
                   <span style={{position:'absolute',left:'-9999px',height:0,width:0,overflow:'hidden'}} aria-live="polite">{favLiveMsg}</span>
                 </button>
@@ -2668,13 +2675,13 @@ function App() {
               <div className="mt-2 px-4">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger
-                    className={`w-full h-12 border-2 rounded-[14px] !bg-[#d8e2b0] !border-[#c5d8a3] text-[#1a365d] font-semibold tracking-wide shadow-sm ${selectedCategory === 'all' ? '' : ''}`}
-                    style={{ color: '#1a365d' }}
+                    className={`w-full h-12 border rounded-md !bg-[#b5af70] !border-[#2c3d50] text-white font-semibold tracking-wide shadow-sm ${selectedCategory === 'all' ? '' : ''}`}
+                    style={{ color: 'white' }}
                   >
-                    <Filter className="h-4 w-4 mr-2 text-[#1f8a99]" />
+                    <Filter className="h-4 w-4 mr-2 text-white" />
                     <SelectValue placeholder={t.allCategories} />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-2 border-[#bfe7e3] rounded-[14px] shadow-xl text-[#1a365d]">
+                  <SelectContent className="bg-white border border-[#2c3d50] rounded-[14px] shadow-xl text-[#2c3d50]">
                     <SelectItem value="all" className="font-semibold">{t.allCategories}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
@@ -2695,8 +2702,8 @@ function App() {
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex w-full min-w-0 rounded-[14px] bg-transparent px-3 py-1 text-base shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-12 pl-12 pr-10 border-2"
-                  style={{ borderColor: '#bfe7e3' }}
+                  className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex w-full min-w-0 rounded-[14px] bg-transparent px-3 py-1 text-base shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-12 pl-12 pr-10 border"
+                  style={{ borderColor: '#2c3d50' }}
                 />
                 {searchQuery && (
                   <button
@@ -2709,23 +2716,23 @@ function App() {
                 )}
               </div>
               {/* Template language switcher - match CardHeader style */}
-              <div className="w-full mt-3 px-4 flex items-center justify-between" style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48 }}>
+              <div className="w-full mt-3 px-4 flex items-center justify-between gap-0.5" style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48 }}>
                 <div className="text-base font-bold text-white inline-flex items-center gap-2 leading-none whitespace-nowrap">
                   <Languages className="h-5 w-5 text-white" />
-                  <span className="truncate">{t.templateLanguage}</span>
+                  <span className="truncate mr-[5px]">{t.templateLanguage}</span>
                 </div>
                 <div className="flex bg-white rounded-lg p-1 shadow-sm">
                   <button
                     onClick={() => setTemplateLanguage('fr')}
                     className={`px-3 py-1 text-sm font-bold rounded-md transition-all duration-300 button-ripple teal-focus ${templateLanguage === 'fr' ? 'text-white' : 'text-gray-600'}`}
-                    style={templateLanguage === 'fr' ? { background: 'var(--primary)' } : {} }
+                    style={templateLanguage === 'fr' ? { background: '#2c3d50' } : {} }
                   >
                     FR
                   </button>
                   <button
                     onClick={() => setTemplateLanguage('en')}
                     className={`px-3 py-1 text-sm font-bold rounded-md transition-all duration-300 button-ripple teal-focus ${templateLanguage === 'en' ? 'text-white' : 'text-gray-600'}`}
-                    style={templateLanguage === 'en' ? { background: 'var(--primary)' } : {} }
+                    style={templateLanguage === 'en' ? { background: '#2c3d50' } : {} }
                   >
                     EN
                   </button>
@@ -2760,12 +2767,12 @@ function App() {
                           className={`w-full p-4 border cursor-pointer transition-all duration-150 ${
                             selectedTemplate?.id === template.id
                               ? 'shadow-lg transform scale-[1.02]'
-                              : 'border-[#e1eaf2] bg-white hover:border-[#7bd1ca] hover:shadow-md hover:-translate-y-[1px]'
+                              : 'border-[#e1eaf2] bg-white hover:border-[#2c3d50] hover:shadow-md hover:-translate-y-[1px]'
                           }`}
                           style={
                             selectedTemplate?.id === template.id
                               ? {
-                                  borderColor: '#1f8a99',
+                                  borderColor: '#2c3d50',
                                   background: '#e6f0ff',
                                   borderRadius: '14px',
                                   scrollMarginTop: 220,
@@ -2797,7 +2804,7 @@ function App() {
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }}
-                              className={`ml-3 text-base ${isFav(template.id) ? 'text-[#f5c542]' : 'text-gray-300 hover:text-[#f5c542]'}`}
+                              className={`ml-3 text-base ${isFav(template.id) ? 'text-[#aca868]' : 'text-gray-300 hover:text-[#aca868]'}`}
                               title={isFav(template.id) ? 'Unfavorite' : 'Favorite'}
                               aria-label="Toggle favorite"
                             >★</button>
@@ -2856,8 +2863,8 @@ function App() {
               </div>
               <div className="mt-2">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className={`w-full h-12 border-2 transition-all duration-200 rounded-[14px] ${selectedCategory === 'all' ? 'font-semibold' : ''}`} style={{ background: 'rgba(163, 179, 84, 0.36)', borderColor: '#bfe7e3', color: '#1a365d' }}>
-                    <Filter className="h-4 w-4 mr-2 text-[#1f8a99]" />
+                  <SelectTrigger className={`w-full h-12 border transition-all duration-200 rounded-md ${selectedCategory === 'all' ? 'font-semibold' : ''}`} style={{ background: '#b5af70', borderColor: '#b5af70', color: 'white' }}>
+                    <Filter className="h-4 w-4 mr-2 text-white" />
                     <SelectValue placeholder={t.allCategories} />
                   </SelectTrigger>
                   <SelectContent>
@@ -2880,8 +2887,8 @@ function App() {
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex w-full min-w-0 rounded-[14px] bg-transparent px-3 py-1 text-base shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-12 pl-12 pr-10 border-2"
-                  style={{ borderColor: '#bfe7e3' }}
+                  className="file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex w-full min-w-0 rounded-[14px] bg-transparent px-3 py-1 text-base shadow-xs outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm h-12 pl-12 pr-10 border"
+                  style={{ borderColor: '#aca868' }}
                 />
               </div>
               <div className="mt-3 space-y-3">
@@ -2912,7 +2919,7 @@ function App() {
                             {badgeLabel}
                           </Badge>
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }} className={`ml-3 text-base ${isFav(template.id) ? 'text-[#f5c542]' : 'text-gray-300 hover:text-[#f5c542]'}`} title={isFav(template.id) ? 'Unfavorite' : 'Favorite'} aria-label="Toggle favorite">★</button>
+                        <button onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }} className={`ml-3 text-base ${isFav(template.id) ? 'text-[#aca868]' : 'text-gray-300 hover:text-[#aca868]'}`} title={isFav(template.id) ? 'Unfavorite' : 'Favorite'} aria-label="Toggle favorite">★</button>
                       </div>
                     </div>
                   )
@@ -2930,13 +2937,13 @@ function App() {
             aria-orientation="vertical"
             className="w-[3px] cursor-col-resize select-none rounded"
             style={{
-              background: 'rgba(20,90,100,0.15)',
+              background: 'rgba(172, 168, 104, 0.3)',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(31,138,153,0.25)';
+              e.currentTarget.style.background = 'rgba(172, 168, 104, 0.5)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(20,90,100,0.15)';
+              e.currentTarget.style.background = 'rgba(172, 168, 104, 0.3)';
             }}
             onMouseDown={(e) => {
               isDragging.current = 'left';
@@ -3030,7 +3037,7 @@ function App() {
                               size="sm"
                               className="shadow-soft"
                               variant="outline"
-                              style={{ background: '#fff', color: '#145a64', borderColor: 'rgba(20,90,100,0.35)' }}
+                              style={{ background: '#fff', color: '#2c3d50', borderColor: 'rgba(44, 61, 80, 0.35)' }}
                             >
 	                          <Settings className="h-4 w-4 mr-2" />
 	                          {t.variables}
@@ -3044,7 +3051,7 @@ function App() {
                           size="sm"
                           variant="outline"
                           className="shadow-soft"
-                          style={{ background: '#fff', color: '#145a64', borderColor: 'rgba(20,90,100,0.35)' }}
+                          style={{ background: '#fff', color: '#2c3d50', borderColor: 'rgba(44, 61, 80, 0.35)' }}
                           title="Ouvrir les fonctions IA"
                         >
                           IA
@@ -3058,7 +3065,7 @@ function App() {
                     {/* Editable subject with preview highlighting */}
                     <div className="space-y-3 mt-2">
                       <div className="flex items-center gap-2 text-slate-800 font-semibold">
-                        <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
+                        <span className="inline-block h-2 w-2 rounded-full bg-[#2c3d50]"></span>
                         <span>{t.subject}</span>
                       </div>
                       <SimplePillEditor
@@ -3080,7 +3087,7 @@ function App() {
                     {/* Editable body with preview highlighting */}
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-slate-800 font-semibold">
-                        <span className="inline-block h-2 w-2 rounded-full bg-[#1f8a99]"></span>
+                        <span className="inline-block h-2 w-2 rounded-full bg-[#2c3d50]"></span>
                         <span>{t.body}</span>
                       </div>
                       <RichTextPillEditor
@@ -3107,7 +3114,7 @@ function App() {
                 <div className="flex justify-between items-center actions-row">
                   {/* Left-side tools: Export (+) then Copy link */}
                   <div className="flex items-center gap-2 relative" ref={exportMenuRef}>
-                    <Button size="sm" variant="outline" className="font-medium border-2" style={{ borderRadius: 12, borderColor: '#bfe7e3' }} onClick={() => setShowExportMenu(v => !v)} aria-expanded={showExportMenu} aria-haspopup="menu">
+                    <Button size="sm" variant="outline" className="font-medium border text-[#2c3d50]" style={{ borderRadius: 12, borderColor: '#2c3d50' }} onClick={() => setShowExportMenu(v => !v)} aria-expanded={showExportMenu} aria-haspopup="menu">
                       +
                     </Button>
                     {showExportMenu && (
@@ -3120,7 +3127,7 @@ function App() {
                     <Button 
                       variant="ghost" 
                       onClick={() => copyTemplateLink()}
-                      className="text-gray-500 hover:text-[#1f8a99] hover:bg-[#dbeafe] transition-all duration-300 font-medium text-sm"
+                      className="text-gray-500 hover:text-[#aca868] hover:bg-[#fefbe8] transition-all duration-300 font-medium text-sm"
                       style={{ borderRadius: '12px' }}
                       title={t.copyLinkTitle}
                     >
@@ -3154,22 +3161,22 @@ function App() {
                       size="sm"
                       className="font-medium border-2 transition-all duration-300 group shadow-soft"
                       style={{ 
-                        borderColor: 'rgba(31, 138, 153, 0.3)',
+                        borderColor: '#2c3d50',
                         borderRadius: '12px',
-                        backgroundColor: 'rgba(219, 234, 254, 0.3)'
+                        backgroundColor: 'rgba(44, 61, 80, 0.08)'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#1f8a99';
-                        e.currentTarget.style.backgroundColor = 'rgba(219, 234, 254, 0.6)';
+                        e.currentTarget.style.borderColor = '#2c3d50';
+                        e.currentTarget.style.backgroundColor = 'rgba(44, 61, 80, 0.15)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(31, 138, 153, 0.3)';
-                        e.currentTarget.style.backgroundColor = 'rgba(219, 234, 254, 0.3)';
+                        e.currentTarget.style.borderColor = '#2c3d50';
+                        e.currentTarget.style.backgroundColor = 'rgba(44, 61, 80, 0.08)';
                       }}
                       title="Copy subject only (Ctrl+J)"
                     >
-                      <Mail className="h-4 w-4 mr-2 text-[#1f8a99]" />
-                      <span className="text-[#1a365d]">{t.copySubject || 'Subject'}</span>
+                      <Mail className="h-4 w-4 mr-2 text-[#2c3d50]" />
+                      <span className="text-[#2c3d50]">{t.copySubject || 'Subject'}</span>
                     </Button>
                     
                     {/* Body Copy Button - Sage accent (slightly darker) */}
@@ -3179,22 +3186,22 @@ function App() {
                       size="sm"
                       className="font-medium border-2 transition-all duration-300 group shadow-soft"
                       style={{ 
-                        borderColor: 'rgba(163, 179, 84, 0.5)',
+                        borderColor: '#aca868',
                         borderRadius: '12px',
-                        backgroundColor: 'rgba(163, 179, 84, 0.18)'
+                        backgroundColor: 'rgba(172, 168, 104, 0.12)'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#8ea345';
-                        e.currentTarget.style.backgroundColor = 'rgba(163, 179, 84, 0.28)';
+                        e.currentTarget.style.borderColor = '#aca868';
+                        e.currentTarget.style.backgroundColor = 'rgba(172, 168, 104, 0.22)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(163, 179, 84, 0.5)';
-                        e.currentTarget.style.backgroundColor = 'rgba(163, 179, 84, 0.18)';
+                        e.currentTarget.style.borderColor = '#aca868';
+                        e.currentTarget.style.backgroundColor = 'rgba(172, 168, 104, 0.12)';
                       }}
                       title="Copy body only (Ctrl+B)"
                     >
-                      <Edit3 className="h-4 w-4 mr-2 text-[#8ea345]" />
-                      <span className="text-[#1a365d]">{t.copyBody || 'Body'}</span>
+                      <Edit3 className="h-4 w-4 mr-2 text-[#2c3d50]" />
+                      <span className="text-[#2c3d50]">{t.copyBody || 'Body'}</span>
                     </Button>
                     
                     {/* Complete Copy Button - Gradient (main action) */}
@@ -3205,7 +3212,7 @@ function App() {
                           ? 'transform scale-[1.02]' 
                           : 'hover:scale-[1.02]'
                       }`}
-                      style={{ background: '#1f8a99' }}
+                      style={{ background: '#5a88b5' }}
                       title="Copy entire email (Ctrl+Enter)"
                     >
                       <Copy className="h-5 w-5 mr-2" />
@@ -3216,7 +3223,7 @@ function App() {
                     <Button 
                       onClick={openInOutlook}
                       className="font-bold transition-all duration-200 shadow-soft text-white btn-pill"
-                      style={{ background: '#145a64', borderRadius: '12px' }}
+                      style={{ background: '#2c3d50', borderRadius: '12px' }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-1px)';
                       }}
@@ -3291,8 +3298,8 @@ function App() {
           style={{ right: pillPos.right, bottom: pillPos.bottom }}
         >
           <button
-            className="px-3 py-2 rounded-full shadow-lg border bg-white text-[#145a64] font-semibold"
-            style={{ borderColor: '#bfe7e3' }}
+            className="px-3 py-2 rounded-full shadow-lg border bg-white text-[#aca868] font-semibold"
+            style={{ borderColor: '#aca868' }}
             onMouseDown={(e) => {
               e.preventDefault()
               const startX = e.clientX
@@ -3452,7 +3459,7 @@ function App() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="border-2 text-[#145a64]"
+                    className="border-2 text-[#aca868]"
                     style={{ borderColor: 'rgba(20,90,100,0.35)', borderRadius: 10, background: '#fff' }}
                     title={t.reset}
                     onMouseDown={(e)=> e.stopPropagation()}
@@ -3550,7 +3557,7 @@ function App() {
                           </label>
                           <div className="shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
                             <button
-                              className="text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#145a64] hover:bg-[#f0fbfb]"
+                              className="text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#aca868] hover:bg-[#f0fbfb]"
                               title={interfaceLanguage==='fr'?'Remettre l’exemple':'Reset to example'}
                               onClick={() => setVariables(prev => ({ ...prev, [varName]: (varInfo?.example || '') }))}
                             >Ex.</button>
