@@ -1986,8 +1986,10 @@ function App() {
 
   const extracted = {}
 
-    const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
-    const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
+  const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
+  const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
+  const plainSubjectText = stripRichTextForSync(finalSubject)
+  const plainBodyText = stripRichTextForSync(finalBody)
 
     console.log('🔄 Templates:', {
       subjectTemplate: subjectTemplate?.substring(0, 100) + '...',
@@ -1996,7 +1998,7 @@ function App() {
 
     if (subjectTemplate && finalSubject) {
       // Strip rich text formatting while preserving variable pills for sync
-      const plainSubject = stripRichTextForSync(finalSubject)
+      const plainSubject = plainSubjectText
       const subjectValues = extractVariablesFromTemplate(plainSubject, subjectTemplate, selectedTemplate.variables)
       Object.entries(subjectValues).forEach(([name, value]) => {
         console.log(`🔄 Extracted from subject - ${name}: "${value.substring(0, 50)}..."`)
@@ -2006,7 +2008,7 @@ function App() {
 
     if (bodyTemplate && finalBody) {
       // Strip rich text formatting while preserving variable pills for sync
-      const plainBody = stripRichTextForSync(finalBody)
+      const plainBody = plainBodyText
       const bodyValues = extractVariablesFromTemplate(plainBody, bodyTemplate, selectedTemplate.variables)
       Object.entries(bodyValues).forEach(([name, value]) => {
         console.log(`🔄 Extracted from body - ${name}: "${value.substring(0, 50)}..."`)
@@ -2023,12 +2025,12 @@ function App() {
       let fallback = null
 
       if (subjectTemplate && subjectTemplate.includes(`<<${varName}>>`)) {
-        const plainSubject = stripRichTextForSync(finalSubject)
+        const plainSubject = plainSubjectText
         fallback = extractVariableWithAnchors(plainSubject, subjectTemplate, varName)
       }
 
       if (!fallback && bodyTemplate && bodyTemplate.includes(`<<${varName}>>`)) {
-        const plainBody = stripRichTextForSync(finalBody)
+        const plainBody = plainBodyText
         fallback = extractVariableWithAnchors(plainBody, bodyTemplate, varName)
       }
 
@@ -2045,13 +2047,12 @@ function App() {
       if (!previousValue) return
 
       // Check both original and plain text versions for rich text compatibility
-      const plainSubject = stripRichTextForSync(finalSubject)
-      const plainBody = stripRichTextForSync(finalBody)
-      
-      const stillInSubject = finalSubject?.includes(previousValue) || plainSubject?.includes(previousValue)
-      const stillInBody = finalBody?.includes(previousValue) || plainBody?.includes(previousValue)
+      const stillInSubject = finalSubject?.includes(previousValue) || plainSubjectText?.includes(previousValue)
+      const stillInBody = finalBody?.includes(previousValue) || plainBodyText?.includes(previousValue)
+      const placeholderToken = `<<${varName}>>`
+      const placeholderPresent = plainSubjectText?.includes(placeholderToken) || plainBodyText?.includes(placeholderToken)
 
-      if (!stillInSubject && !stillInBody) {
+      if (!stillInSubject && !stillInBody && !placeholderPresent) {
         console.log(`🔄 Detected removal of ${varName}; clearing value`)
         extracted[varName] = ''
       }
