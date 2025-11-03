@@ -1,5 +1,20 @@
 # Changes Made to Email Assistant v8
 
+## 2025-11-02 – ECHO branding refinement and banner layout optimization
+
+### Banner Layout Adjustments
+- **Logo positioning**: Enlarged ECHO logo to 540×270px (225% of original), positioned with -0.685in top margin and -100px left margin for optimal visual balance
+- **Subtitle positioning**: Moved subtitle left by 90px and up by 29px to align with logo and create cohesive banner composition
+- **Banner trimming**: Set banner maxHeight to 140px with overflow hidden to create compact header that ends just below subtitle
+- **Spacing refinement**: Added 0.125in top padding to banner and 0.125in bottom margin to logo for balanced breathing room
+
+### Visual Hierarchy
+- Fine-tuned positioning ensures ECHO branding is prominent while maintaining clean, professional appearance
+- Subtitle "Studio de modèles interactifs" / "Interactive Template Studio" positioned for optimal readability
+- Compact banner design maximizes content area while preserving brand identity
+
+---
+
 ## 2025-11-02 – ECHO branding, contact workflow, and editor polish
 
 ### Highlights

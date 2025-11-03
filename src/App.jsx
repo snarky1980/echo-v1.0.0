@@ -18,6 +18,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { ScrollArea } from './components/ui/scroll-area.jsx'
 import './App.css'
 
+const CATEGORY_BADGE_STYLES = {
+  'Devis et approbations': { bg: '#d9f5f0', border: '#97dcd0', text: '#0f3d47' },
+  'Devis et approbation': { bg: '#d9f5f0', border: '#97dcd0', text: '#0f3d47' },
+  'Documents et formats': { bg: '#ece8ff', border: '#c7bef5', text: '#372d70' },
+  'Délai et livraison': { bg: '#ffe9db', border: '#ffc9a9', text: '#7a3410' },
+  'Délais et livraison': { bg: '#ffe9db', border: '#ffc9a9', text: '#7a3410' },
+  'Précisions et instructions client': { bg: '#e5f7eb', border: '#b8e9c6', text: '#1f5135' },
+  'Suivi et annulation': { bg: '#ffe6f1', border: '#ffb7d6', text: '#6f2347' },
+  'Sécurité et droits d\'auteur': { bg: '#fff4d8', border: '#ffd98f', text: '#6b4600' },
+  default: { bg: '#e6f0ff', border: '#c7dbff', text: '#1a365d' }
+}
+
+const getCategoryBadgeStyle = (category = '') => CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default
+
 // Custom CSS for modern typography and variable highlighting with the EXACT original teal/sage styling
 const customEditorStyles = `
   /* Translation Bureau Brand Colors - EXACT MATCH from original design */
@@ -154,9 +168,10 @@ const customEditorStyles = `
   }
   /* Focus assist: when a variable input is focused, outline matching marks */
   mark.var-highlight.focused {
-    outline: 2px solid rgba(20, 90, 100, 0.9);
-    box-shadow: 0 0 0 3px rgba(20, 90, 100, 0.18);
-    transition: outline-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    outline: 3px solid rgba(20, 90, 100, 0.95);
+    border: 1px solid rgba(10, 40, 60, 0.7);
+    box-shadow: 0 0 0 4px rgba(20, 90, 100, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    transition: outline-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
   }
   
   .editor-textarea {
@@ -922,7 +937,6 @@ function App() {
         const applyTemplateMeta = (m) => {
           if (m?.templateLanguage && (m.templateLanguage === 'fr' || m.templateLanguage === 'en')) {
             setTemplateLanguage(m.templateLanguage)
-            setInterfaceLanguage(m.templateLanguage)
           }
           if (m?.templateId) {
             if (templatesData?.templates?.length) {
@@ -2469,7 +2483,7 @@ function App() {
       ) : (
         !varsOnlyMode && <>
       {/* Exact banner from attached design */}
-  <header className="w-full mx-auto max-w-none page-wrap py-4 relative z-50 sticky top-0 border-b" style={{ backgroundColor: '#ffffff', borderColor: 'var(--tb-mint)' }}>
+  <header className="w-full mx-auto max-w-none page-wrap relative z-50 sticky top-0 border-b" style={{ backgroundColor: '#ffffff', borderColor: 'var(--tb-mint)', maxHeight: '140px', overflow: 'hidden', paddingTop: '0.125in' }}>
         {/* Decorative pills and lines - EXACT positions from design */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           {/* Top row of pills */}
@@ -2489,7 +2503,7 @@ function App() {
           
           {/* Horizontal line with dot */}
           <div className="hpill-line" style={{ left: '600px', top: '40px', height: '2px', width: '320px', background: 'var(--tb-navy)', opacity: 0.35 }}>
-            <span className="hpill-dot" style={{ top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '18px', height: '18px', background: '#ffffff', borderRadius: '9999px', boxShadow: '0 0 0 4px var(--tb-mint), 0 0 0 6px #fff', position: 'absolute' }}></span>
+            <span className="hpill-dot" style={{ top: '50%', left: '30%', transform: 'translate(-50%, -50%)', width: '18px', height: '18px', background: '#ffffff', borderRadius: '9999px', boxShadow: '0 0 0 4px var(--tb-teal), 0 0 0 6px #fff', position: 'absolute' }}></span>
           </div>
           
           {/* Vertical line with dot */}
@@ -2500,21 +2514,16 @@ function App() {
         
         {/* Main content */}
   <div className="flex items-start justify-between relative">
-          {/* Left side: Logo + Title with 2in margin */}
+          {/* Left side: Logo + Subtitle with 2in margin */}
           <div className="flex items-center space-x-6" style={{ marginLeft: '2in' }}>
-                {/* Large navy circle with mail icon */}
-                <div className="relative">
-                  <div className="p-6" style={{ backgroundColor: 'var(--tb-navy)', borderRadius: '56px' }}>
-                    <Mail className="text-white" style={{ width: '60px', height: '60px' }} />
-                  </div>
+                {/* ECHO logo SVG - 225% larger (540×270), moved up ~0.65 inch */}
+                <div className="relative" style={{ width: '540px', height: '270px', marginTop: '-0.685in', marginBottom: '0.125in', marginLeft: '-100px' }}>
+                  <img src="/src/assets/echo-logo.svg" alt="ECHO" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
-            
-            {/* Title and subtitle */}
-            <div>
-              <h1 className="echo-title tracking-tight" style={{ color: 'var(--tb-navy)' }}>
-                {t.title}
-              </h1>
-              <p className="font-semibold" style={{ color: '#1f8a99', fontSize: '100%' }}>
+
+            {/* Subtitle only */}
+            <div className="flex flex-col justify-center" style={{ marginLeft: '-90px', marginTop: '-29px' }}>
+              <p className="font-semibold" style={{ color: '#1f8a99', fontSize: '100%', maxWidth: '22rem' }}>
                 {t.subtitle}
               </p>
             </div>
@@ -2561,20 +2570,20 @@ function App() {
               </div>
             </div>
             </div>
-            {/* Subtle Help button just underneath the teal area (smaller) */}
-            <Button
-              onClick={() => setShowHelpCenter(true)}
-              variant="outline"
-              className="mt-1 inline-flex items-center gap-1 rounded-[8px] border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-slate-600 hover:text-slate-800 hover:border-slate-300"
-              title={interfaceLanguage === 'fr' ? "Ouvrir le centre d'aide" : 'Open help centre'}
-              style={{ boxShadow: 'none', lineHeight: 1 }}
-            >
-              <LifeBuoy className="h-3 w-3 text-slate-500" aria-hidden="true" />
-              <span>{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
-            </Button>
           </div>
         </div>
       </header>
+
+  {/* Fixed Help button - bottom-right corner */}
+  <Button
+    onClick={() => setShowHelpCenter(true)}
+    variant="outline"
+    className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 border-[#1f8a99] bg-white px-4 py-3 text-sm font-semibold tracking-wide text-[#1f8a99] shadow-lg hover:bg-[#1f8a99] hover:text-white transition-all"
+    title={interfaceLanguage === 'fr' ? "Ouvrir le centre d'aide" : 'Open help centre'}
+  >
+    <LifeBuoy className="h-5 w-5" aria-hidden="true" />
+    <span>{interfaceLanguage === 'fr' ? 'Aide' : 'Help'}</span>
+  </Button>
 
   {/* Main content with resizable panes - full width */}
   <main className="w-full max-w-none px-3 sm:px-4 lg:px-6 py-5">
@@ -2613,10 +2622,10 @@ function App() {
     {/* Left panel - Template list (resizable) */}
     <div className="hidden md:block shrink-0" style={{ width: leftWidth }}>
       <Card className="h-fit card-soft border-0 overflow-hidden rounded-[14px]" style={{ background: '#ffffff' }}>
-        <CardContent className="p-0">
+        <CardContent className="p-0" style={{ padding: 0 }}>
           <ScrollArea
-            className="rounded-[14px] overflow-hidden"
-            style={{ '--scrollbar-width': '8px', height: 'calc(100vh - 208px)' }}
+            className="rounded-[14px] overflow-hidden bg-white"
+            style={{ '--scrollbar-width': '8px', height: 'calc(100vh - 160px)' }}
             viewportRef={viewportRef}
             onViewportScroll={() => {
               const vp = viewportRef.current
@@ -2626,15 +2635,15 @@ function App() {
             }}
           >
             {/* Sticky header inside scroll area */}
-            <div className="sticky top-0 z-10 px-0 pt-2 pb-2 bg-white border-b border-[#e6eef5]">
-              {/* Teal header bar - match style of "Langue du modèle" */}
-              <div className="h-[48px] w-full rounded-[14px] px-4 flex items-center justify-center mb-3" style={{ background: 'var(--primary)' }}>
-                <div className="text-base font-bold text-white inline-flex items-center gap-2 leading-none whitespace-nowrap">
-                  <FileText className="h-5 w-5 text-white" aria-hidden="true" />
+            <div className="sticky top-0 z-10 px-0 pt-0 pb-2 bg-white">
+              {/* Teal header bar - match CardHeader style, extend to edges */}
+              <div className="w-full px-4 flex items-center justify-center mb-3" style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48, borderTopLeftRadius: 14, borderTopRightRadius: 14 }}>
+                <div className="text-2xl font-bold text-white inline-flex items-center gap-2 leading-none whitespace-nowrap">
+                  <FileText className="h-6 w-6 text-white" aria-hidden="true" />
                   <span className="truncate">{interfaceLanguage === 'fr' ? 'Modèles' : 'Templates'}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between px-4">
                 <p className="text-sm text-gray-600">{filteredTemplates.length} {t.templatesCount}</p>
                 <button
                   onClick={() => {
@@ -2656,16 +2665,16 @@ function App() {
                 </button>
               </div>
               {/* Category filter */}
-              <div className="mt-2">
+              <div className="mt-2 px-4">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger
-                    className={`w-full h-12 border-2 rounded-[14px] ${selectedCategory === 'all' ? 'font-semibold' : ''}`}
-                    style={{ background: 'rgba(163, 179, 84, 0.36)', borderColor: '#bfe7e3', color: '#1a365d' }}
+                    className={`w-full h-12 border-2 rounded-[14px] !bg-[#d8e2b0] !border-[#c5d8a3] text-[#1a365d] font-semibold tracking-wide shadow-sm ${selectedCategory === 'all' ? '' : ''}`}
+                    style={{ color: '#1a365d' }}
                   >
                     <Filter className="h-4 w-4 mr-2 text-[#1f8a99]" />
                     <SelectValue placeholder={t.allCategories} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-2 border-[#bfe7e3] rounded-[14px] shadow-xl text-[#1a365d]">
                     <SelectItem value="all" className="font-semibold">{t.allCategories}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
@@ -2676,8 +2685,8 @@ function App() {
                 </Select>
               </div>
               {/* Search */}
-              <div className="relative group mt-2">
-                <Search className="absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" style={{ left: 18 }} />
+              <div className="relative group mt-2 px-4">
+                <Search className="absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" style={{ left: 34 }} />
                 <Input
                   ref={searchRef}
                   id="template-search-main"
@@ -2699,8 +2708,8 @@ function App() {
                   </button>
                 )}
               </div>
-              {/* Template language */}
-              <div className="h-[48px] w-full rounded-[14px] mt-3 px-4 flex items-center justify-between" style={{ background: 'var(--primary)' }}>
+              {/* Template language switcher - match CardHeader style */}
+              <div className="w-full mt-3 px-4 flex items-center justify-between" style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48 }}>
                 <div className="text-base font-bold text-white inline-flex items-center gap-2 leading-none whitespace-nowrap">
                   <Languages className="h-5 w-5 text-white" />
                   <span className="truncate">{t.templateLanguage}</span>
@@ -2734,60 +2743,68 @@ function App() {
               const topPad = start * ITEM_H
               const bottomPad = (count - end) * ITEM_H
               return (
-                <div className="p-2" style={{ minHeight: (count + 1) * ITEM_H }}>
+                <div className="p-3 bg-white" style={{ minHeight: (count + 1) * ITEM_H }}>
                   <div style={{ height: topPad }} />
                   <div className="space-y-3">
-                    {filteredTemplates.slice(start, end).map((template) => (
-                      <div
-                        key={template.id}
-                        ref={(el) => { if (el) itemRefs.current[template.id] = el }}
-                        onClick={() => setSelectedTemplate(template)}
-                        onMouseDown={() => setPressedCardId(template.id)}
-                        onMouseUp={() => setPressedCardId(null)}
-                        onMouseLeave={() => setPressedCardId(null)}
-                        className={`w-full p-4 border cursor-pointer transition-all duration-150 ${
-                          selectedTemplate?.id === template.id
-                            ? 'shadow-lg transform scale-[1.02]'
-                            : 'border-[#e1eaf2] bg-white hover:border-[#7bd1ca] hover:shadow-md hover:-translate-y-[1px]'
-                        }`}
-                        style={
-                          selectedTemplate?.id === template.id
-                            ? {
-                                borderColor: '#1f8a99',
-                                background: '#e6f0ff',
-                                borderRadius: '14px',
-                                scrollMarginTop: 220,
-                              }
-                            : { borderRadius: '14px', transform: pressedCardId === template.id ? 'scale(0.995)' : undefined, boxShadow: pressedCardId === template.id ? 'inset 0 0 0 1px rgba(0,0,0,0.05)' : undefined, scrollMarginTop: 220 }
-                        }
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-gray-900 text-[13px] mb-1" title={template.title[templateLanguage]}>
-                              {renderHighlighted(
-                                template.title[templateLanguage],
-                                getMatchRanges(template.id, `title.${templateLanguage}`)
-                              )}
-                            </h3>
-                            <p className="text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2" title={template.description[templateLanguage]}>
-                              {renderHighlighted(
-                                template.description[templateLanguage],
-                                getMatchRanges(template.id, `description.${templateLanguage}`)
-                              )}
-                            </p>
-                            <Badge variant="secondary" className="text-[11px] font-medium bg-[#e6f0ff] text-[#1a365d] border-[#c7dbff]">
-                              {template.category}
-                            </Badge>
+                    {filteredTemplates.slice(start, end).map((template) => {
+                      const badgeStyle = getCategoryBadgeStyle(template.category)
+                      const badgeLabel = t.categories?.[template.category] || template.category
+                      return (
+                        <div
+                          key={template.id}
+                          ref={(el) => { if (el) itemRefs.current[template.id] = el }}
+                          onClick={() => setSelectedTemplate(template)}
+                          onMouseDown={() => setPressedCardId(template.id)}
+                          onMouseUp={() => setPressedCardId(null)}
+                          onMouseLeave={() => setPressedCardId(null)}
+                          className={`w-full p-4 border cursor-pointer transition-all duration-150 ${
+                            selectedTemplate?.id === template.id
+                              ? 'shadow-lg transform scale-[1.02]'
+                              : 'border-[#e1eaf2] bg-white hover:border-[#7bd1ca] hover:shadow-md hover:-translate-y-[1px]'
+                          }`}
+                          style={
+                            selectedTemplate?.id === template.id
+                              ? {
+                                  borderColor: '#1f8a99',
+                                  background: '#e6f0ff',
+                                  borderRadius: '14px',
+                                  scrollMarginTop: 220,
+                                }
+                              : { borderRadius: '14px', transform: pressedCardId === template.id ? 'scale(0.995)' : undefined, boxShadow: pressedCardId === template.id ? 'inset 0 0 0 1px rgba(0,0,0,0.05)' : undefined, scrollMarginTop: 220 }
+                          }
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-gray-900 text-[13px] mb-1" title={template.title[templateLanguage]}>
+                                {renderHighlighted(
+                                  template.title[templateLanguage],
+                                  getMatchRanges(template.id, `title.${templateLanguage}`)
+                                )}
+                              </h3>
+                              <p className="text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2" title={template.description[templateLanguage]}>
+                                {renderHighlighted(
+                                  template.description[templateLanguage],
+                                  getMatchRanges(template.id, `description.${templateLanguage}`)
+                                )}
+                              </p>
+                              <Badge
+                                variant="outline"
+                                className="text-[11px] font-semibold px-3 py-1 border rounded-full shadow-sm"
+                                style={{ background: badgeStyle.bg, color: badgeStyle.text, borderColor: badgeStyle.border }}
+                              >
+                                {badgeLabel}
+                              </Badge>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }}
+                              className={`ml-3 text-base ${isFav(template.id) ? 'text-[#f5c542]' : 'text-gray-300 hover:text-[#f5c542]'}`}
+                              title={isFav(template.id) ? 'Unfavorite' : 'Favorite'}
+                              aria-label="Toggle favorite"
+                            >★</button>
                           </div>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }}
-                            className={`ml-3 text-base ${isFav(template.id) ? 'text-[#f5c542]' : 'text-gray-300 hover:text-[#f5c542]'}`}
-                            title={isFav(template.id) ? 'Unfavorite' : 'Favorite'}
-                            aria-label="Toggle favorite"
-                          >★</button>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                   <div style={{ height: bottomPad }} />
                 </div>
@@ -2868,30 +2885,38 @@ function App() {
                 />
               </div>
               <div className="mt-3 space-y-3">
-                {filteredTemplates.slice(0, 80).map((template) => (
-                  <div key={template.id} onClick={() => { setSelectedTemplate(template); setShowMobileTemplates(false) }} className="w-full p-4 border border-[#e1eaf2] bg-white rounded-[14px]">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 text-[13px] mb-1" title={template.title[templateLanguage]}>
-                          {renderHighlighted(
-                            template.title[templateLanguage],
-                            getMatchRanges(template.id, `title.${templateLanguage}`)
-                          )}
-                        </h3>
-                        <p className="text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2" title={template.description[templateLanguage]}>
-                          {renderHighlighted(
-                            template.description[templateLanguage],
-                            getMatchRanges(template.id, `description.${templateLanguage}`)
-                          )}
-                        </p>
-                        <Badge variant="secondary" className="text-[11px] font-medium bg-[#e6f0ff] text-[#1a365d] border-[#c7dbff]">
-                          {template.category}
-                        </Badge>
+                {filteredTemplates.slice(0, 80).map((template) => {
+                  const badgeStyle = getCategoryBadgeStyle(template.category)
+                  const badgeLabel = t.categories?.[template.category] || template.category
+                  return (
+                    <div key={template.id} onClick={() => { setSelectedTemplate(template); setShowMobileTemplates(false) }} className="w-full p-4 border border-[#e1eaf2] bg-white rounded-[14px]">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-gray-900 text-[13px] mb-1" title={template.title[templateLanguage]}>
+                            {renderHighlighted(
+                              template.title[templateLanguage],
+                              getMatchRanges(template.id, `title.${templateLanguage}`)
+                            )}
+                          </h3>
+                          <p className="text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2" title={template.description[templateLanguage]}>
+                            {renderHighlighted(
+                              template.description[templateLanguage],
+                              getMatchRanges(template.id, `description.${templateLanguage}`)
+                            )}
+                          </p>
+                          <Badge
+                            variant="outline"
+                            className="text-[11px] font-semibold px-3 py-1 border rounded-full shadow-sm"
+                            style={{ background: badgeStyle.bg, color: badgeStyle.text, borderColor: badgeStyle.border }}
+                          >
+                            {badgeLabel}
+                          </Badge>
+                        </div>
+                        <button onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }} className={`ml-3 text-base ${isFav(template.id) ? 'text-[#f5c542]' : 'text-gray-300 hover:text-[#f5c542]'}`} title={isFav(template.id) ? 'Unfavorite' : 'Favorite'} aria-label="Toggle favorite">★</button>
                       </div>
-                      <button onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }} className={`ml-3 text-base ${isFav(template.id) ? 'text-[#f5c542]' : 'text-gray-300 hover:text-[#f5c542]'}`} title={isFav(template.id) ? 'Unfavorite' : 'Favorite'} aria-label="Toggle favorite">★</button>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
