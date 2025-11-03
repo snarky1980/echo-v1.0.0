@@ -2701,6 +2701,7 @@ function App() {
                   id="template-search-main"
                   name="template-search-main"
                   type="text"
+                  autoComplete="off"
                   placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
