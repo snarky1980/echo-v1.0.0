@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Bold, Italic, Underline, Type, AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react';
+import { Bold, Italic, Underline, Strikethrough, Type, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Highlighter, Palette, Link as LinkIcon } from 'lucide-react';
 import { Button } from './ui/button.jsx';
 
 const FONT_SIZE_OPTIONS = [
@@ -28,13 +28,48 @@ const FONT_COMMAND_TO_PX = {
   '7': '28px'
 };
 
+const HIGHLIGHT_COLORS = [
+  { name: 'Yellow', value: '#ffeb3b' },
+  { name: 'Green', value: '#c6f68d' },
+  { name: 'Blue', value: '#90caf9' },
+  { name: 'Pink', value: '#f48fb1' },
+  { name: 'Orange', value: '#ffcc80' },
+  { name: 'None', value: 'transparent' }
+];
+
+const TEXT_COLORS = [
+  { name: 'Black', value: '#000000' },
+  { name: 'Dark Gray', value: '#424242' },
+  { name: 'Gray', value: '#757575' },
+  { name: 'Red', value: '#f44336' },
+  { name: 'Blue', value: '#2196f3' },
+  { name: 'Green', value: '#4caf50' },
+  { name: 'Orange', value: '#ff9800' },
+  { name: 'Purple', value: '#9c27b0' }
+];
+
+const FONT_FAMILIES = [
+  { name: 'Arial', value: 'Arial, sans-serif' },
+  { name: 'Times New Roman', value: 'Times New Roman, serif' },
+  { name: 'Courier New', value: 'Courier New, monospace' },
+  { name: 'Georgia', value: 'Georgia, serif' },
+  { name: 'Verdana', value: 'Verdana, sans-serif' },
+  { name: 'Helvetica', value: 'Helvetica, sans-serif' },
+  { name: 'Comic Sans', value: 'Comic Sans MS, cursive' },
+  { name: 'Impact', value: 'Impact, fantasy' }
+];
+
 const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
   const [activeFormats, setActiveFormats] = useState({
     bold: false,
     italic: false,
-    underline: false
+    underline: false,
+    strikethrough: false
   });
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
+  const [fontFamily, setFontFamily] = useState('Arial, sans-serif');
+  const [showHighlightPicker, setShowHighlightPicker] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const toolbarRef = useRef(null);
 
   const normalizeFontSize = useCallback((computedSize) => {
@@ -67,7 +102,8 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
       setActiveFormats({
         bold: document.queryCommandState('bold'),
         italic: document.queryCommandState('italic'),
-        underline: document.queryCommandState('underline')
+        underline: document.queryCommandState('underline'),
+        strikethrough: document.queryCommandState('strikeThrough')
       });
 
       // Get font size from selection
@@ -100,11 +136,33 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
     return () => document.removeEventListener('selectionchange', handleSelectionChange);
   }, [updateFormatState]);
 
+  // Close color pickers when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (toolbarRef.current && !toolbarRef.current.contains(e.target)) {
+        setShowHighlightPicker(false);
+        setShowColorPicker(false);
+      }
+    };
+
+    if (showHighlightPicker || showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showHighlightPicker, showColorPicker]);
+
   // Execute formatting command
   const executeCommand = useCallback((command, value = null) => {
     if (disabled) return;
 
     try {
+      // Save the current selection before we lose focus
+      const savedSelection = window.getSelection();
+      let savedRange = null;
+      if (savedSelection && savedSelection.rangeCount > 0) {
+        savedRange = savedSelection.getRangeAt(0).cloneRange();
+      }
+
       // For block-level commands, ensure the selection is not inside a var-pill
       const isBlockCommand = (
         command === 'insertUnorderedList' ||
@@ -115,32 +173,57 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
         command === 'justifyFull'
       );
 
-      if (isBlockCommand) {
-        const sel = window.getSelection();
-        if (sel && sel.rangeCount) {
-          const range = sel.getRangeAt(0);
-          const anchorNode = range.startContainer;
-          let el = anchorNode.nodeType === Node.ELEMENT_NODE
-            ? anchorNode
-            : anchorNode.parentElement;
-          let pill = null;
-          if (el && el.closest) {
-            pill = el.closest('.var-pill');
-          }
+      if (isBlockCommand && savedRange) {
+        const anchorNode = savedRange.startContainer;
+        let el = anchorNode.nodeType === Node.ELEMENT_NODE
+          ? anchorNode
+          : anchorNode.parentElement;
+        let pill = null;
+        if (el && el.closest) {
+          pill = el.closest('.var-pill');
+        }
 
-          if (pill) {
-            // If caret is inside a pill, move it just after the pill so block command can apply
-            const afterRange = document.createRange();
-            afterRange.setStartAfter(pill);
-            afterRange.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(afterRange);
-          }
+        if (pill) {
+          // If caret is inside a pill, move it just after the pill so block command can apply
+          const afterRange = document.createRange();
+          afterRange.setStartAfter(pill);
+          afterRange.collapse(true);
+          savedRange = afterRange;
         }
       }
 
-      // Execute command immediately while we still have selection
+      // Restore selection before executing command
+      if (savedRange) {
+        const sel = window.getSelection();
+        if (sel) {
+          sel.removeAllRanges();
+          sel.addRange(savedRange);
+        }
+      }
+
+      // For color commands, enable styleWithCSS for better compatibility
+      const isColorCommand = command === 'foreColor' || command === 'backColor' || command === 'hiliteColor';
+      
+      if (isColorCommand) {
+        try {
+          document.execCommand('styleWithCSS', false, true);
+        } catch (e) {
+          // Some browsers don't support this
+        }
+      }
+
+      // Execute command immediately while we have selection
       document.execCommand(command, false, value);
+      
+      // Reset styleWithCSS
+      if (isColorCommand) {
+        try {
+          document.execCommand('styleWithCSS', false, false);
+        } catch (e) {
+          // Ignore
+        }
+      }
+      
       updateFormatState();
       
       // Then notify parent
@@ -215,6 +298,45 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
     }
   }, [disabled, onCommand, updateFormatState]);
 
+  // Handle font family change
+  const handleFontFamilyChange = useCallback((newFamily) => {
+    if (disabled) {
+      return;
+    }
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      setFontFamily(newFamily);
+      onCommand?.('fontName', newFamily);
+      return;
+    }
+
+    try {
+      document.execCommand('styleWithCSS', false, true);
+    } catch (error) {
+      // styleWithCSS not supported - continue with default behavior
+    }
+
+    document.execCommand('fontName', false, newFamily);
+
+    try {
+      document.execCommand('styleWithCSS', false, false);
+    } catch (error) {
+      // Ignore if browser does not support toggling
+    }
+
+    setFontFamily(newFamily);
+    onCommand?.('fontName', newFamily);
+
+    // Sync external state
+    updateFormatState();
+
+    if (document.activeElement && document.activeElement.isContentEditable) {
+      const event = new Event('input', { bubbles: true });
+      document.activeElement.dispatchEvent(event);
+    }
+  }, [disabled, onCommand, updateFormatState]);
+
   if (disabled) {
     return null;
   }
@@ -222,7 +344,7 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
   return (
     <div 
       ref={toolbarRef}
-      className={`flex items-center gap-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-lg ${className}`}
+      className={`flex flex-wrap items-center gap-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-lg ${className}`}
     >
       {/* Text Formatting */}
       <div className="flex items-center gap-1 pr-2 border-r border-slate-300">
@@ -261,9 +383,121 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
         >
           <Underline className="h-5 w-5" />
         </Button>
+        
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className={`h-9 w-9 p-0 ${activeFormats.strikethrough ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('strikeThrough')}
+          title="Strikethrough"
+        >
+          <Strikethrough className="h-5 w-5" />
+        </Button>
       </div>
 
-      {/* Lists removed by request */}
+      {/* Lists */}
+      <div className="flex items-center gap-1 pr-2 border-r border-slate-300">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('insertUnorderedList')}
+          title="Bullet List"
+        >
+          <List className="h-5 w-5" />
+        </Button>
+        
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => executeCommand('insertOrderedList')}
+          title="Numbered List"
+        >
+          <ListOrdered className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Highlighting & Colors */}
+      <div className="flex items-center gap-1 pr-2 border-r border-slate-300 relative">
+        {/* Highlight */}
+        <div className="relative">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => {
+              setShowHighlightPicker(!showHighlightPicker);
+              setShowColorPicker(false);
+            }}
+            title="Highlight Color"
+          >
+            <Highlighter className="h-5 w-5" />
+          </Button>
+          {showHighlightPicker && (
+            <div className="absolute top-full left-0 mt-1 p-2 bg-white border border-slate-300 rounded-lg shadow-lg z-50 flex gap-1">
+              {HIGHLIGHT_COLORS.map(color => (
+                <button
+                  key={color.value}
+                  type="button"
+                  className="w-7 h-7 rounded border-2 border-slate-300 hover:border-slate-500 transition-colors"
+                  style={{ backgroundColor: color.value }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    executeCommand('backColor', color.value);
+                    setShowHighlightPicker(false);
+                  }}
+                  title={color.name}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Text Color */}
+        <div className="relative">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-9 w-9 p-0 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => {
+              setShowColorPicker(!showColorPicker);
+              setShowHighlightPicker(false);
+            }}
+            title="Text Color"
+          >
+            <Palette className="h-5 w-5" />
+          </Button>
+          {showColorPicker && (
+            <div className="absolute top-full left-0 mt-1 p-2 bg-white border border-slate-300 rounded-lg shadow-lg z-50 flex gap-1">
+              {TEXT_COLORS.map(color => (
+                <button
+                  key={color.value}
+                  type="button"
+                  className="w-7 h-7 rounded border-2 border-slate-300 hover:border-slate-500 transition-colors"
+                  style={{ backgroundColor: color.value }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    executeCommand('foreColor', color.value);
+                    setShowColorPicker(false);
+                  }}
+                  title={color.name}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Alignment */}
       <div className="flex items-center gap-1 pr-2 border-r border-slate-300">
@@ -325,6 +559,23 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
           {FONT_SIZE_OPTIONS.map(size => (
             <option key={size.value} value={size.value}>
               {size.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Font Family */}
+      <div className="flex items-center gap-2">
+        <select
+          value={fontFamily}
+          onChange={(e) => handleFontFamilyChange(e.target.value)}
+          className="text-sm border border-slate-300 rounded px-3 py-1.5 bg-white cursor-pointer hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          title="Font Family"
+          style={{ fontFamily: fontFamily }}
+        >
+          {FONT_FAMILIES.map(font => (
+            <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+              {font.name}
             </option>
           ))}
         </select>

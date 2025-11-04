@@ -603,7 +603,7 @@ const interfaceTexts = {
     templateLanguage: 'Langue du modèle',
     interfaceLanguage: 'Langue de l\'interface',
     variables: 'Variables',
-    editEmail: 'Éditez votre courriel',
+    editEmail: 'Éditez votre modèle',
     subject: 'Objet',
     body: 'Corps du message',
     reset: 'Réinitialiser',
@@ -615,8 +615,8 @@ const interfaceTexts = {
     copyLink: 'Copier le lien',
     copyLinkTitle: 'Copier le lien direct vers ce modèle',
     openInOutlook: 'Ouvrir dans Outlook',
-    openInOutlookTitle: 'Composer un courriel avec Outlook',
-    sendEmail: 'Envoyer courriel',
+    openInOutlookTitle: 'Composer avec Outlook',
+    sendEmail: 'Envoyer',
   favorites: 'Favoris',
   showFavoritesOnly: 'Afficher uniquement les favoris',
     noTemplate: 'Sélectionnez un modèle pour commencer',
@@ -642,7 +642,7 @@ const interfaceTexts = {
     templateLanguage: 'Template language',
     interfaceLanguage: 'Interface language',
     variables: 'Variables',
-    editEmail: 'Edit your email',
+    editEmail: 'Edit your template',
     subject: 'Subject',
     body: 'Message body',
     reset: 'Reset',
@@ -654,8 +654,8 @@ const interfaceTexts = {
     copyLink: 'Copy link',
     copyLinkTitle: 'Copy direct link to this template',
     openInOutlook: 'Open in Outlook',
-    openInOutlookTitle: 'Compose email in Outlook',
-    sendEmail: 'Send Email',
+    openInOutlookTitle: 'Compose in Outlook',
+    sendEmail: 'Send',
   favorites: 'Favorites',
   showFavoritesOnly: 'Show only favorites',
     noTemplate: 'Select a template to get started',
@@ -714,7 +714,7 @@ function App() {
   useEffect(() => { templateLanguageRef.current = templateLanguage }, [templateLanguage])
   const [favorites, setFavorites] = useState(savedState.favorites || [])
   const [favoritesOnly, setFavoritesOnly] = useState(savedState.favoritesOnly || false)
-  const [copySuccess, setCopySuccess] = useState(false)
+  const [copySuccess, setCopySuccess] = useState(null) // tracks which button was clicked: 'subject', 'body', 'all', or null
   const [showVariablePopup, setShowVariablePopup] = useState(false)
   const [showHelpCenter, setShowHelpCenter] = useState(false)
   const [showAIPanel, setShowAIPanel] = useState(false)
@@ -1656,14 +1656,19 @@ function App() {
     if (!templatesData) return empty
     let dataset = templatesData.templates
 
-    // Apply category and favorites filters first
-    if (selectedCategory !== 'all') dataset = dataset.filter(t => t.category === selectedCategory)
-    if (favoritesOnly) {
-      const favSet = new Set(favorites)
-      dataset = dataset.filter(t => favSet.has(t.id))
+    const qRaw = (searchQuery || '').trim()
+    const hasSearchQuery = qRaw.length > 0
+
+    // If there's a search query, search across ALL categories and languages
+    // Otherwise, apply category and favorites filters
+    if (!hasSearchQuery) {
+      if (selectedCategory !== 'all') dataset = dataset.filter(t => t.category === selectedCategory)
+      if (favoritesOnly) {
+        const favSet = new Set(favorites)
+        dataset = dataset.filter(t => favSet.has(t.id))
+      }
     }
 
-    const qRaw = (searchQuery || '').trim()
     if (!qRaw) return { filteredTemplates: dataset, searchMatchMap: {} }
 
     // Tokenize query supporting quotes and AND/OR (EN/FR)
@@ -1698,6 +1703,15 @@ function App() {
       if (t === 'OR') { pushCurrent() } else if (t === 'AND') { /* implicit */ } else { current.push(t) }
     }
     pushCurrent()
+
+    // Helper: sort favorites first when searching
+    const sortWithFavoritesFirst = (templateList) => {
+      if (!hasSearchQuery) return templateList
+      const favSet = new Set(favorites)
+      const favs = templateList.filter(t => favSet.has(t.id))
+      const nonFavs = templateList.filter(t => !favSet.has(t.id))
+      return [...favs, ...nonFavs]
+    }
 
     const itemText = (it) => normalize([
       it.title?.fr || '', it.title?.en || '', it.description?.fr || '', it.description?.en || '', it.category || ''
@@ -1785,7 +1799,7 @@ function App() {
     if (rawTerms.length) {
       const { items: exactItems, matchMap: exactMap } = collectExact(gated, rawTerms)
       if (exactItems.length) {
-        return { filteredTemplates: exactItems, searchMatchMap: exactMap }
+        return { filteredTemplates: sortWithFavoritesFirst(exactItems), searchMatchMap: exactMap }
       }
     }
 
@@ -1795,7 +1809,7 @@ function App() {
     if (expandedTerms.length) {
       const { items: exactItems2, matchMap: exactMap2 } = collectExact(gated, expandedTerms)
       if (exactItems2.length) {
-        return { filteredTemplates: exactItems2, searchMatchMap: exactMap2 }
+        return { filteredTemplates: sortWithFavoritesFirst(exactItems2), searchMatchMap: exactMap2 }
       }
     }
 
@@ -1882,7 +1896,7 @@ function App() {
         }
       }
       if (simple.length === 0) return { filteredTemplates: [], searchMatchMap: {} }
-      return { filteredTemplates: simple.map(s => s.item), searchMatchMap: sMatchMap }
+      return { filteredTemplates: sortWithFavoritesFirst(simple.map(s => s.item)), searchMatchMap: sMatchMap }
     }
 
     // Sort by best (lowest) score, stable by original order
@@ -1893,7 +1907,8 @@ function App() {
       const id = r.item.id
       matchMap[id] = r.matches
     }
-    return { filteredTemplates: items, searchMatchMap: matchMap }
+
+    return { filteredTemplates: sortWithFavoritesFirst(items), searchMatchMap: matchMap }
   }, [templatesData, searchQuery, selectedCategory, favoritesOnly, favorites])
 
   // Helpers for rendering highlighted text
@@ -1960,6 +1975,68 @@ function App() {
 
     const wrapper = document.createElement('div')
     wrapper.innerHTML = ensureHtmlString(htmlText)
+
+    // Convert styling to email-client-friendly format
+    const makeOutlookFriendly = (element) => {
+      // Process all elements with inline styles
+      element.querySelectorAll('[style]').forEach((el) => {
+        const computedStyle = window.getComputedStyle(el)
+        let newStyle = ''
+        
+        // Font size
+        const fontSize = computedStyle.fontSize
+        if (fontSize && fontSize !== '14px') {
+          newStyle += `font-size: ${fontSize}; `
+        }
+        
+        // Text color
+        const color = computedStyle.color
+        if (color && color !== 'rgb(0, 0, 0)' && color !== 'rgba(0, 0, 0, 1)') {
+          newStyle += `color: ${color}; `
+        }
+        
+        // Background color (highlighting)
+        const bgColor = computedStyle.backgroundColor
+        if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent' && bgColor !== 'rgb(255, 255, 255)') {
+          newStyle += `background-color: ${bgColor}; `
+        }
+        
+        // Font weight (bold)
+        const fontWeight = computedStyle.fontWeight
+        if (fontWeight && (fontWeight === 'bold' || parseInt(fontWeight) >= 700)) {
+          newStyle += `font-weight: bold; `
+        }
+        
+        // Font style (italic)
+        const fontStyle = computedStyle.fontStyle
+        if (fontStyle === 'italic') {
+          newStyle += `font-style: italic; `
+        }
+        
+        // Text decoration (underline, strikethrough)
+        const textDecoration = computedStyle.textDecoration
+        if (textDecoration && textDecoration !== 'none') {
+          newStyle += `text-decoration: ${textDecoration}; `
+        }
+        
+        if (newStyle) {
+          el.setAttribute('style', newStyle.trim())
+        } else {
+          el.removeAttribute('style')
+        }
+      })
+
+      // Ensure lists have proper inline styles
+      element.querySelectorAll('ul, ol').forEach((list) => {
+        list.setAttribute('style', 'margin: 0; padding-left: 40px;')
+      })
+
+      element.querySelectorAll('li').forEach((li) => {
+        li.setAttribute('style', 'margin: 0; padding: 0;')
+      })
+    }
+
+    makeOutlookFriendly(wrapper)
 
     // Remove technical attributes we don't need in exported HTML
     wrapper.querySelectorAll('br[data-line-break]').forEach((node) => {
@@ -2160,12 +2237,37 @@ function App() {
         textContent = resolvedSubject
         break
       case 'body':
-        htmlContent = bodyResult.html
+        // Wrap body in complete HTML document structure for email clients
+        htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0;">
+<div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">
+${bodyResult.html}
+</div>
+</body>
+</html>`
         textContent = bodyResult.text
         break
       case 'all':
       default:
-        htmlContent = `<div><strong>Subject:</strong> ${toSimpleHtml(resolvedSubject)}</div><br><div>${bodyResult.html}</div>`
+        htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0;">
+<div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">
+<div><strong>Subject:</strong> ${toSimpleHtml(resolvedSubject)}</div>
+<br>
+<div>${bodyResult.html}</div>
+</div>
+</body>
+</html>`
         textContent = `${resolvedSubject}\n\n${bodyResult.text}`
         break
     }
@@ -2201,8 +2303,8 @@ function App() {
       }
       
       // Visual success feedback (2 seconds)
-      setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
+      setCopySuccess(type) // Set to 'subject', 'body', or 'all'
+      setTimeout(() => setCopySuccess(null), 2000)
     } catch (error) {
       console.error('Copy error:', error)
       // Fallback to plain text only
@@ -2221,8 +2323,8 @@ function App() {
           document.execCommand('copy')
           textArea.remove()
         }
-        setCopySuccess(true)
-        setTimeout(() => setCopySuccess(false), 2000)
+        setCopySuccess(type) // Set to 'subject', 'body', or 'all'
+        setTimeout(() => setCopySuccess(null), 2000)
       } catch (fallbackError) {
         console.error('Fallback copy error:', fallbackError)
         alert('Copy error. Please select the text manually and use Ctrl+C.')
@@ -2259,8 +2361,8 @@ function App() {
       }
       
       // Temporary visual feedback
-      setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
+      setCopySuccess('link')
+      setTimeout(() => setCopySuccess(null), 2000)
     } catch (error) {
       console.error('Link copy error:', error)
       alert('Link copy error. Please copy the URL manually from the address bar.')
@@ -2602,7 +2704,7 @@ function App() {
       <div className="text-sm">
         {interfaceLanguage === 'fr'
           ? "Le fichier complete_email_templates.json n'a pas été trouvé ou n'a pas pu être chargé. Le bouton d'envoi s'affiche uniquement quand un modèle est sélectionné."
-          : 'The complete_email_templates.json file was not found or could not be loaded. The Send Email button only shows when a template is selected.'}
+          : 'The complete_email_templates.json file was not found or could not be loaded. The Send button only shows when a template is selected.'}
         <div className="mt-2">
           <a className="underline text-amber-800" href="./complete_email_templates.json" target="_blank" rel="noreferrer">complete_email_templates.json</a>
         </div>
@@ -2676,14 +2778,14 @@ function App() {
               <div className="mt-2 px-4">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger
-                    className={`w-full h-12 border rounded-md !bg-[#b5af70] !border-[#2c3d50] text-white font-semibold tracking-wide shadow-sm ${selectedCategory === 'all' ? '' : ''}`}
-                    style={{ color: 'white' }}
+                    className={`w-full h-12 border rounded-md !bg-[#b5af70] !border-[#2c3d50] text-white font-semibold tracking-wide shadow-sm`}
+                    style={{ color: 'white', fontSize: selectedCategory === 'all' ? '1rem' : '0.875rem' }}
                   >
                     <Filter className="h-4 w-4 mr-2 text-white" />
                     <SelectValue placeholder={t.allCategories} />
                   </SelectTrigger>
                   <SelectContent className="bg-white border border-[#2c3d50] rounded-[14px] shadow-xl text-[#2c3d50]">
-                    <SelectItem value="all" className="font-semibold">{t.allCategories}</SelectItem>
+                    <SelectItem value="all" className="font-semibold" style={{ fontSize: '1rem' }}>{t.allCategories}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
                         {t.categories[category] || category}
@@ -2710,7 +2812,8 @@ function App() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center"
+                    className="absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center"
+                    style={{ right: '31px' }}
                     title="Clear search"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -2806,7 +2909,7 @@ function App() {
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }}
-                              className={`ml-3 text-xl transition-colors ${isFav(template.id) ? 'text-[#8a8535]' : 'text-[#2c3d50] hover:text-[#8a8535]'}`}
+                              className={`ml-3 text-xl transition-colors ${isFav(template.id) ? 'text-[#8a8535]' : 'text-gray-200 hover:text-[#8a8535]'}`}
                               title={isFav(template.id) ? 'Unfavorite' : 'Favorite'}
                               aria-label="Toggle favorite"
                             >★</button>
@@ -2865,12 +2968,12 @@ function App() {
               </div>
               <div className="mt-2">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className={`w-full h-12 border transition-all duration-200 rounded-md ${selectedCategory === 'all' ? 'font-semibold' : ''}`} style={{ background: '#b5af70', borderColor: '#b5af70', color: 'white' }}>
+                  <SelectTrigger className={`w-full h-12 border transition-all duration-200 rounded-md ${selectedCategory === 'all' ? 'font-semibold' : ''}`} style={{ background: '#b5af70', borderColor: '#b5af70', color: 'white', fontSize: selectedCategory === 'all' ? '1rem' : '0.875rem' }}>
                     <Filter className="h-4 w-4 mr-2 text-white" />
                     <SelectValue placeholder={t.allCategories} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all" className="font-semibold">{t.allCategories}</SelectItem>
+                    <SelectItem value="all" className="font-semibold" style={{ fontSize: '1rem' }}>{t.allCategories}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>
                         {t.categories[category] || category}
@@ -3134,7 +3237,7 @@ function App() {
                       title={t.copyLinkTitle}
                     >
                       <Link className="h-4 w-4 mr-2" />
-                      {t.copyLink}
+                      {copySuccess === 'link' ? t.copied : t.copyLink}
                     </Button>
 
                   </div>
@@ -3178,7 +3281,7 @@ function App() {
                       title="Copy subject only (Ctrl+J)"
                     >
                       <Mail className="h-4 w-4 mr-2 text-[#2c3d50]" />
-                      <span className="text-[#2c3d50]">{t.copySubject || 'Subject'}</span>
+                      <span className="text-[#2c3d50]">{copySuccess === 'subject' ? t.copied : (t.copySubject || 'Subject')}</span>
                     </Button>
                     
                     {/* Body Copy Button - Sage accent (slightly darker) */}
@@ -3203,25 +3306,25 @@ function App() {
                       title="Copy body only (Ctrl+B)"
                     >
                       <Edit3 className="h-4 w-4 mr-2 text-[#2c3d50]" />
-                      <span className="text-[#2c3d50]">{t.copyBody || 'Body'}</span>
+                      <span className="text-[#2c3d50]">{copySuccess === 'body' ? t.copied : (t.copyBody || 'Body')}</span>
                     </Button>
                     
                     {/* Complete Copy Button - Gradient (main action) */}
                     <Button 
                       onClick={() => copyToClipboard('all')} 
                       className={`font-bold transition-all duration-200 shadow-soft btn-pill text-white ${
-                        copySuccess 
+                        copySuccess === 'all'
                           ? 'transform scale-[1.02]' 
                           : 'hover:scale-[1.02]'
                       }`}
                       style={{ background: '#5a88b5' }}
-                      title="Copy entire email (Ctrl+Enter)"
+                      title="Copy entire template (Ctrl+Enter)"
                     >
                       <Copy className="h-5 w-5 mr-2" />
-                      {copySuccess ? t.copied : (t.copyAll || 'All')}
+                      {copySuccess === 'all' ? t.copied : (t.copyAll || 'All')}
                     </Button>
 
-                    {/* Send Email Button - Teal primary action (moved CTA) */}
+                    {/* Send Button - Teal primary action (moved CTA) */}
                     <Button 
                       onClick={openInOutlook}
                       className="font-bold transition-all duration-200 shadow-soft text-white btn-pill"
@@ -3247,7 +3350,7 @@ function App() {
                   <div className="text-center">
                     <div className="relative mb-6">
                       <FileText className="h-16 w-16 text-gray-300 mx-auto animate-bounce" />
-                      <Sparkles className="h-6 w-6 text-emerald-400 absolute -top-2 -right-2 animate-pulse" />
+                      <Sparkles className="h-6 w-6 text-[#2c3d50] absolute -top-2 -right-2 animate-pulse" />
                     </div>
                     <p className="text-gray-500 text-lg font-medium">{t.noTemplate}</p>
                   </div>
