@@ -10,9 +10,23 @@
 
 1. Copy the relevant prompt below (Variables or Templates)
 2. Customize the bracketed sections `[like this]` with your specific requirements
-3. Attach your partial/incomplete CSV file (if applicable)
-4. Paste the prompt to your AI assistant
+3. **Attach your CSV file** to the AI conversation (recommended) OR paste CSV content in the prompt
+4. Paste the customized prompt to your AI assistant
 5. Review and validate the AI's output before importing
+
+### How to Attach CSV Files
+
+**Method 1: File Attachment (Recommended)**
+- Click the attachment/paperclip icon in ChatGPT/Claude
+- Select your CSV file (e.g., `my-variables.csv`)
+- In the prompt, update the "MY CSV DATA" section to: `See attached file: filename.csv`
+- **Advantages:** No formatting issues, works with large files, preserves encoding
+
+**Method 2: Paste CSV Content**
+- Open CSV in text editor (VS Code, Notepad++)
+- Copy entire contents
+- Paste where it says `[IF PROVIDING PARTIAL CSV - PASTE IT HERE]`
+- **When to use:** Small files (< 50 rows), quick edits, showing samples only
 
 ---
 
@@ -86,8 +100,9 @@ I need you to help me generate/complete a CSV file for email template variables.
 
 ### MY CSV DATA:
 
-[IF PROVIDING PARTIAL CSV - PASTE IT HERE]
-[IF ASKING FOR NEW GENERATION - DELETE THIS SECTION]
+[IF ATTACHING FILE - Replace this section with: "See attached file: filename.csv"]
+[IF PASTING CONTENT - Paste your CSV content below this line]
+[IF GENERATING NEW - Delete this entire section]
 
 ### DELIVERABLE:
 
@@ -241,8 +256,9 @@ Example format:
 
 ### MY CSV DATA:
 
-[IF PROVIDING PARTIAL CSV - PASTE IT HERE]
-[IF ASKING FOR NEW GENERATION - DELETE THIS SECTION]
+[IF ATTACHING FILE - Replace this section with: "See attached file: filename.csv"]
+[IF PASTING CONTENT - Paste your CSV content below this line]
+[IF GENERATING NEW - Delete this entire section]
 
 ### DELIVERABLE:
 
