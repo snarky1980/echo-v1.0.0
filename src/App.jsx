@@ -2806,7 +2806,7 @@ function App() {
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }}
-                              className={`ml-3 text-xl ${isFav(template.id) ? 'text-[#8a8535]' : 'text-gray-200 hover:text-[#8a8535]'}`}
+                              className={`ml-3 text-xl transition-colors ${isFav(template.id) ? 'text-[#8a8535]' : 'text-[#2c3d50] hover:text-[#8a8535]'}`}
                               title={isFav(template.id) ? 'Unfavorite' : 'Favorite'}
                               aria-label="Toggle favorite"
                             >★</button>
