@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { LifeBuoy, Lightbulb, BookOpen, AlertTriangle, MessageCircle, ExternalLink, Mail, X, CheckCircle2, Loader2 } from 'lucide-react'
+import { LifeBuoy, Lightbulb, BookOpen, AlertTriangle, MessageCircle, ExternalLink, Mail, X, CheckCircle2, Loader2, Copy, Star, Shield } from 'lucide-react'
 import { Button } from './ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card.jsx'
 import { ScrollArea } from './ui/scroll-area.jsx'
@@ -20,6 +20,60 @@ const translations = {
         'Copiez le résultat (objet, corps ou tout) ou composez directement dans Outlook lorsque vous êtes satisfait.'
       ]
     },
+    sections: {
+      variables: {
+        heading: 'Variables & pastilles',
+        points: [
+          'Les variables apparaissent comme des pastilles dans l\'Objet et le Corps. Cliquez dessus ou tapez pour les modifier.',
+          'Les pastilles montrent la valeur en temps réel. Vous ne devriez pas voir «<>» : si c\'est le cas, vérifiez que la variable existe et n\'a pas été supprimée.',
+          'Utilisez le panneau Variables pour voir et éditer toutes les valeurs d\'un coup; la synchronisation est bidirectionnelle.'
+        ]
+      },
+      popout: {
+        heading: 'Fenêtre détachée (popout)',
+        points: [
+          'Ouvrez le panneau Variables dans une fenêtre séparée pour travailler côte à côte.',
+          'À l\'ouverture, les valeurs sont extraites immédiatement de l\'Objet et du Corps (via les pastilles).',
+          'Les changements dans l\'une ou l\'autre fenêtre se reflètent automatiquement (BroadcastChannel).'
+        ]
+      },
+      copying: {
+        heading: 'Copier & Outlook',
+        points: [
+          'Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles.',
+          '« Ouvrir dans Outlook » compose un nouveau message avec votre client par défaut. Certaines organisations bloquent les liens mailto:.',
+          'Le lien direct (icône de lien) inclut l\'identifiant et la langue dans l\'URL.'
+        ]
+      },
+      favorites: {
+        heading: 'Favoris',
+        points: [
+          'Cliquez l\'icône étoile pour marquer un modèle. L\'icône devient or quand favori et très claire sinon.',
+          'Activez « Afficher uniquement les favoris » pour filtrer la liste.',
+          'Les favoris sont mémorisés localement dans le navigateur.'
+        ]
+      },
+      shortcuts: {
+        heading: 'Raccourcis clavier',
+        items: [
+          ['Ctrl/Cmd + Entrée', 'Copier tout'],
+          ['Ctrl/Cmd + B', 'Copier le corps'],
+          ['Ctrl/Cmd + J', 'Copier l\'objet'],
+          ['Ctrl/Cmd + Shift + Entrée', 'Ouvrir dans Outlook'],
+          ['Ctrl/Cmd + /', 'Focus sur la recherche'],
+          ['Ctrl/Cmd + R (Variables)', 'Réinitialiser aux exemples'],
+          ['Ctrl/Cmd + Shift + V (Variables)', 'Collage intelligent var: valeur']
+        ]
+      },
+      privacy: {
+        heading: 'Confidentialité & stockage',
+        points: [
+          'Tout fonctionne localement dans votre navigateur. Aucune donnée n\'est envoyée à un serveur, sauf si vous soumettez le formulaire de contact.',
+          'Les préférences (langues, favoris, etc.) et les variables en cours sont sauvegardées en local.',
+          'Exportez vos modèles JSON pour sauvegarder ou partager vos modifications.'
+        ]
+      }
+    },
     faq: {
       heading: 'Questions fréquentes',
       items: [
@@ -37,7 +91,7 @@ const translations = {
         },
         {
           question: 'Puis-je travailler sans connexion ?',
-          answer: 'Oui. Tous les traitements se font dans votre navigateur et les données restent locales. Pensez simplement à exporter vos modèles JSON si vous avez fait des modifications.'
+          answer: 'Oui. Tous les traitements se font dans votre navigateur et les données restent locales.'
         }
       ]
     },
@@ -58,25 +112,12 @@ const translations = {
             'Confirmez qu\'un modèle est sélectionné. Le bouton s\'active uniquement quand un contenu final est disponible.',
             'Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook.'
           ]
-        },
-        {
-          title: 'Impossible de charger les modèles',
-          steps: [
-            'Assurez-vous que `complete_email_templates.json` est présent dans `public/` et accessible.',
-            'Ouvrez la console réseau du navigateur pour repérer une erreur 404 ou CORS.',
-            'Utilisez le paramètre `?debug=1` pour vérifier les compteurs de chargement.'
-          ]
         }
       ]
     },
     resources: {
       heading: 'Ressources utiles',
-      links: [
-        { label: 'Guide complet des fonctionnalités (README)', href: 'https://github.com/snarky1980/email-assistant-v8-blue-highlights-1/blob/main/README.md' },
-        { label: 'Notes d\'implantation détaillées', href: 'https://github.com/snarky1980/email-assistant-v8-blue-highlights-1/blob/main/IMPLEMENTATION_CHANGES.md' },
-        { label: 'Guide développeur', href: 'https://github.com/snarky1980/email-assistant-v8-blue-highlights-1/blob/main/docs/DEVELOPER-GUIDE.md' },
-        { label: 'Aide hors ligne (HTML)', href: './help.html' }
-      ]
+      links: []
     },
     contact: {
       heading: 'Besoin d\'un coup de main ?',
@@ -118,8 +159,8 @@ const translations = {
       form: {
         nameLabel: 'Nom complet',
   namePlaceholder: 'Ex. Jeanne Tremblay',
-        emailLabel: 'Courriel professionnel',
-  emailPlaceholder: 'prenom.nom@canada.ca',
+    emailLabel: 'Courriel professionnel',
+  emailPlaceholder: 'prenom.nom@moncourriel.com',
         messageLabelFallback: 'Message',
         optional: '(facultatif)',
         submit: 'Envoyer la demande',
@@ -151,6 +192,60 @@ const translations = {
         'Copy the result (subject, body, or everything) or launch Outlook when you\'re happy with the message.'
       ]
     },
+    sections: {
+      variables: {
+        heading: 'Variables & pills',
+        points: [
+          'Variables render as pills inside Subject and Body. Click or type to change values.',
+          'Pills show live values. You should not see "<>"; if you do, ensure the variable exists and wasn\'t removed.',
+          'Use the Variables panel to view/edit all values at once; syncing is bidirectional.'
+        ]
+      },
+      popout: {
+        heading: 'Detached window (popout)',
+        points: [
+          'Open Variables in a separate window to work side-by-side.',
+          'When opening, values are extracted immediately from the Subject and Body (via the pills).',
+          'Edits reflect both ways automatically using BroadcastChannel.'
+        ]
+      },
+      copying: {
+        heading: 'Copying & Outlook',
+        points: [
+          'Copy Subject / Copy Body / Copy All buttons include your current values.',
+          '“Open in Outlook” composes a draft with your default client. Some orgs block mailto: links.',
+          'The direct-link icon includes id & language in the URL.'
+        ]
+      },
+      favorites: {
+        heading: 'Favorites',
+        points: [
+          'Click the star to favorite a template. The icon turns gold when favorited and very light when not.',
+          'Turn on “Show only favorites” to filter the list.',
+          'Favorites are stored locally in your browser.'
+        ]
+      },
+      shortcuts: {
+        heading: 'Keyboard shortcuts',
+        items: [
+          ['Ctrl/Cmd + Enter', 'Copy all'],
+          ['Ctrl/Cmd + B', 'Copy body'],
+          ['Ctrl/Cmd + J', 'Copy subject'],
+          ['Ctrl/Cmd + Shift + Enter', 'Open in Outlook'],
+          ['Ctrl/Cmd + /', 'Focus search'],
+          ['Ctrl/Cmd + R (Variables)', 'Reset to examples'],
+          ['Ctrl/Cmd + Shift + V (Variables)', 'Smart paste var: value']
+        ]
+      },
+      privacy: {
+        heading: 'Privacy & storage',
+        points: [
+          'Everything runs locally in your browser. No data is sent to a server unless you submit the contact form.',
+          'Preferences (languages, favorites, etc.) and in-progress variables are saved in local storage.',
+          'Export your JSON templates to back up or share edits.'
+        ]
+      }
+    },
     faq: {
       heading: 'Frequently asked questions',
       items: [
@@ -168,7 +263,7 @@ const translations = {
         },
         {
           question: 'Can I work offline?',
-          answer: 'Absolutely. Everything runs in your browser and data stays local. Remember to export your JSON templates if you made edits.'
+          answer: 'Absolutely. Everything runs in your browser and data stays local.'
         }
       ]
     },
@@ -189,25 +284,12 @@ const translations = {
             'Confirm that a template is selected. The button is enabled only when final content is available.',
             'Some organizations block `mailto:` links. If that\'s the case, use Copy all and paste into Outlook manually.'
           ]
-        },
-        {
-          title: 'Templates refuse to load',
-          steps: [
-            'Ensure `complete_email_templates.json` lives in `public/` and can be fetched.',
-            'Open the browser network console to look for 404 or CORS errors.',
-            'Append `?debug=1` to the URL to inspect loading counters.'
-          ]
         }
       ]
     },
     resources: {
       heading: 'Helpful resources',
-      links: [
-        { label: 'Feature guide (README)', href: 'https://github.com/snarky1980/email-assistant-v8-blue-highlights-1/blob/main/README.md' },
-        { label: 'Implementation notes', href: 'https://github.com/snarky1980/email-assistant-v8-blue-highlights-1/blob/main/IMPLEMENTATION_CHANGES.md' },
-        { label: 'Developer guide', href: 'https://github.com/snarky1980/email-assistant-v8-blue-highlights-1/blob/main/docs/DEVELOPER-GUIDE.md' },
-        { label: 'Offline help (HTML)', href: './help.html' }
-      ]
+      links: []
     },
     contact: {
       heading: 'Need something else?',
@@ -249,8 +331,8 @@ const translations = {
       form: {
         nameLabel: 'Full name',
   namePlaceholder: 'e.g. Jordan Lee',
-        emailLabel: 'Work email',
-  emailPlaceholder: 'firstname.lastname@canada.ca',
+    emailLabel: 'Work email',
+  emailPlaceholder: 'firstname.lastname@myemail.com',
         messageLabelFallback: 'Message',
         optional: '(optional)',
         submit: 'Send request',
@@ -290,6 +372,7 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
   const strings = useMemo(() => translations[language] || translations.fr, [language])
   const contactOptions = strings.contact?.options || []
   const closeBtnRef = useRef(null)
+  const [query, setQuery] = useState('')
   const [formData, setFormData] = useState(() => ({
     category: contactOptions[0]?.value || 'support',
     name: '',
@@ -446,10 +529,7 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
       >
         <CardHeader className="flex flex-row items-start justify-between gap-4 pb-3">
           <div>
-            <div className="flex items-center gap-2 text-[#145a64]">
-              <LifeBuoy className="h-5 w-5" aria-hidden="true" />
-              <span className="text-sm font-semibold uppercase tracking-wide">Email Assistant</span>
-            </div>
+            {/* Removed small brand title "Email Assistant" as requested */}
             <CardTitle id="help-centre-title" className="text-2xl font-bold text-[#0f2c33]">
               {strings.title}
             </CardTitle>
@@ -468,7 +548,37 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
         <CardContent className="flex-1 pt-0" style={{ minHeight: 0 }}>
           <ScrollArea className="h-full w-full pr-2">
             <div className="space-y-8 pb-4">
-              <section>
+              <div className="flex flex-col gap-3 rounded-xl border border-[#e6eef5] bg-white/70 p-3 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-700">
+                  <a href="#quickstart" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.quickStart.heading}</a>
+                  {strings.sections?.variables ? (
+                    <a href="#variables" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.sections.variables.heading}</a>
+                  ) : null}
+                  {strings.sections?.popout ? (
+                    <a href="#popout" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.sections.popout.heading}</a>
+                  ) : null}
+                  {strings.sections?.copying ? (
+                    <a href="#copying" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.sections.copying.heading}</a>
+                  ) : null}
+                  {strings.sections?.favorites ? (
+                    <a href="#favorites" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.sections.favorites.heading}</a>
+                  ) : null}
+                  {strings.sections?.shortcuts ? (
+                    <a href="#shortcuts" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.sections.shortcuts.heading}</a>
+                  ) : null}
+                  {strings.sections?.privacy ? (
+                    <a href="#privacy" className="rounded-full bg-[#f0fbfb] px-3 py-1 font-semibold text-[#145a64] hover:underline">{strings.sections.privacy.heading}</a>
+                  ) : null}
+                </div>
+                <div className="md:w-60">
+                  <Input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={language === 'fr' ? "Rechercher dans l'aide…" : 'Search the help…'}
+                  />
+                </div>
+              </div>
+              <section id="quickstart">
                 <SectionHeader
                   icon={Lightbulb}
                   title={strings.quickStart.heading}
@@ -483,18 +593,87 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
                   ))}
                 </ul>
               </section>
+              {strings.sections?.variables ? (
+                <section id="variables">
+                  <SectionHeader icon={BookOpen} title={strings.sections.variables.heading} />
+                  <ul className="mt-4 space-y-2 text-sm text-slate-700">
+                    {(strings.sections.variables.points || [])
+                      .filter((p) => !query || p.toLowerCase().includes(query.toLowerCase()))
+                      .map((p, i) => (
+                        <li key={i} className="flex gap-3">
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#1f8a99]" aria-hidden="true" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              {strings.sections?.popout ? (
+                <section id="popout">
+                  <SectionHeader icon={ExternalLink} title={strings.sections.popout.heading} />
+                  <ul className="mt-4 space-y-2 text-sm text-slate-700">
+                    {(strings.sections.popout.points || [])
+                      .filter((p) => !query || p.toLowerCase().includes(query.toLowerCase()))
+                      .map((p, i) => (
+                        <li key={i} className="flex gap-3">
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#1f8a99]" aria-hidden="true" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              {strings.sections?.copying ? (
+                <section id="copying">
+                  <SectionHeader icon={Copy} title={strings.sections.copying.heading} />
+                  <ul className="mt-4 space-y-2 text-sm text-slate-700">
+                    {(strings.sections.copying.points || [])
+                      .filter((p) => !query || p.toLowerCase().includes(query.toLowerCase()))
+                      .map((p, i) => (
+                        <li key={i} className="flex gap-3">
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#1f8a99]" aria-hidden="true" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              {strings.sections?.favorites ? (
+                <section id="favorites">
+                  <SectionHeader icon={Star} title={strings.sections.favorites.heading} />
+                  <ul className="mt-4 space-y-2 text-sm text-slate-700">
+                    {(strings.sections.favorites.points || [])
+                      .filter((p) => !query || p.toLowerCase().includes(query.toLowerCase()))
+                      .map((p, i) => (
+                        <li key={i} className="flex gap-3">
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#1f8a99]" aria-hidden="true" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </section>
+              ) : null}
 
               <Separator className="bg-[#e6eef5]" />
 
               <section>
                 <SectionHeader icon={BookOpen} title={strings.faq.heading} />
                 <div className="mt-4 space-y-4">
-                  {strings.faq.items.map((item, index) => (
-                    <div key={index} className="rounded-lg border border-[#e1eff4] bg-[#f9feff] p-4 shadow-sm">
-                      <p className="font-semibold text-[#124a52]">{item.question}</p>
-                      <p className="mt-2 text-sm text-slate-700">{item.answer}</p>
-                    </div>
-                  ))}
+                  {strings.faq.items
+                    .filter((qa) => {
+                      if (!query) return true
+                      const q = query.toLowerCase()
+                      return qa.question.toLowerCase().includes(q) || qa.answer.toLowerCase().includes(q)
+                    })
+                    .map((item, index) => (
+                      <div key={index} className="rounded-lg border border-[#e1eff4] bg-[#f9feff] p-4 shadow-sm">
+                        <p className="font-semibold text-[#124a52]">{item.question}</p>
+                        <p className="mt-2 text-sm text-slate-700">{item.answer}</p>
+                      </div>
+                    ))}
                 </div>
               </section>
 
@@ -503,41 +682,91 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
               <section>
                 <SectionHeader icon={AlertTriangle} title={strings.troubleshooting.heading} />
                 <div className="mt-4 space-y-5">
-                  {strings.troubleshooting.items.map((block, index) => (
-                    <div key={index} className="rounded-xl border border-[#fde68a] bg-[#fffbeb] p-4 shadow-sm">
-                      <h4 className="text-sm font-semibold text-[#92400e]">{block.title}</h4>
-                      <ul className="mt-3 space-y-1.5 text-sm text-[#78350f]">
-                        {block.steps.map((step, stepIndex) => (
-                          <li key={stepIndex} className="flex gap-2">
-                            <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#f59e0b]" aria-hidden="true" />
-                            <span>{step}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                  {strings.troubleshooting.items
+                    .filter((blk) => {
+                      if (!query) return true
+                      const q = query.toLowerCase()
+                      return blk.title.toLowerCase().includes(q) || (blk.steps || []).some((s) => s.toLowerCase().includes(q))
+                    })
+                    .map((block, index) => (
+                      <div key={index} className="rounded-xl border border-[#fde68a] bg-[#fffbeb] p-4 shadow-sm">
+                        <h4 className="text-sm font-semibold text-[#92400e]">{block.title}</h4>
+                        <ul className="mt-3 space-y-1.5 text-sm text-[#78350f]">
+                          {block.steps.map((step, stepIndex) => (
+                            <li key={stepIndex} className="flex gap-2">
+                              <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#f59e0b]" aria-hidden="true" />
+                              <span>{step}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                 </div>
               </section>
 
               <Separator className="bg-[#e6eef5]" />
 
+              {strings.sections?.shortcuts ? (
+                <section id="shortcuts">
+                  <SectionHeader icon={Lightbulb} title={strings.sections.shortcuts.heading} />
+                  <div className="mt-3 overflow-hidden rounded-lg border border-[#e6eef5]">
+                    <div className="grid grid-cols-1 divide-y divide-[#e6eef5] text-sm md:grid-cols-2 md:divide-x md:divide-y-0">
+                      {(strings.sections.shortcuts.items || [])
+                        .filter(([combo, desc]) => {
+                          if (!query) return true
+                          const q = query.toLowerCase()
+                          return combo.toLowerCase().includes(q) || desc.toLowerCase().includes(q)
+                        })
+                        .map(([combo, desc], i) => (
+                          <div key={i} className="flex items-center justify-between gap-3 p-3">
+                            <span className="font-mono text-xs text-slate-700">{combo}</span>
+                            <span className="text-slate-800">{desc}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </section>
+              ) : null}
+
+              {strings.sections?.privacy ? (
+                <section id="privacy">
+                  <SectionHeader icon={Shield} title={strings.sections.privacy.heading} />
+                  <ul className="mt-4 space-y-2 text-sm text-slate-700">
+                    {(strings.sections.privacy.points || [])
+                      .filter((p) => !query || p.toLowerCase().includes(query.toLowerCase()))
+                      .map((p, i) => (
+                        <li key={i} className="flex gap-3">
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#1f8a99]" aria-hidden="true" />
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </section>
+              ) : null}
+
+              <Separator className="bg-[#e6eef5]" />
+
               <section>
-                <SectionHeader icon={MessageCircle} title={strings.resources.heading} />
-                <ul className="mt-4 grid gap-2 text-sm text-[#145a64] md:grid-cols-2">
-                  {strings.resources.links.map((link) => (
-                    <li key={link.href}>
-                      <a
-                        className="group inline-flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 transition-colors duration-150 hover:border-[#bfe7e3] hover:bg-[#f0fbfb]"
-                        href={link.href}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 text-[#1f8a99] transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
-                        <span>{link.label}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                {Array.isArray(strings.resources?.links) && strings.resources.links.length > 0 ? (
+                  <>
+                    <SectionHeader icon={MessageCircle} title={strings.resources.heading} />
+                    <ul className="mt-4 grid gap-2 text-sm text-[#145a64] md:grid-cols-2">
+                      {strings.resources.links.map((link) => (
+                        <li key={link.href}>
+                          <a
+                            className="group inline-flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 transition-colors duration-150 hover:border-[#bfe7e3] hover:bg-[#f0fbfb]"
+                            href={link.href}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5 text-[#1f8a99] transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                            <span>{link.label}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
               </section>
 
               <Separator className="bg-[#e6eef5]" />

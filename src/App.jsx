@@ -306,6 +306,27 @@ const stripRichTextForSync = (htmlText = '') => {
   return plainText
 }
 
+// Extract variable values directly from pill elements in HTML
+const extractVariablesFromPills = (htmlText = '') => {
+  if (!htmlText) return {}
+  
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlText
+  
+  const variables = {}
+  const pills = tempDiv.querySelectorAll('[data-var]')
+  
+  pills.forEach(pill => {
+    const varName = pill.getAttribute('data-var')
+    const varValue = pill.getAttribute('data-value') || pill.textContent || ''
+    if (varName) {
+      variables[varName] = varValue
+    }
+  })
+  
+  return variables
+}
+
 // Parse template structure into text and variable parts
 const parseTemplateStructure = (tpl) => {
   if (!tpl) return []
@@ -1129,31 +1150,38 @@ function App() {
         }
 
         if (msg.type === 'popoutOpened' || msg.type === 'popoutReady') {
-          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, preparing fresh variables snapshot...`)
+          console.log(`🔄 ${msg.type === 'popoutReady' ? 'Popout ready' : 'Popout opened'}, extracting current values from editors...`)
 
           setTimeout(() => {
+            // ALWAYS extract from editors when popout opens to get latest values
+            // This ensures any edits made in the main window pills are captured
             let latestVariables = null
+            
             try {
               const runSync = syncFromTextRef.current
               const syncResult = typeof runSync === 'function' ? runSync() : null
               if (syncResult?.variables) {
                 latestVariables = { ...syncResult.variables }
+                console.log('🔄 Extracted variables from editors:', latestVariables)
               }
             } catch (syncError) {
               console.error('Failed to extract variables while preparing popout snapshot:', syncError)
             }
 
+            // Fallback to snapshot or current variables if extraction failed
             if (!latestVariables && pendingPopoutSnapshotRef.current) {
               latestVariables = { ...pendingPopoutSnapshotRef.current }
+              console.log('🔄 Using pending snapshot:', latestVariables)
             }
 
             if (!latestVariables) {
               latestVariables = { ...variablesRef.current }
+              console.log('🔄 Using current variables ref:', latestVariables)
             }
 
             pendingPopoutSnapshotRef.current = null
 
-            console.log('🔄 Prepared variables for popout:', latestVariables)
+            console.log('🔄 Sending variables to popout:', latestVariables)
 
             try {
               channel.postMessage({
@@ -1163,7 +1191,7 @@ function App() {
                 templateLanguage: templateLanguageRef.current || templateLanguage,
                 sender: popoutSenderIdRef.current
               })
-              console.log('🔄 Sent refreshed variables to popout')
+              console.log('🔄 Sent variables to popout successfully')
             } catch (e) {
               console.error('Failed to send variables snapshot to popout:', e)
             }
@@ -1175,14 +1203,16 @@ function App() {
         if (msg.type === 'syncFromText') {
           console.log('🔄 Received syncFromText request from popout')
           
-          // Use a small delay to ensure all state is ready
+          // Extract current values from editors
           setTimeout(() => {
             const runSync = syncFromTextRef.current
             const result = typeof runSync === 'function' ? runSync() : { success: false, updated: false, variables: { ...variablesRef.current } }
             
-            // Send back the result
+            console.log('🔄 Sync result:', result)
+            
+            // Send back the extracted variables
             try {
-              console.log('🔄 Sending sync result back to popout:', result)
+              console.log('🔄 Sending sync result back to popout:', result.variables)
               channel.postMessage({
                 type: 'syncComplete',
                 success: result.success,
@@ -1194,6 +1224,7 @@ function App() {
               console.error('Failed to send sync result:', e)
             }
           }, 50) // Small delay to ensure state consistency
+          return
         }
       }
       
@@ -1986,77 +2017,38 @@ function App() {
 
   const extracted = {}
 
+  // Extract values directly from pill elements (most reliable method)
+  const pillValuesFromSubject = extractVariablesFromPills(finalSubject)
+  const pillValuesFromBody = extractVariablesFromPills(finalBody)
+  
+  console.log('🔄 Values extracted from pills:', {
+    subject: pillValuesFromSubject,
+    body: pillValuesFromBody
+  })
+  
+  // Merge pill values (subject takes priority)
+  Object.assign(extracted, pillValuesFromBody, pillValuesFromSubject)
+
   const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
   const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
-  const plainSubjectText = stripRichTextForSync(finalSubject)
-  const plainBodyText = stripRichTextForSync(finalBody)
 
     console.log('🔄 Templates:', {
       subjectTemplate: subjectTemplate?.substring(0, 100) + '...',
       bodyTemplate: bodyTemplate?.substring(0, 100) + '...'
     })
 
-    if (subjectTemplate && finalSubject) {
-      // Strip rich text formatting while preserving variable pills for sync
-      const plainSubject = plainSubjectText
-      const subjectValues = extractVariablesFromTemplate(plainSubject, subjectTemplate, selectedTemplate.variables)
-      Object.entries(subjectValues).forEach(([name, value]) => {
-        console.log(`🔄 Extracted from subject - ${name}: "${value.substring(0, 50)}..."`)
-        extracted[name] = value
-      })
+    // For any variables not found in pills, try template-based extraction
+    const missingVars = selectedTemplate.variables.filter(v => !extracted.hasOwnProperty(v))
+    
+    if (missingVars.length > 0 && (subjectTemplate && finalSubject)) {
+      const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, missingVars)
+      Object.assign(extracted, subjectValues)
     }
 
-    if (bodyTemplate && finalBody) {
-      // Strip rich text formatting while preserving variable pills for sync
-      const plainBody = plainBodyText
-      const bodyValues = extractVariablesFromTemplate(plainBody, bodyTemplate, selectedTemplate.variables)
-      Object.entries(bodyValues).forEach(([name, value]) => {
-        console.log(`🔄 Extracted from body - ${name}: "${value.substring(0, 50)}..."`)
-        // Only overwrite if we don't have a subject value already
-        if (!extracted[name]) {
-          extracted[name] = value
-        }
-      })
+    if (missingVars.length > 0 && (bodyTemplate && finalBody)) {
+      const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, missingVars.filter(v => !extracted.hasOwnProperty(v)))
+      Object.assign(extracted, bodyValues)
     }
-
-    // Fallback to anchor-based extraction for any variables we still couldn't resolve
-    selectedTemplate.variables.forEach(varName => {
-      if (extracted[varName]) return
-      let fallback = null
-
-      if (subjectTemplate && subjectTemplate.includes(`<<${varName}>>`)) {
-        const plainSubject = plainSubjectText
-        fallback = extractVariableWithAnchors(plainSubject, subjectTemplate, varName)
-      }
-
-      if (!fallback && bodyTemplate && bodyTemplate.includes(`<<${varName}>>`)) {
-        const plainBody = plainBodyText
-        fallback = extractVariableWithAnchors(plainBody, bodyTemplate, varName)
-      }
-
-      if (fallback) {
-        console.log(`🔄 Fallback extracted - ${varName}: "${fallback.substring(0, 50)}..."`)
-        extracted[varName] = fallback
-      }
-    })
-
-    // Detect deletions: if previous value no longer appears anywhere, clear it explicitly
-    selectedTemplate.variables.forEach(varName => {
-      if (Object.prototype.hasOwnProperty.call(extracted, varName)) return
-      const previousValue = (variables[varName] ?? '').trim()
-      if (!previousValue) return
-
-      // Check both original and plain text versions for rich text compatibility
-      const stillInSubject = finalSubject?.includes(previousValue) || plainSubjectText?.includes(previousValue)
-      const stillInBody = finalBody?.includes(previousValue) || plainBodyText?.includes(previousValue)
-      const placeholderToken = `<<${varName}>>`
-      const placeholderPresent = plainSubjectText?.includes(placeholderToken) || plainBodyText?.includes(placeholderToken)
-
-      if (!stillInSubject && !stillInBody && !placeholderPresent) {
-        console.log(`🔄 Detected removal of ${varName}; clearing value`)
-        extracted[varName] = ''
-      }
-    })
 
     console.log('🔄 Final extracted values:', extracted)
     
@@ -2093,15 +2085,20 @@ function App() {
         }
       })
 
+      console.log('🔄 Template loaded, initializing variables:', initialVars)
+
       // Compute templates for current language
       const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
       const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
 
       // A2: Auto-fill with default/example values immediately (displayed inside pills)
+      variablesRef.current = initialVars
       setVariables(initialVars)
       setFinalSubject(subjectTemplate)
       setFinalBody(bodyTemplate)
       manualEditRef.current = { subject: false, body: false }
+      
+      console.log('🔄 Variables state and ref updated with initial values')
     } else {
       // No template selected - clear editors
       setVariables({})
@@ -2669,7 +2666,7 @@ function App() {
                   aria-pressed={favoritesOnly}
                   aria-live="polite"
                 >
-                  <span className={`text-base transition-all duration-150 ${favoritesOnly ? 'text-[#aca868] scale-110' : 'text-gray-300 scale-100'}`}>★</span>
+                  <span className={`text-xl transition-all duration-150 ${favoritesOnly ? 'text-[#8a8535] scale-110' : 'text-gray-200 scale-100'}`}>★</span>
                   {favoritesOnly ? `${t.favorites} (${favorites.length || 0})` : t.favorites}
                   <span style={{position:'absolute',left:'-9999px',height:0,width:0,overflow:'hidden'}} aria-live="polite">{favLiveMsg}</span>
                 </button>
@@ -2808,7 +2805,7 @@ function App() {
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }}
-                              className={`ml-3 text-base ${isFav(template.id) ? 'text-[#aca868]' : 'text-gray-300 hover:text-[#aca868]'}`}
+                              className={`ml-3 text-xl ${isFav(template.id) ? 'text-[#8a8535]' : 'text-gray-200 hover:text-[#8a8535]'}`}
                               title={isFav(template.id) ? 'Unfavorite' : 'Favorite'}
                               aria-label="Toggle favorite"
                             >★</button>
@@ -2923,7 +2920,7 @@ function App() {
                             {badgeLabel}
                           </Badge>
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }} className={`ml-3 text-base ${isFav(template.id) ? 'text-[#aca868]' : 'text-gray-300 hover:text-[#aca868]'}`} title={isFav(template.id) ? 'Unfavorite' : 'Favorite'} aria-label="Toggle favorite">★</button>
+                        <button onClick={(e) => { e.stopPropagation(); toggleFav(template.id) }} className={`ml-3 text-xl ${isFav(template.id) ? 'text-[#8a8535]' : 'text-gray-200 hover:text-[#8a8535]'}`} title={isFav(template.id) ? 'Unfavorite' : 'Favorite'} aria-label="Toggle favorite">★</button>
                       </div>
                     </div>
                   )

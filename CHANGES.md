@@ -1,5 +1,21 @@
 # Changes Made to Email Assistant v8
 
+## 2025-11-04 – Help Centre expansion, cleanup, and favicon refresh
+
+### Help Centre improvements
+- Added new bilingual sections: Variables & pills, Popout, Copying & Outlook, Favorites, Shortcuts, and Privacy
+- Introduced a compact table of contents and a search filter that narrows results across sections, FAQ, and troubleshooting
+- Removed the “Ressources utiles / Helpful resources” links and now hide the entire block automatically when no links are present
+- Updated example email addresses to use FR: `prenom.nom@moncourriel.com` and EN: `firstname.lastname@myemail.com`
+- Pruned troubleshooting by removing “Impossible de charger les modèles” (FR) / “Templates refuse to load” (EN)
+- Simplified offline FAQ answers by removing the “export JSON” sentence in both FR and EN
+- Removed the small "Email Assistant" title line from the Help window header to reduce visual clutter
+
+### Favicon
+- Refreshed the favicon to a navy square with a centered lowercase “e” in white for improved readability and consistency
+
+---
+
 ## 2025-11-02 – ECHO branding refinement and banner layout optimization
 
 ### Banner Layout Adjustments
