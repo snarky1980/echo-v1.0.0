@@ -2718,7 +2718,7 @@ function App() {
                 )}
               </div>
               {/* Template language switcher - match CardHeader style */}
-              <div className="w-full mt-3 px-4 flex items-center justify-between gap-0.5" style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48, borderRadius: '14px' }}>
+              <div className="w-full mt-3 px-4 flex items-center justify-between gap-0.5" style={{ background: 'var(--primary)', paddingTop: 10, paddingBottom: 10, minHeight: 48 }}>
                 <div className="text-base font-bold text-white inline-flex items-center gap-2 leading-none whitespace-nowrap">
                   <Languages className="h-5 w-5 text-white" />
                   <span className="truncate mr-[5px]">{t.templateLanguage}</span>
