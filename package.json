@@ -1,13 +1,13 @@
 {
-  "name": "email-assistant-v8-",
+  "name": "echo-email-assistant",
   "private": false,
-  "version": "8.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Modern React app for professional email generation with AI assistance",
-  "homepage": "https://snarky1980.github.io/email-assistant-v8-blue-highlights/",
+  "description": "ECHO Email Template Assistant - Professional email template management with rich text editing, AI assistance, and variable management",
+  "homepage": "https://snarky1980.github.io/echo-v1.0.0/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/snarky1980/email-assistant-v8-blue-highlights.git"
+    "url": "https://github.com/snarky1980/echo-v1.0.0.git"
   },
   "scripts": {
     "dev": "vite",
