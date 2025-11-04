@@ -1,163 +1,287 @@
-# Email Assistant v8 (imported from v6)
+# ECHO Email Template Assistant v1.0.0
 
-[![Deploy to GitHub Pages](https://github.com/snarky1980/email-assistant-v8-fixed/actions/workflows/deploy.yml/badge.svg)](https://github.com/snarky1980/email-assistant-v8-fixed/actions/workflows/deploy.yml)
+> **Professional email template management with rich text editing, AI assistance, and variable management**
 
-Live demo: https://snarky1980.github.io/email-assistant-v8-fixed/
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://snarky1980.github.io/echo-v1.0.0/)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/snarky1980/echo-v1.0.0)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-This repository starts from the email-assistant v6 codebase and is ready for you to continue work toward v8.
+---
 
-## ⚠️ UI FREEZE - DO NOT MODIFY
+## ✨ Features
 
-**CRITICAL**: The current UI design (mint/sage gradients with pills pattern) is the CANONICAL design and must NOT be changed.
+### 📝 Rich Text Editor
+- **Full formatting toolbar**: Bold, italic, underline, strikethrough
+- **6 highlight colors**: Yellow, green, pink, orange, red, purple
+- **8 text colors**: Professional color palette
+- **Font selection**: 8 fonts with visual preview dropdown
+- **Font sizing**: 4 sizes (14px-20px) with size preview
+- **Alignment tools**: Left, center, right, justify
+- **Lists**: Bulleted and numbered lists
 
-- **Canonical commit**: `d208852` - "UX: variables popup movable/resizable + Outlook compose button (mailto) + admin filters"
-- **Protected elements**:
-  - Main banner with mint/sage/teal gradients
-  - Pills pattern design for language and category selection
-  - Color scheme: emerald, teal, sage, mint (NOT blue/indigo)
-  - Visual banner layout with images
-  - Resizable Variables popup
-  - "Ouvrir dans Outlook" / "Open in Outlook" button
+### 🎨 Visual Enhancements (v1.0.0)
+- **Custom Font Selector**: See each font in its actual typeface before selecting
+- **Custom Size Selector**: Preview font sizes visually (Small, Normal, Large, X-Large)
+- **Toast Notifications**: Non-intrusive notifications for exports and actions
+- **Modern UI**: Smooth animations, hover effects, and responsive design
 
-**Before making ANY UI changes**:
-1. Create a feature branch
-2. Test locally first
-3. Get approval before merging to main
-4. Never directly edit color classes without documenting the reason
+### 📤 Comprehensive Export Options
+All exports preserve rich text formatting (highlights, colors, fonts, etc.):
 
-If you need to revert to the canonical UI: `git reset --hard d208852`
+- **📄 PDF Export**: Full formatting with color preservation
+- **📗 Open in Word**: HTML-based .doc with all formatting
+- **📘 Download Word**: MHTML format for offline editing
+- **🌐 HTML Export**: Complete standalone HTML file
+- **✉️ EML Export**: Multipart email (plain text + HTML)
+- **📋 Copy HTML**: Rich text to clipboard
+- **📝 Copy Text**: Plain text (no formatting)
 
-Two ways to run locally:
+### 🔧 Variable Management
+- **Dynamic placeholders**: Insert variables like `<<ClientName>>`, `<<ProjectName>>`
+- **Visual pills**: Variables appear as colored pills in the editor
+- **Live editing**: Click pills to edit values in real-time
+- **Popout editor**: Manage all variables in separate window
+- **Format with text**: Apply formatting to variables and surrounding text simultaneously
+- **Auto-sync**: Changes sync across all instances
 
-- Static server (simple, no build step): serves the current folder and the JSON data file.
-- Vite dev server (HMR): for active React development in `src/`.
+### 📚 Template Library
+- **Bilingual templates**: French and English versions
+- **Category organization**: Group templates by type
+- **Search & filter**: Find templates quickly with fuzzy search
+- **Favorites**: Star important templates for quick access
+- **Import/Export**: CSV and JSON formats supported
 
-## Quick start: static server
+### 🤖 AI Assistance (Optional)
+- **AI-powered suggestions**: Generate email content with OpenAI
+- **Template completion**: Auto-generate bilingual templates
+- **Variable generation**: Create complete variable libraries
+- **CSV processing**: Use AI to fill/translate CSV files
 
-Serve the project root with any static server. Examples (Linux/macOS):
+### 🔒 Privacy & Security
+- **100% client-side**: All data stored in browser localStorage
+- **No server required**: Works completely offline
+- **OpenAI API**: Optional, user provides their own key
+- **Export your data**: Full JSON export anytime
+
+---
+
+## 🚀 Quick Start
+
+### Live Demo
+Visit **[https://snarky1980.github.io/echo-v1.0.0/](https://snarky1980.github.io/echo-v1.0.0/)** to use the app immediately!
+
+### Local Development
 
 ```bash
-# from the project root
-npx http-server -p 5173 .
-# then open in your browser
-# http://localhost:5173/
-```
+# Clone the repository
+git clone https://github.com/snarky1980/echo-v1.0.0.git
+cd echo-v1.0.0
 
-The app will load the pill UI and fetch `public/complete_email_templates.json` (served at `/complete_email_templates.json`).
-
-One-command option using the provided script:
-
-```bash
-npm run serve:static
-```
-
-## React dev workflow (Vite)
-
-```bash
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
-# open http://localhost:5173/
-```
 
-This runs the Vite dev server with HMR using `index.html` and the React entry in `src/main.jsx`.
-
-### One-command local dev (avoid wrong folder)
-
-If you also have an older folder like `~/email-assistant-v8-`, make sure you always run from the fixed repo `~/email-assistant-v8-fixed`.
-
-Two easy options:
-
-1) Using npm --prefix from anywhere
-
-```bash
-npm --prefix "$HOME/email-assistant-v8-fixed" run dev
-```
-
-2) Add a zsh alias (put this in ~/.zshrc)
-
-```bash
-alias eav8='cd "$HOME/email-assistant-v8-fixed" && npm run dev'
-```
-
-Then start dev with:
-
-```bash
-eav8
-```
-
-### Port conflicts and auto-retry
-
-The dev server binds to port 5173 with `strictPort: true`.
-
-- Free the port and start:
-
-```bash
-npm run dev:clean
-```
-
-- Auto-retry on alternate ports 5174/5175 if 5173 is busy:
-
-```bash
-npm run dev:retry
-```
-
-## Production preview (optional)
-
-```bash
+# Build for production
 npm run build
-npm run preview -- --port 5175
-# open http://localhost:5175/
+
+# Preview production build
+npm run preview
 ```
 
-Notes:
-- If `index.html` uses classic scripts, Vite won’t bundle them, but the React SPA still builds fine. The static server path remains supported.
+---
 
-## Admin Console
+## 📖 Documentation
 
-A static Admin Console helps edit templates/variables without coding.
+### User Guides
+- **[Admin Console Guide](docs/ADMIN-CSV-IMPORT-GUIDE.md)**: Import/export templates and variables
+- **[AI Usage Guide](docs/AI-USAGE-QUICK-REFERENCE.md)**: Use AI to generate content
+- **[Help Center](help.html)**: In-app help and troubleshooting
 
-- Open: http://localhost:5173/admin.html (same static server)
-- Import: Load any existing `complete_email_templates.json` (auto-loads from project root if present)
-- Edit: templates, variables, and metadata (FR/EN supported)
-- Export: downloads a validated `complete_email_templates.json`; replace the one in the repo and commit
+### Developer Resources
+- **[Developer Guide](docs/DEVELOPER-GUIDE.md)**: Architecture and development
+- **[Changelog](CHANGELOG_2025-11-04.md)**: Version history and updates
+- **[Implementation Report](IMPLEMENTATION_REPORT.md)**: Technical details
 
-Validation warns about duplicate IDs, unknown categories, missing variables, and unlisted placeholders `<<Var>>`. Warnings don’t block export.
+---
 
-Tip: Keep the main app open at `/` while editing in `/admin.html` to preview changes after updating the JSON file and reloading.
-# Deployment fix
+## 💡 Usage Examples
 
-- Les déploiements sont maintenant gérés automatiquement par le workflow GitHub Actions `Deploy to GitHub Pages`. Évitez de lancer `npm run deploy` tant que le workflow est en cours, sinon GitHub rejette le second déploiement comme déjà en cours.
+### Creating an Email Template
 
-## In-app help centre (FR/EN)
+1. **Select a template** from the library or start blank
+2. **Insert variables** using the `+ Variable` button
+3. **Format the content** with the rich text toolbar
+4. **Preview** in both French and English
+5. **Export** to PDF, Word, Email, or HTML
 
-- Un bouton **Aide / Help** apparaît désormais dans la bannière principale à droite du sélecteur de langue.
-- Le bouton est compact afin de ne pas augmenter la hauteur de la bannière. Il remplace l’ancienne version en pied de page.
-- Le centre d'aide s'ouvre dans une fenêtre superposée et reste au-dessus des autres panneaux (y compris le popup Variables) jusqu'à ce que vous le fermiez.
-- Le contenu est entièrement bilingue et couvre :
-  - un parcours de prise en main rapide ;
-  - une FAQ axée sur la synchronisation des variables et le bouton Outlook ;
-  - une liste de dépannage pas-à-pas pour les problèmes courants ;
-  - des liens directs vers la documentation du dépôt (README, notes d'implantation, guide développeur, aide hors ligne).
-- Le bouton « Nous écrire / Contact support » ouvre votre agent de messagerie par défaut avec un sujet prérempli.
+### Managing Variables
 
-### Modifier l'adresse de support
+1. **Open Variables Editor** (popout window)
+2. **Add/edit** variable names and values
+3. **Sync** automatically with email content
+4. **Format variables** along with surrounding text
+5. **Save** - changes persist in browser storage
 
-- Par défaut, l’adresse utilisée est `translationbureau@tpsgc-pwgsc.gc.ca`.
-- Vous pouvez la remplacer sans toucher au code en définissant la variable d’environnement **`VITE_SUPPORT_EMAIL`** avant de lancer le build Vite :
+### Importing Templates
 
-```bash
-VITE_SUPPORT_EMAIL="mon-equipe@exemple.gc.ca" npm run dev
+1. **Open Admin Console** (admin.html)
+2. **Go to Templates tab**
+3. **Click "Import CSV"**
+4. **Select your CSV file** (must match schema)
+5. **Review** warnings and import
+
+---
+
+## 🏗️ Tech Stack
+
+- **React 18.3**: Modern component-based UI
+- **Vite 6.3**: Lightning-fast build tool
+- **Tailwind CSS 4.1**: Utility-first styling
+- **Lexical**: Robust rich text editor
+- **Radix UI**: Accessible component primitives
+- **Lucide React**: Beautiful icons
+- **Fuse.js**: Fuzzy search
+
+---
+
+## 🎯 Key Features Breakdown
+
+### Toast Notification System
+```javascript
+// Success notification
+toast.success('Template saved!', 5000)
+
+// Error notification  
+toast.error('Failed to export', 3000)
+
+// Info notification
+toast.info('Download from your Downloads folder', 5000)
 ```
 
-- Lors du déploiement (CI ou GitHub Pages), ajoutez la même variable dans l’environnement où la commande `npm run build` est exécutée.
+- Appears in bottom-right corner
+- Auto-dismisses after 4-5 seconds
+- Three types: success ✅, error ❌, info ℹ️
+- Non-blocking and stackable
 
-## Support rapide
+### Custom Font Selectors
 
-- Les sections **FAQ**, **Dépannage**, et **Ressources** du centre d’aide compilent les réponses issues de `TROUBLESHOOTING.md`, `IMPLEMENTATION_CHANGES.md`, et `docs/DEVELOPER-GUIDE.md`.
-- Le bouton **Réinitialiser** rappelé dans la FAQ restaure les exemples du modèle, y compris les valeurs du popup Variables.
-- Le centre d’aide documente aussi le nouvel état d’**épingle** du popup, la synchronisation immédiate à l’ouverture et les gestes-clavier utiles.
+**Font Family Selector**
+- Each option displays in its actual font
+- 8 professional fonts available
+- Click-outside-to-close behavior
+- Smooth animations
 
-## Saisie rapide dans l’objet (FR) / Fast subject editing (EN)
+**Font Size Selector**
+- Visual size preview (14px, 16px, 18px, 20px)
+- Each option shown at actual size
+- Consistent design with font family selector
 
-- Cliquer sur une pastille (variable) dans l’objet sélectionne désormais tout son contenu, comme dans le corps du message. Cela facilite le remplacement immédiat.
-- Le comportement s’applique aux pastilles vides et remplies; l’éditeur maintient la mise au point visuelle sur la pastille active.
+### Rich Text Export Formats
+
+All exports use `makeOutlookFriendly()` function to:
+- Convert computed styles to inline styles
+- Preserve highlights and background colors
+- Maintain fonts, sizes, and colors
+- Support email clients and Word
+
+**EML Format** (multipart/alternative):
+```
+Content-Type: multipart/alternative
+├── text/plain (fallback)
+└── text/html (rich formatting)
+```
+
+---
+
+## 📦 File Structure
+
+```
+echo-v1.0.0/
+├── src/
+│   ├── App.jsx                    # Main application
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── toast.jsx          # Toast notification system
+│   │   │   ├── font-selector.jsx  # Custom font dropdown
+│   │   │   └── font-size-selector.jsx # Custom size dropdown
+│   │   ├── HelpCenter.jsx
+│   │   ├── HighlightingEditor.jsx
+│   │   └── RichTextToolbar.jsx
+│   └── utils/
+│       ├── storage.js             # localStorage management
+│       └── openai.js              # AI integration (optional)
+├── assets/                        # Static assets
+├── docs/                          # Documentation
+├── imports/                       # Example CSV files
+├── scripts/                       # Utility scripts
+├── admin.html                     # Admin console
+├── help.html                      # Help center
+└── index.html                     # Main entry point
+```
+
+---
+
+## 🔄 Version History
+
+### v1.0.0 (November 4, 2025)
+- ✨ Custom font selectors with visual previews
+- ✨ Custom font size selector with size preview
+- ✨ Toast notification system
+- ✨ Enhanced EML export (multipart/alternative with HTML)
+- ✨ Enhanced Outlook integration (.eml files with HTML)
+- ✨ Variable pill formatting when selected with text
+- 🐛 Fixed corrupted emoji icons in export menu
+- 📝 Comprehensive documentation and changelog
+
+### v8.0.0 (Previous Version)
+- Complete rich text editor
+- Template library with bilingual support
+- Variable management system
+- Multiple export formats
+- Admin console for CSV imports
+- AI assistance integration
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🆘 Support
+
+- **Issues**: [GitHub Issues](https://github.com/snarky1980/echo-v1.0.0/issues)
+- **Documentation**: Check the `/docs` folder
+- **Help Center**: Available in-app at `help.html`
+
+---
+
+## 🙏 Acknowledgments
+
+Built with modern web technologies and best practices:
+- React team for the amazing framework
+- Vite for blazing-fast builds
+- Tailwind CSS for beautiful styling
+- Lexical for robust text editing
+- Open source community for inspiration
+
+---
+
+**Made with ❤️ for professional email communication**
+
+**Live Demo**: [https://snarky1980.github.io/echo-v1.0.0/](https://snarky1980.github.io/echo-v1.0.0/)
