@@ -91,6 +91,14 @@ I need you to help me generate/complete a CSV file for email template variables.
 - Do NOT modify the [COLUMN_NAME] column
 - Keep existing values in [COLUMN_NAME] unchanged
 - Only fill in empty/missing cells in [COLUMN_NAME]
+- Use values from [COLUMN_NAME] as context/reference when generating content for other columns
+
+[OPTIONAL - DELETE IF NOT APPLICABLE]
+**Use Existing Data as Context:**
+- Review the existing data in [COLUMN_NAME] before generating new content
+- Base your generated content on the style, tone, and patterns found in [COLUMN_NAME]
+- Ensure consistency with the existing [COLUMN_NAME] values
+- Match the level of detail and formality present in [COLUMN_NAME]
 
 [OPTIONAL - DELETE IF NOT APPLICABLE]
 **Generation Requirements:**
@@ -233,6 +241,15 @@ I need you to help me generate/complete a CSV file for bilingual email templates
 - Do NOT modify: [COLUMN_NAMES]
 - Keep existing values in: [COLUMN_NAMES]
 - Only fill in empty/missing cells
+- Use values from [COLUMN_NAMES] as context/reference when generating new content
+
+[OPTIONAL - DELETE IF NOT APPLICABLE]
+**Use Existing Data as Context:**
+- Review the existing data in [COLUMN_NAME] before generating new content
+- Base your generated content on the style, tone, and patterns found in [COLUMN_NAME]
+- Ensure consistency with the existing [COLUMN_NAME] values
+- Match the level of detail and formality present in [COLUMN_NAME]
+- Example: If generating body_en, use body_fr as the source to translate/adapt
 
 [OPTIONAL - DELETE IF NOT APPLICABLE]
 **Generation Requirements:**
@@ -323,9 +340,48 @@ Please generate the CSV now.
 - Only fill in: title_en, description_en, subject_en, body_en
 - Ensure English versions use the same variable placeholders as French versions
 
+**Use Existing Data as Context:**
+- Review the French content (title_fr, description_fr, subject_fr, body_fr) carefully
+- Base your English translations on the exact meaning and tone of the French versions
+- Maintain the same level of formality (vouvoiement → professional English)
+- Preserve the same structure and paragraph breaks in body_en as in body_fr
+- Match the conciseness of title_fr in title_en
+
 ### MY CSV DATA:
 
-[Paste your partial CSV with only French content]
+[Paste your partial CSV with only French content OR attach file]
+
+Please generate the CSV now.
+```
+
+### Example 3b: Generate Content Based on Existing Patterns
+
+**Customized Prompt:**
+```
+[Use Templates prompt template above]
+
+**Columns/Data to Preserve:**
+- Do NOT modify: id, category, variables
+- Keep these columns exactly as provided
+
+**Use Existing Data as Context:**
+- I have provided 3 existing complete templates as examples (rows 1-3)
+- Study the style, tone, and structure of these example templates carefully
+- Use them as a model for generating the new templates (rows 4-10)
+- Match the greeting style (e.g., "Bonjour <<ClientName>>," format)
+- Follow the same paragraph structure and length
+- Maintain consistent formality level across all templates
+- Use similar closing phrases (e.g., "N'hésitez pas à..." pattern)
+
+**Generation Requirements:**
+- Generate 7 NEW templates (in addition to the 3 examples provided)
+- Use the same category structure as the examples
+- Follow the template naming pattern shown in the id column
+
+### MY CSV DATA:
+
+See attached file: templates-with-examples.csv
+(First 3 rows are complete examples, rows 4-10 need content generated)
 
 Please generate the CSV now.
 ```
@@ -554,6 +610,21 @@ Always generate/complete variables CSV before templates:
 - Gives AI clear list of available variables
 - Ensures consistent variable naming
 - Reduces errors in template generation
+
+### Tip 6: Use Existing Content as Patterns
+
+Provide 2-3 complete examples in your CSV for AI to follow:
+- AI can learn your preferred style and tone
+- Ensures consistency across all generated content
+- Shows desired length and structure
+- Demonstrates greeting/closing patterns
+
+**Example approach:**
+1. Manually create 2-3 high-quality templates
+2. Include them in your CSV (rows 1-3)
+3. Ask AI to generate 10 more templates (rows 4-13)
+4. Specify: "Use rows 1-3 as style/tone examples"
+5. Result: All 10 new templates match your quality standard
 
 ---
 
