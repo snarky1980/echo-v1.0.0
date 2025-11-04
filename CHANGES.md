@@ -1,5 +1,33 @@
 # Changes Made to Email Assistant v8
 
+## 2025-11-04 – CSV import for variables, UI polish, and deployment fixes
+
+### Variables CSV Import Feature
+- **New import capability**: Added "Importer variables (CSV)" button in the Variables tab of admin console
+- **CSV parser**: Supports columns `name`, `description_fr`, `description_en`, `format`, `example`
+- **Smart merge**: Creates new variables or updates existing ones with imported metadata
+- **Example files**: Created `imports/variables-library.csv` (12 sample variables) and `imports/template-example.csv` (4 sample templates)
+- **Documentation**: Added comprehensive `imports/README.md` with import guide, CSV format specs, and troubleshooting tips
+- **Flexible format**: Supports both comma and semicolon separators, recognizes alternative column names
+
+### UI Polish
+- **Template language selector**: Added subtle rounded corners (4px) to the "Langue du modèle" bar for refined appearance
+- **Favorites star icon**: Changed unfavorited star color from light gray to dark blue (#2c3d50) to match app theme, with smooth color transition on hover
+- **Improved visibility**: Dark blue star is more visible and professional while maintaining the gold color when favorited
+
+### Bug Fixes & Deployment
+- **ECHO logo 404 fix**: Properly imported `echo-logo.svg` asset for production builds (was hardcoded path causing 404)
+- **Safari compatibility**: Removed `backdrop-filter` from help.html (unsupported in Safari 9+), replaced with solid background
+- **CSS cleanup**: Moved inline styles in help.html to external CSS classes to eliminate linting warnings
+
+### Import Workflow
+The new two-file CSV import workflow:
+1. Import `variables-library.csv` first (establishes all variable definitions with FR/EN metadata)
+2. Import `template-example.csv` second (templates reference existing variables)
+3. Export final JSON with complete bilingual data
+
+---
+
 ## 2025-11-04 – Help Centre expansion, cleanup, and favicon refresh
 
 ### Help Centre improvements
