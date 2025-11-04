@@ -6,6 +6,7 @@ import Fuse from 'fuse.js'
 import { loadState, saveState } from './utils/storage.js';
 // Deploy marker: 2025-10-16T07:31Z
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight, LifeBuoy } from 'lucide-react'
+import echoLogo from './assets/echo-logo.svg'
 import { Button } from './components/ui/button.jsx'
 import { Input } from './components/ui/input.jsx'
 import SimplePillEditor from './components/SimplePillEditor.jsx';
@@ -2513,7 +2514,7 @@ function App() {
           <div className="flex items-center space-x-6" style={{ marginLeft: '3in' }}>
                 {/* ECHO logo SVG - 225% larger (540×270), moved up ~0.65 inch */}
                 <div className="relative" style={{ width: '270px', height: '135px', marginTop: '-0.185in', marginBottom: '2px', marginLeft: '-100px' }}>
-                  <img src="/src/assets/echo-logo.svg" alt="ECHO" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <img src={echoLogo} alt="ECHO" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
 
             {/* Subtitle only */}
