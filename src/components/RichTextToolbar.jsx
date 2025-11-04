@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Bold, Italic, Underline, Strikethrough, Type, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Highlighter, Palette, Link as LinkIcon } from 'lucide-react';
 import { Button } from './ui/button.jsx';
+import FontSelector from './ui/font-selector.jsx';
+import FontSizeSelector from './ui/font-size-selector.jsx';
 
 const FONT_SIZE_OPTIONS = [
   { label: 'Small', value: '14px' },
@@ -192,6 +194,39 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
         }
       }
 
+      // For non-block commands with selection, check if pills are included and format them too
+      const isFormattingCommand = !isBlockCommand && savedRange && !savedRange.collapsed;
+      const pillsToFormat = [];
+      
+      if (isFormattingCommand) {
+        // Get the common ancestor container
+        const container = savedRange.commonAncestorContainer;
+        const parentElement = container.nodeType === Node.ELEMENT_NODE ? container : container.parentElement;
+        
+        if (parentElement && parentElement.querySelectorAll) {
+          // Find all pills in the parent
+          const allPills = parentElement.querySelectorAll('.var-pill');
+          
+          // Check which pills intersect with the selection range
+          allPills.forEach(pill => {
+            try {
+              if (savedRange.intersectsNode(pill)) {
+                pillsToFormat.push(pill);
+              }
+            } catch (e) {
+              // intersectsNode might not be supported in all browsers
+              // Fallback: check if pill is between start and end
+              const range = document.createRange();
+              range.selectNode(pill);
+              if (savedRange.compareBoundaryPoints(Range.START_TO_END, range) > 0 &&
+                  savedRange.compareBoundaryPoints(Range.END_TO_START, range) < 0) {
+                pillsToFormat.push(pill);
+              }
+            }
+          });
+        }
+      }
+
       // Restore selection before executing command
       if (savedRange) {
         const sel = window.getSelection();
@@ -214,6 +249,30 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
 
       // Execute command immediately while we have selection
       document.execCommand(command, false, value);
+      
+      // Also apply formatting to pills that were in the selection
+      if (pillsToFormat.length > 0) {
+        pillsToFormat.forEach(pill => {
+          // Select the pill's content
+          const pillRange = document.createRange();
+          pillRange.selectNodeContents(pill);
+          const pillSelection = window.getSelection();
+          pillSelection.removeAllRanges();
+          pillSelection.addRange(pillRange);
+          
+          // Apply the command to the pill
+          document.execCommand(command, false, value);
+        });
+        
+        // Restore original selection
+        if (savedRange) {
+          const sel = window.getSelection();
+          if (sel) {
+            sel.removeAllRanges();
+            sel.addRange(savedRange);
+          }
+        }
+      }
       
       // Reset styleWithCSS
       if (isColorCommand) {
@@ -550,35 +609,22 @@ const RichTextToolbar = ({ onCommand, className = '', disabled = false }) => {
       {/* Font Size */}
       <div className="flex items-center gap-2">
         <Type className="h-5 w-5 text-slate-600" />
-        <select
+        <FontSizeSelector
           value={fontSize}
-          onChange={(e) => handleFontSizeChange(e.target.value)}
-          className="text-sm border border-slate-300 rounded px-3 py-1.5 bg-white cursor-pointer hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          title="Font Size"
-        >
-          {FONT_SIZE_OPTIONS.map(size => (
-            <option key={size.value} value={size.value}>
-              {size.label}
-            </option>
-          ))}
-        </select>
+          onChange={handleFontSizeChange}
+          sizes={FONT_SIZE_OPTIONS}
+          disabled={disabled}
+        />
       </div>
 
       {/* Font Family */}
       <div className="flex items-center gap-2">
-        <select
+        <FontSelector
           value={fontFamily}
-          onChange={(e) => handleFontFamilyChange(e.target.value)}
-          className="text-sm border border-slate-300 rounded px-3 py-1.5 bg-white cursor-pointer hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
-          title="Font Family"
-          style={{ fontFamily: fontFamily }}
-        >
-          {FONT_FAMILIES.map(font => (
-            <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
-              {font.name}
-            </option>
-          ))}
-        </select>
+          onChange={handleFontFamilyChange}
+          fonts={FONT_FAMILIES}
+          disabled={disabled}
+        />
       </div>
 
       {/* Separator removed by request */}

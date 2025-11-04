@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card.j
 import { Badge } from './components/ui/badge.jsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select.jsx'
 import { ScrollArea } from './components/ui/scroll-area.jsx'
+import { useToast } from './components/ui/toast.jsx'
 import './App.css'
 
 const CATEGORY_BADGE_STYLES = {
@@ -667,6 +668,9 @@ const interfaceTexts = {
 }
 
 function App() {
+  // Toast notifications
+  const toast = useToast()
+  
   // Inject custom styles for variable highlighting
   useEffect(() => {
     const styleElement = document.createElement('style')
@@ -1978,26 +1982,36 @@ function App() {
 
     // Convert styling to email-client-friendly format
     const makeOutlookFriendly = (element) => {
-      // Process all elements with inline styles
-      element.querySelectorAll('[style]').forEach((el) => {
+      // Process ALL elements (not just those with style attribute)
+      // because computed styles may come from CSS classes or parent elements
+      element.querySelectorAll('*').forEach((el) => {
+        // Skip if it's a structural element we don't want to style
+        if (['BR', 'HR'].includes(el.tagName)) return
+        
         const computedStyle = window.getComputedStyle(el)
         let newStyle = ''
         
         // Font size
         const fontSize = computedStyle.fontSize
-        if (fontSize && fontSize !== '14px') {
+        if (fontSize && fontSize !== '16px' && fontSize !== '14px') {
           newStyle += `font-size: ${fontSize}; `
         }
         
         // Text color
         const color = computedStyle.color
-        if (color && color !== 'rgb(0, 0, 0)' && color !== 'rgba(0, 0, 0, 1)') {
+        const colorRgb = color.replace(/\s/g, '')
+        if (color && colorRgb !== 'rgb(0,0,0)' && colorRgb !== 'rgba(0,0,0,1)') {
           newStyle += `color: ${color}; `
         }
         
-        // Background color (highlighting)
+        // Background color (highlighting) - CRITICAL for highlights
         const bgColor = computedStyle.backgroundColor
-        if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent' && bgColor !== 'rgb(255, 255, 255)') {
+        const bgColorRgb = bgColor.replace(/\s/g, '')
+        if (bgColor && 
+            bgColorRgb !== 'rgba(0,0,0,0)' && 
+            bgColorRgb !== 'transparent' && 
+            bgColorRgb !== 'rgb(255,255,255)' &&
+            bgColorRgb !== 'rgba(255,255,255,1)') {
           newStyle += `background-color: ${bgColor}; `
         }
         
@@ -2015,24 +2029,30 @@ function App() {
         
         // Text decoration (underline, strikethrough)
         const textDecoration = computedStyle.textDecoration
-        if (textDecoration && textDecoration !== 'none') {
+        if (textDecoration && !textDecoration.includes('none')) {
           newStyle += `text-decoration: ${textDecoration}; `
+        }
+        
+        // Font family
+        const fontFamily = computedStyle.fontFamily
+        if (fontFamily && fontFamily !== 'Arial' && !fontFamily.startsWith('-apple-system')) {
+          newStyle += `font-family: ${fontFamily}; `
         }
         
         if (newStyle) {
           el.setAttribute('style', newStyle.trim())
-        } else {
-          el.removeAttribute('style')
         }
       })
 
       // Ensure lists have proper inline styles
       element.querySelectorAll('ul, ol').forEach((list) => {
-        list.setAttribute('style', 'margin: 0; padding-left: 40px;')
+        const currentStyle = list.getAttribute('style') || ''
+        list.setAttribute('style', currentStyle + ' margin: 0; padding-left: 40px;')
       })
 
       element.querySelectorAll('li').forEach((li) => {
-        li.setAttribute('style', 'margin: 0; padding: 0;')
+        const currentStyle = li.getAttribute('style') || ''
+        li.setAttribute('style', currentStyle + ' margin: 0; padding: 0;')
       })
     }
 
@@ -2373,35 +2393,88 @@ ${bodyResult.html}
   const exportAs = async (mode) => {
     const subject = finalSubject || ''
     const bodyText = finalBody || ''
-    const bodyHtml = `<html><body><pre style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; white-space: pre-wrap; line-height: 1.6">${
-      (bodyText || '').replace(/[&<>]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))
-    }</pre></body></html>`
+    
+    // Get rich HTML from editor (same as copy function)
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables)
+    const bodyHtmlSource = bodyEditorRef.current?.getHtml?.() ?? finalBody
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText)
 
     if (mode === 'eml') {
-      // Build a minimal .eml content
+      // Build a proper multipart .eml with both plain text and HTML (rich formatting)
+      const boundary = '----=_NextPart_000_0000_01DA1234.56789ABC'
+      const cleanBodyHtml = bodyResult.html || ''
+      
       const eml = [
-        `Subject: ${subject}`,
+        `Subject: ${resolvedSubject}`,
         'MIME-Version: 1.0',
-        'Content-Type: text/plain; charset=UTF-8',
+        `Content-Type: multipart/alternative; boundary="${boundary}"`,
         '',
-        bodyText
+        `--${boundary}`,
+        'Content-Type: text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding: quoted-printable',
+        '',
+        bodyResult.text || '',
+        '',
+        `--${boundary}`,
+        'Content-Type: text/html; charset=UTF-8',
+        'Content-Transfer-Encoding: quoted-printable',
+        '',
+        `<!DOCTYPE html>`,
+        `<html>`,
+        `<head>`,
+        `<meta charset="UTF-8">`,
+        `<meta name="viewport" content="width=device-width, initial-scale=1.0">`,
+        `</head>`,
+        `<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">`,
+        cleanBodyHtml,
+        `</body>`,
+        `</html>`,
+        '',
+        `--${boundary}--`
       ].join('\r\n')
+      
       const blob = new Blob([eml], { type: 'message/rfc822' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'email.eml'
+      a.download = `${(resolvedSubject || 'email').replace(/[^a-z0-9]/gi, '_')}.eml`
       a.click()
       URL.revokeObjectURL(url)
       return
     }
 
     if (mode === 'html') {
-      const blob = new Blob([bodyHtml], { type: 'text/html;charset=utf-8' })
+      const htmlDoc = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${resolvedSubject || 'Document'}</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 2em auto;
+  padding: 2em;
+  line-height: 1.6;
+}
+h1 {
+  color: #2c3d50;
+  border-bottom: 2px solid #2c3d50;
+  padding-bottom: 0.5em;
+}
+</style>
+</head>
+<body>
+<h1>${resolvedSubject || 'Untitled'}</h1>
+${bodyResult.html}
+</body>
+</html>`
+      const blob = new Blob([htmlDoc], { type: 'text/html;charset=utf-8' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'email.html'
+      a.download = `${resolvedSubject || 'email'}.html`
       a.click()
       URL.revokeObjectURL(url)
       return
@@ -2411,18 +2484,274 @@ ${bodyResult.html}
       try {
         if (navigator.clipboard && navigator.clipboard.write) {
           const type = 'text/html'
-          const blob = new Blob([bodyHtml], { type })
+          const blob = new Blob([bodyResult.html], { type })
           const item = new ClipboardItem({ [type]: blob })
           await navigator.clipboard.write([item])
         } else {
           // Fallback: copy as plain text
-          await navigator.clipboard.writeText(bodyHtml)
+          await navigator.clipboard.writeText(bodyResult.html)
         }
         setCopySuccess(true)
         setTimeout(() => setCopySuccess(false), 1500)
       } catch (e) {
         console.error('Copy HTML failed', e)
         alert('Copy HTML failed. Please try again or use the HTML export option.')
+      }
+      return
+    }
+
+    if (mode === 'word') {
+      // Create a Word-compatible HTML document with rich formatting
+      // Get clean HTML with inline styles
+      const cleanBodyHtml = bodyResult.html || ''
+      
+      const wordHtml = `
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<title>${resolvedSubject || 'Document'}</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+body {
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-size: 11pt;
+  line-height: 1.5;
+  margin: 1in;
+}
+h1 {
+  font-size: 16pt;
+  font-weight: bold;
+  margin-bottom: 12pt;
+  color: #2c3d50;
+  border-bottom: 2px solid #2c3d50;
+  padding-bottom: 8pt;
+}
+p {
+  margin: 0 0 10pt 0;
+}
+/* Preserve all rich text formatting */
+strong, b { font-weight: bold !important; }
+em, i { font-style: italic !important; }
+u { text-decoration: underline !important; }
+s, strike { text-decoration: line-through !important; }
+ul, ol { margin: 10pt 0; padding-left: 40pt; }
+li { margin: 5pt 0; }
+/* Ensure inline styles are preserved */
+[style*="background-color"] { background-color: inherit !important; }
+[style*="color"] { color: inherit !important; }
+[style*="font-weight"] { font-weight: inherit !important; }
+[style*="font-style"] { font-style: inherit !important; }
+[style*="text-decoration"] { text-decoration: inherit !important; }
+[style*="font-size"] { font-size: inherit !important; }
+</style>
+</head>
+<body>
+<h1>${resolvedSubject || 'Untitled'}</h1>
+${cleanBodyHtml}
+</body>
+</html>`.trim()
+
+      const blob = new Blob([wordHtml], { type: 'application/msword' })
+      const url = URL.createObjectURL(blob)
+      const filename = `${(resolvedSubject || 'document').replace(/[^a-z0-9]/gi, '_')}.doc`
+      
+      // Create download link
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.target = '_blank'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      
+      // Show toast notification
+      setTimeout(() => {
+        if (templateLanguage === 'fr') {
+          toast.success(`📄 Fichier téléchargé: ${filename}\n\nOuvrez le fichier depuis vos Téléchargements pour l'ouvrir dans Word.`, 5000)
+        } else {
+          toast.success(`📄 File downloaded: ${filename}\n\nOpen the file from your Downloads folder to launch it in Word.`, 5000)
+        }
+        URL.revokeObjectURL(url)
+      }, 500)
+      return
+    }
+
+    if (mode === 'docx') {
+      // Create MHTML format (Web Archive) which Word opens reliably with full formatting
+      const cleanBodyHtml = bodyResult.html || ''
+      
+      const mhtmlDoc = `MIME-Version: 1.0
+Content-Type: multipart/related; boundary="----=_NextPart_000_0000"
+
+------=_NextPart_000_0000
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/document.html
+
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+<head>
+<meta charset='utf-8'>
+<title>${(resolvedSubject || 'Document').replace(/"/g, '&quot;')}</title>
+<style>
+body {
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-size: 11pt;
+  line-height: 1.5;
+  margin: 1in;
+}
+h1 {
+  font-size: 16pt;
+  font-weight: bold;
+  margin-bottom: 12pt;
+  color: #2c3d50;
+  border-bottom: 2px solid #2c3d50;
+  padding-bottom: 8pt;
+}
+p { margin: 0 0 10pt 0; }
+strong, b { font-weight: bold !important; }
+em, i { font-style: italic !important; }
+u { text-decoration: underline !important; }
+s, strike { text-decoration: line-through !important; }
+ul, ol { margin: 10pt 0; padding-left: 40pt; }
+li { margin: 5pt 0; }
+/* Ensure inline styles are preserved */
+[style*="background-color"] { background-color: inherit !important; }
+[style*="color"] { color: inherit !important; }
+[style*="font-weight"] { font-weight: inherit !important; }
+[style*="font-style"] { font-style: inherit !important; }
+[style*="text-decoration"] { text-decoration: inherit !important; }
+[style*="font-size"] { font-size: inherit !important; }
+</style>
+</head>
+<body>
+<h1>${resolvedSubject || 'Untitled'}</h1>
+${cleanBodyHtml}
+</body>
+</html>
+
+------=_NextPart_000_0000--`
+
+      const blob = new Blob([mhtmlDoc], { type: 'application/msword' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${(resolvedSubject || 'document').replace(/[^a-z0-9]/gi, '_')}.doc`
+      a.click()
+      URL.revokeObjectURL(url)
+      return
+    }
+
+    if (mode === 'pdf') {
+      // Create a print-friendly HTML and trigger browser print dialog
+      // Users can then save as PDF from the print dialog
+      const printWindow = window.open('', '_blank')
+      if (!printWindow) {
+        alert('Please allow pop-ups to export as PDF')
+        return
+      }
+
+      const cleanBodyHtml = bodyResult.html || ''
+
+      const printHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>${resolvedSubject || 'Document'}</title>
+<style>
+@media print {
+  @page {
+    margin: 1in;
+    size: letter;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
+body {
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  color: #000;
+  max-width: 8.5in;
+  margin: 0 auto;
+  padding: 1in;
+}
+h1 {
+  font-size: 18pt;
+  font-weight: bold;
+  margin-bottom: 16pt;
+  color: #2c3d50;
+  border-bottom: 2px solid #2c3d50;
+  padding-bottom: 8pt;
+}
+p {
+  margin: 0 0 12pt 0;
+}
+/* Preserve ALL rich text formatting including highlights */
+strong, b { font-weight: bold !important; }
+em, i { font-style: italic !important; }
+u { text-decoration: underline !important; }
+s, strike { text-decoration: line-through !important; }
+ul, ol { margin: 10pt 0; padding-left: 40pt; }
+li { margin: 5pt 0; }
+/* Critical: Ensure inline styles (colors, highlights) are preserved in print */
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+}
+/* Ensure all inline background colors print */
+[style*="background-color"],
+[style*="background"],
+span[style],
+mark[style] {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+</style>
+</head>
+<body>
+<h1>${resolvedSubject || 'Untitled Document'}</h1>
+${cleanBodyHtml}
+<script>
+  window.onload = function() {
+    window.print();
+    // Close window after printing (or canceling)
+    setTimeout(function() {
+      window.close();
+    }, 100);
+  };
+</script>
+</body>
+</html>`.trim()
+
+      printWindow.document.write(printHtml)
+      printWindow.document.close()
+      return
+    }
+
+    if (mode === 'copy-text') {
+      // Copy as plain text (strip all formatting)
+      try {
+        const plainText = `${resolvedSubject ? resolvedSubject + '\n\n' : ''}${bodyResult.text}`
+        await navigator.clipboard.writeText(plainText)
+        setCopySuccess(true)
+        setTimeout(() => setCopySuccess(false), 1500)
+      } catch (e) {
+        console.error('Copy text failed', e)
+        alert('Copy failed. Please try again.')
       }
       return
     }
@@ -2526,13 +2855,66 @@ ${bodyResult.html}
     }
     
     const subject = resolvedSubject || ''
-    const body = (bodyResult.text || '').replace(/\n/g, '\r\n')
-    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    
+    // Create a multipart .eml file with HTML to preserve rich formatting
+    // This will open in the default email client (Outlook, Mail, etc.) with full formatting
+    const boundary = '----=_NextPart_000_0000_01DA1234.56789ABC'
+    const cleanBodyHtml = bodyResult.html || ''
+    
+    const eml = [
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      '',
+      `--${boundary}`,
+      'Content-Type: text/plain; charset=UTF-8',
+      'Content-Transfer-Encoding: quoted-printable',
+      '',
+      bodyResult.text || '',
+      '',
+      `--${boundary}`,
+      'Content-Type: text/html; charset=UTF-8',
+      'Content-Transfer-Encoding: quoted-printable',
+      '',
+      `<!DOCTYPE html>`,
+      `<html>`,
+      `<head>`,
+      `<meta charset="UTF-8">`,
+      `<meta name="viewport" content="width=device-width, initial-scale=1.0">`,
+      `</head>`,
+      `<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">`,
+      cleanBodyHtml,
+      `</body>`,
+      `</html>`,
+      '',
+      `--${boundary}--`
+    ].join('\r\n')
     
     try {
-      // Try to open using window.location.href first (preferred method)
-      window.location.href = mailtoUrl
+      const blob = new Blob([eml], { type: 'message/rfc822' })
+      const url = URL.createObjectURL(blob)
+      const filename = `${(subject || 'email').replace(/[^a-z0-9]/gi, '_')}.eml`
       
+      // Create download link
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.target = '_blank'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      
+      // Show toast notification
+      setTimeout(() => {
+        if (templateLanguage === 'fr') {
+          toast.success(`✉️ Fichier téléchargé: ${filename}\n\nOuvrez le fichier depuis vos Téléchargements pour l'ouvrir dans votre client email.`, 5000)
+        } else {
+          toast.success(`✉️ File downloaded: ${filename}\n\nOpen the file from your Downloads folder to launch it in your email client.`, 5000)
+        }
+        URL.revokeObjectURL(url)
+      }, 500)
+      
+      // Provide visual feedback
       // Provide visual feedback
       if (document.activeElement) {
         const button = document.activeElement
@@ -2545,23 +2927,10 @@ ${bodyResult.html}
         }, 2000)
       }
     } catch (error) {
-      console.error('Error opening email client:', error)
-      // Fallback method
-      try {
-        window.open(mailtoUrl, '_blank')
-      } catch (fallbackError) {
-        console.error('Fallback method failed:', fallbackError)
-        // Final fallback - copy to clipboard and show instructions
-        navigator.clipboard.writeText(`${subject}\n\n${finalBody}`).then(() => {
-          alert(templateLanguage === 'fr' 
-            ? 'Impossible d\'ouvrir votre client de messagerie. Le contenu a été copié dans le presse-papiers.' 
-            : 'Unable to open your email client. The content has been copied to your clipboard.')
-        }).catch(() => {
-          alert(templateLanguage === 'fr' 
-            ? 'Impossible d\'ouvrir votre client de messagerie. Veuillez copier manuellement le contenu.' 
-            : 'Unable to open your email client. Please copy the content manually.')
-        })
-      }
+      console.error('Error creating .eml file:', error)
+      alert(templateLanguage === 'fr' 
+        ? 'Erreur lors de la création du fichier email.' 
+        : 'Error creating email file.')
     }
   }
 
@@ -3223,10 +3592,16 @@ ${bodyResult.html}
                       +
                     </Button>
                     {showExportMenu && (
-                      <div className="absolute left-0 z-20 mt-2 w-48 bg-white border border-[#e6eef5] rounded-[12px] shadow-soft py-1" role="menu">
-                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('eml'); setShowExportMenu(false) }}>Exporter en .eml</button>
-                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('html'); setShowExportMenu(false) }}>Exporter en HTML</button>
-                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('copy-html'); setShowExportMenu(false) }}>Copier en HTML</button>
+                      <div className="absolute left-0 z-20 mt-2 w-52 bg-white border border-[#e6eef5] rounded-[12px] shadow-soft py-1" role="menu">
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('pdf'); setShowExportMenu(false) }}>📄 Exporter en PDF</button>
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('word'); setShowExportMenu(false) }}>📗 Ouvrir dans Word</button>
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('docx'); setShowExportMenu(false) }}>📘 Télécharger Word (.doc)</button>
+                        <div className="border-t border-gray-200 my-1"></div>
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('html'); setShowExportMenu(false) }}>🌐 Exporter en HTML</button>
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('eml'); setShowExportMenu(false) }}>✉️ Exporter en .eml</button>
+                        <div className="border-t border-gray-200 my-1"></div>
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('copy-html'); setShowExportMenu(false) }}>📋 Copier en HTML</button>
+                        <button className="w-full text-left px-3 py-2 hover:bg-[#f5fbff] text-sm" onClick={() => { exportAs('copy-text'); setShowExportMenu(false) }}>📝 Copier en texte</button>
                       </div>
                     )}
                     <Button 

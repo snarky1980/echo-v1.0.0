@@ -259,5 +259,48 @@ Main app → Test templates → Admin console → Export JSON → Commit
 
 ---
 
+## 🎨 New Features (v8.1.0 - Nov 4, 2025)
+
+### Custom Font Selectors
+- **Font Family Selector:** Visual preview of each font in dropdown
+- **Font Size Selector:** See actual size before selecting (14px-20px)
+- Located in Rich Text Toolbar (top of email editor)
+
+### Toast Notifications
+- Non-intrusive notifications in bottom-right corner
+- Auto-dismiss after 4-5 seconds
+- Used for export confirmations (Word, Outlook, etc.)
+- Three types: success ✅, error ❌, info ℹ️
+
+### Enhanced Exports
+- **All formats now preserve rich text formatting:**
+  - Highlights (6 colors)
+  - Text colors (8 colors)
+  - Fonts (8 families)
+  - Bold, italic, underline, strikethrough
+- **EML exports** now include HTML (multipart/alternative)
+- **Outlook integration** creates .eml files with full formatting
+- **Toast guidance** for downloaded files (since browsers block auto-open)
+
+### Variable Pill Formatting
+- Select text + variables together
+- Apply formatting (highlight, colors, etc.) to entire selection
+- Pills and text formatted simultaneously
+
+### Export Menu Icons
+```
+📄 PDF (with color preservation)
+📗 Open in Word (with formatting)
+📘 Download Word (.doc with formatting)
+🌐 Export HTML (complete rich formatting)
+✉️ Export EML (multipart with HTML)
+📋 Copy HTML (rich text to clipboard)
+📝 Copy Text (plain text only)
+```
+
+---
+
 **Last Updated:** November 4, 2025  
-**Version:** 1.0
+**Version:** 1.1
+
+````
