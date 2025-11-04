@@ -1041,7 +1041,11 @@
         <div class="field"><label>Description FR</label><input id="var-new-desc-fr" /></div>
         <div class="field"><label>Description EN</label><input id="var-new-desc-en" /></div>
       </div>
-      <div><button id="btn-add-var" class="primary">Ajouter</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="btn-add-var" class="primary">Ajouter</button>
+        <button id="btn-import-vars" style="background:#6366f1;color:white;">Importer variables (CSV)</button>
+        <input type="file" id="vars-file-input" accept=".csv,.json" style="display:none;" />
+      </div>
 
       <div style="margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
         <span class="hint">Variables inutilisées: <strong>${unusedKeys.length}</strong></span>
@@ -1120,6 +1124,18 @@
       renderWarnings();
       updateKpis();
     };
+
+    // Wire up variables CSV import
+    const btnImportVars = document.getElementById('btn-import-vars');
+    const varsFileInput = document.getElementById('vars-file-input');
+    if (btnImportVars && varsFileInput) {
+      btnImportVars.onclick = () => varsFileInput.click();
+      varsFileInput.onchange = async (e) => {
+        const f = e.target.files?.[0];
+        if (f) await window.importVariablesFromFile(f);
+        e.target.value = '';
+      };
+    }
 
     // Cleanup unused variables
     const cleanBtn = document.getElementById('btn-clean-unused');
@@ -1774,6 +1790,83 @@
         e.target.value = '';
       }
     };
+  }
+
+  // Bulk import for variables (CSV / JSON)
+  window.importVariablesFromFile = async (file) => {
+    if (!file) return;
+    try {
+      const txt = await file.text();
+      const variables = parseVariablesCsv(txt);
+      if (!variables || !Object.keys(variables).length) { 
+        notify('Aucune variable détectée dans le fichier.', 'warn'); 
+        return; 
+      }
+      const added = mergeImportedVariables(variables);
+      if (added > 0) {
+        saveDraft();
+        updateKpis();
+        renderVariablesEditor();
+        renderTemplateEditor();
+        renderWarnings();
+        notify(`${added} variable(s) importée(s).`);
+      } else {
+        notify('Aucune variable ajoutée (toutes existaient déjà).', 'warn');
+      }
+    } catch (err) {
+      console.error(err);
+      notify('Import de variables échoué: format non reconnu ou contenu invalide.', 'warn');
+    }
+  };
+
+  function parseVariablesCsv(csvText) {
+    // Expected headers: name, description_fr, description_en, format, example_fr, example_en (or example)
+    const vars = {};
+    const lines = csvText.split(/\r?\n/);
+    if (!lines.length) return vars;
+    const header = lines.shift();
+    if (!header) return vars;
+    const sep = header.includes(';') && !header.includes(',') ? ';' : ',';
+    const keys = header.split(sep).map(s => s.trim().toLowerCase());
+    
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const cells = splitCsvLine(line, sep);
+      const obj = {};
+      keys.forEach((k, i) => obj[k] = cells[i] ?? '');
+      
+      const name = (obj.name || obj.variable || obj.var || obj.key || '').trim();
+      if (!name) continue;
+      
+      const desc_fr = (obj.description_fr || obj.desc_fr || obj.descriptionfr || '').trim();
+      const desc_en = (obj.description_en || obj.desc_en || obj.descriptionen || '').trim();
+      const format = (obj.format || 'text').trim();
+      const example = (obj.example || obj.example_fr || obj.exemple || '').trim();
+      
+      vars[name] = {
+        description: { fr: desc_fr, en: desc_en },
+        format: format,
+        example: example
+      };
+    }
+    return vars;
+  }
+
+  function mergeImportedVariables(newVars) {
+    let added = 0;
+    const lib = data.variables || (data.variables = {});
+    for (const [name, meta] of Object.entries(newVars)) {
+      if (!lib[name]) {
+        lib[name] = meta;
+        added++;
+      } else {
+        // Update existing variable metadata
+        lib[name].description = meta.description || lib[name].description;
+        lib[name].format = meta.format || lib[name].format;
+        lib[name].example = meta.example || lib[name].example;
+      }
+    }
+    return added;
   }
 
   function parseBulkTemplates(text, extHint) {

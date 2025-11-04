@@ -1,5 +1,6 @@
 // Admin Console for Email Assistant v6
 (function () {
+  try { window.__EA_SCRIPT_LOADED = Date.now(); } catch {}
   const JSON_PATH = './complete_email_templates.json';
   const DRAFT_KEY = 'ea_admin_draft_v2';
 
@@ -21,7 +22,6 @@
   const kpiVariables = $('#kpi-variables');
   const warningsEl = $('#warnings');
   const noticeEl = $('#notice');
-<<<<<<< Updated upstream
   // Modal elements (for previews/confirmations)
   const modal = $('#modal');
   const modalTitle = $('#modal-title');
@@ -29,8 +29,19 @@
   const modalConfirm = $('#modal-confirm');
   const modalCancel = $('#modal-cancel');
   const modalClose = $('#modal-close');
-=======
->>>>>>> Stashed changes
+
+  // Global diagnostics: surface runtime errors in the UI, and log boot
+  try {
+    console.info('[Admin Console] Booting admin-console.js…');
+    window.addEventListener('error', (e) => {
+      try { notify('Erreur: ' + (e?.error?.message || e?.message || 'inconnue'), 'warn'); } catch {}
+      console.error('[Admin Console] window.onerror', e?.error || e);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      try { notify('Erreur (promesse): ' + (e?.reason?.message || String(e?.reason) || 'inconnue'), 'warn'); } catch {}
+      console.error('[Admin Console] unhandledrejection', e?.reason);
+    });
+  } catch {}
 
   const langSwitch = $('#lang-switch');
   const fileInput = $('#file-input');
@@ -38,6 +49,7 @@
   const btnExport = $('#btn-export');
   const btnReset = $('#btn-reset');
   const btnHelp = $('#btn-help');
+  const btnGithub = document.getElementById('btn-github');
 
   const btnNewTemplate = $('#btn-new-template');
   const btnBulkImport = $('#btn-bulk-import');
@@ -59,14 +71,11 @@
   const btnPreview = $('#btn-preview');
   // Keep a short-lived snapshot of the last non-empty warnings
   let lastWarnSnapshot = { items: [], at: 0 };
-<<<<<<< Updated upstream
   // Warnings-driven filtering/navigation helpers
   let warnFilterActive = false;
   let warnTplIds = new Set();
 
   function escapeReg(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-=======
->>>>>>> Stashed changes
 
   // Utils
   const debounce = (fn, ms = 300) => {
@@ -93,8 +102,6 @@
       console.error(e);
     }
   }, 400);
-
-<<<<<<< Updated upstream
   function showModal({ title, bodyHtml, confirmText = 'Confirmer', onConfirm }) {
     if (!modal) { alert('' + (bodyHtml?.replace?.(/<[^>]+>/g, '') || '')); if (onConfirm) onConfirm(); return; }
     modalTitle.textContent = title || 'Aperçu';
@@ -106,9 +113,6 @@
     if (modalConfirm) modalConfirm.onclick = () => { try { onConfirm && onConfirm(); } finally { close(); } };
     modal.style.display = 'flex';
   }
-
-=======
->>>>>>> Stashed changes
   // Ephemeral notification (does not hide persistent warnings)
   const notify = (msg, type = 'info') => {
     if (!noticeEl) return;
@@ -138,6 +142,12 @@
     }
   }
 
+  async function tryFetchJson(url) {
+    const resp = await fetch(url, { cache: 'no-cache' });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return resp.json();
+  }
+
   async function loadInitial() {
     const draft = loadFromDraft();
     if (draft) {
@@ -145,10 +155,34 @@
       afterDataLoad();
       return;
     }
-    const resp = await fetch(JSON_PATH);
-    const json = await resp.json();
-    data = ensureSchema(json);
+    const candidates = [
+      '/complete_email_templates.json', // user confirmed this URL works
+      JSON_PATH,
+      './assets/complete_email_templates.json',
+      '/assets/complete_email_templates.json',
+      './public/complete_email_templates.json',
+      '/public/complete_email_templates.json'
+    ];
+    let loaded = null, lastErr = null;
+    for (const u of candidates) {
+      try {
+        const json = await tryFetchJson(u);
+        loaded = ensureSchema(json);
+        break;
+      } catch (e) { lastErr = e; }
+    }
+    if (!loaded) {
+      notify('Erreur de chargement du JSON (aucune source trouvée).', 'warn');
+      console.error('Failed to load any template JSON from', candidates, lastErr);
+      loaded = ensureSchema({});
+    }
+    data = loaded;
     afterDataLoad();
+    try {
+      const n = data?.templates?.length || 0;
+      console.info('[Admin Console] Loaded templates:', n);
+      notify(`${n} template(s) chargé(s)`);
+    } catch {}
   }
 
   function afterDataLoad() {
@@ -162,7 +196,9 @@
     renderMain();
     updateKpis();
     renderWarnings();
-<<<<<<< Updated upstream
+    if (!data.templates.length) {
+      notify('Aucun template chargé. Utilisez « Importer JSON » ou « Réinitialiser ».', 'warn');
+    }
   // Expose a stable getter for current data for dev tools
   try { window.__EA_DATA__ = () => JSON.parse(JSON.stringify(data)); } catch {}
     // Sync segmented toggle buttons
@@ -170,9 +206,6 @@
       const btns = $$('button[data-lang]', langSwitch);
       btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
     }
-=======
-    if (langSwitch) langSwitch.value = lang;
->>>>>>> Stashed changes
   }
 
   function updateKpis() {
@@ -182,15 +215,12 @@
 
   function renderWarnings() {
     const issues = validateData();
-<<<<<<< Updated upstream
     // Build a set of template IDs implicated in warnings (for filtering/jump)
     warnTplIds = new Set();
     for (const msg of issues) {
       const id = parseIssueTemplateId(msg);
       if (id) warnTplIds.add(id);
     }
-=======
->>>>>>> Stashed changes
     let pinStored = null; try { pinStored = localStorage.getItem('ea_pin_warnings'); } catch {}
     let pinned = (pinStored === 'true' || pinStored === null); // default to pinned if not set
     try { if (pinStored === null) localStorage.setItem('ea_pin_warnings', 'true'); } catch {}
@@ -200,14 +230,11 @@
       lastWarnSnapshot = { items: issues.slice(0, 50), at: Date.now() };
       warningsEl.style.display = 'block';
       warningsEl.className = 'warn';
-<<<<<<< Updated upstream
       const itemsHtml = issues.map(i => {
         const id = parseIssueTemplateId(i);
         const safe = escapeHtml(i);
         return `<li ${id ? `data-tplid="${escapeAttr(id)}" class="warn-item"` : ''}>${safe}${id ? ` <button data-jump="${escapeAttr(id)}" title="Aller au template" style="margin-left:8px;">→</button>` : ''}</li>`;
       }).join('');
-=======
->>>>>>> Stashed changes
       warningsEl.innerHTML = `
         <div class="status-bar">
           <div><strong>Avertissements (${issues.length})</strong></div>
@@ -218,7 +245,6 @@
             </label>
           </div>
         </div>
-<<<<<<< Updated upstream
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
           <button id="btn-fix-add-vars" title="Créer les variables manquantes d’après les placeholders">Ajouter variables manquantes</button>
           <button id="btn-fix-sync-vars" title="Lister tous les placeholders dans chaque template">Synchroniser variables des templates</button>
@@ -230,10 +256,6 @@
         </div>
         <div id="warn-details" style="margin-top:8px; ${collapsed ? 'display:none;' : ''}">
           <ul style="margin:6px 0 0 18px">${itemsHtml}</ul>
-=======
-        <div id="warn-details" style="margin-top:8px; ${collapsed ? 'display:none;' : ''}">
-          <ul style="margin:6px 0 0 18px">${issues.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>
->>>>>>> Stashed changes
         </div>`;
       const pin = document.getElementById('pin-warnings');
       if (pin) {
@@ -251,7 +273,6 @@
           try { localStorage.setItem('ea_warn_collapsed', hide ? 'true' : 'false'); } catch {}
         };
       }
-<<<<<<< Updated upstream
       // Wire quick fixes
       const fixAdd = document.getElementById('btn-fix-add-vars');
       if (fixAdd) fixAdd.onclick = () => { quickFixAddMissingVariables(); saveDraft(); renderWarnings(); notify('Variables ajoutées à partir des placeholders.'); };
@@ -291,8 +312,6 @@
           notify('Template introuvable: '+id, 'warn');
         }
       }, { once: true });
-=======
->>>>>>> Stashed changes
     } else {
       warningsEl.style.display = pinned ? 'block' : 'none';
       if (pinned) {
@@ -470,10 +489,7 @@
       el.onclick = (e) => {
         if (bulkMode) return; // In bulk mode, clicking tiles won’t navigate
         selectedTemplateId = el.dataset.id;
-<<<<<<< Updated upstream
         _revealActiveOnRender = true;
-=======
->>>>>>> Stashed changes
         renderSidebar(); // refresh highlight
         renderMain();
       };
@@ -732,20 +748,32 @@
       t.subject = t.subject || {};
       t.subject[lang] = e.target.value;
       saveDraft();
+      // Rerender variables list so detection follows current language content
+      if (typeof renderVars === 'function') renderVars();
     };
 
     $('#tpl-body').oninput = (e) => {
       t.body = t.body || {};
       t.body[lang] = e.target.value;
       saveDraft();
+      // Rerender variables list so detection follows current language content
+      if (typeof renderVars === 'function') renderVars();
     };
 
     // If preview was active before rerender, rebuild preview contents
     if (window._eaPreviewActive) buildPreview();
 
+    // Detect placeholders only from the current language body text
+    function extractPlaceholdersFromCurrentBody() {
+      const txt = (t.body && typeof t.body[lang] === 'string') ? t.body[lang] : '';
+      const set = new Set([...String(txt).matchAll(/<<([^>]+)>>/g)].map(m => m[1]));
+      return Array.from(set).sort();
+    }
+
     const renderVars = () => {
       const auto = getAutoDetect();
-      const detected = extractPlaceholdersFromTemplate(t);
+      // Only consider placeholders present in the current language body
+      const detected = extractPlaceholdersFromCurrentBody();
       if (auto) {
         t.variables = detected.slice();
         saveDraft();
@@ -800,7 +828,8 @@
         }
       }
       const term = ($('#vars-filter')?.value || '').trim().toLowerCase();
-      const source = auto ? detected : allVars;
+      // Always show only placeholders present in the current body text
+      const source = detected;
       const list = source.filter(v => v.toLowerCase().includes(term));
       const cells = (name) => name ? `
         <td style=\"vertical-align:top;width:50%;padding:4px 6px;\">
@@ -810,7 +839,7 @@
           </label>
         </td>` : `<td style=\"width:50%\"></td>`;
       if (!list.length) {
-        const baseEmpty = source.length ? 'Aucune variable ne correspond au filtre.' : (auto ? 'Aucun placeholder <<NomVariable>> trouvé dans Objet/Corps.' : 'Aucune variable définie pour l’instant (onglet Variables).');
+        const baseEmpty = source.length ? 'Aucune variable ne correspond au filtre.' : 'Aucun placeholder <<NomVariable>> trouvé dans le corps.';
         $('#vars-box').innerHTML = `<div class=\"hint\">${baseEmpty}</div>`;
       } else {
         const rows = [];
@@ -838,7 +867,7 @@
     renderVars();
     const getFilteredList = () => {
       const term = ($('#vars-filter')?.value || '').trim().toLowerCase();
-      return allVars.filter(v => v.toLowerCase().includes(term));
+      return extractPlaceholdersFromCurrentBody().filter(v => v.toLowerCase().includes(term));
     };
     const btnAll = $('#btn-vars-all');
     const btnNone = $('#btn-vars-none');
@@ -873,7 +902,7 @@
     };
     const btnDetect = $('#btn-vars-detect');
     if (btnDetect) btnDetect.onclick = () => {
-      const detected = extractPlaceholdersFromTemplate(t);
+      const detected = extractPlaceholdersFromCurrentBody();
       if (getAutoDetect()) {
         t.variables = detected.slice();
       } else {
@@ -983,6 +1012,18 @@
     });
     const unusedKeys = keys.filter(k => !used.has(k));
 
+    // Compute variables used in the currently selected template only
+    const currentTpl = (data.templates || []).find(x => x.id === selectedTemplateId) || null;
+    const usedInSelected = new Set();
+    if (currentTpl) {
+      extractPlaceholdersFromTemplate(currentTpl).forEach(v => usedInSelected.add(v));
+      if (Array.isArray(currentTpl.variables)) currentTpl.variables.forEach(v => usedInSelected.add(v));
+    }
+    // Preference: show only variables from selected template (default true)
+    const getOnlySelected = () => { try { return localStorage.getItem('ea_vars_only_selected') !== 'false'; } catch { return true; } };
+    const onlySelected = getOnlySelected();
+    const displayKeys = (onlySelected && currentTpl) ? keys.filter(k => usedInSelected.has(k)) : keys;
+
     viewVariables.innerHTML = `
       <div class="row-3">
         <div class="field"><label>Clé</label><input id="var-new-key" placeholder="e.g. NuméroProjet" /></div>
@@ -1000,17 +1041,25 @@
         <div class="field"><label>Description FR</label><input id="var-new-desc-fr" /></div>
         <div class="field"><label>Description EN</label><input id="var-new-desc-en" /></div>
       </div>
-      <div><button id="btn-add-var" class="primary">Ajouter</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="btn-add-var" class="primary">Ajouter</button>
+        <button id="btn-import-vars" style="background:#6366f1;color:white;">Importer variables (CSV)</button>
+        <input type="file" id="vars-file-input" accept=".csv,.json" style="display:none;" />
+      </div>
 
       <div style="margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
         <span class="hint">Variables inutilisées: <strong>${unusedKeys.length}</strong></span>
         <button id="btn-clean-unused" ${unusedKeys.length ? '' : 'disabled'}>Supprimer les variables inutilisées</button>
+        <label style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;">
+          <input type="checkbox" id="vars-only-selected" ${onlySelected ? 'checked' : ''} ${currentTpl ? '' : 'disabled'}>
+          <span>Seulement celles du modèle sélectionné</span>
+        </label>
       </div>
 
       <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"></div>
 
       <div style="display:grid;gap:10px;">
-        ${keys.length ? keys.map(k => {
+        ${displayKeys.length ? displayKeys.map(k => {
           const v = vars[k];
           return `
             <div class="tile" data-k="${escapeAttr(k)}" style="display:grid;gap:8px;">
@@ -1041,9 +1090,18 @@
               </div>
             </div>
           `;
-        }).join('') : `<div class="hint">Aucune variable pour l’instant.</div>`}
+        }).join('') : `<div class="hint">${(onlySelected && currentTpl) ? 'Aucune variable utilisée par le modèle sélectionné.' : 'Aucune variable pour l’instant.'}</div>`}
       </div>
     `;
+
+    // Wire filter toggle
+    const onlySelToggle = document.getElementById('vars-only-selected');
+    if (onlySelToggle) {
+      onlySelToggle.onchange = () => {
+        try { localStorage.setItem('ea_vars_only_selected', onlySelToggle.checked ? 'true' : 'false'); } catch {}
+        renderVariablesEditor();
+      };
+    }
 
     $('#btn-add-var').onclick = () => {
       const key = $('#var-new-key').value.trim();
@@ -1066,6 +1124,18 @@
       renderWarnings();
       updateKpis();
     };
+
+    // Wire up variables CSV import
+    const btnImportVars = document.getElementById('btn-import-vars');
+    const varsFileInput = document.getElementById('vars-file-input');
+    if (btnImportVars && varsFileInput) {
+      btnImportVars.onclick = () => varsFileInput.click();
+      varsFileInput.onchange = async (e) => {
+        const f = e.target.files?.[0];
+        if (f) await window.importVariablesFromFile(f);
+        e.target.value = '';
+      };
+    }
 
     // Cleanup unused variables
     const cleanBtn = document.getElementById('btn-clean-unused');
@@ -1354,25 +1424,99 @@
   }
 
   // Import/Export/Reset/Help
-  btnImport.onclick = () => fileInput.click();
-  fileInput.onchange = async (e) => {
-    const f = e.target.files?.[0];
+  function readFileAsText(file) {
+    if (file?.text) return file.text();
+    // Fallback for older browsers
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error || new Error('File read error'));
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.readAsText(file);
+    });
+  }
+
+  async function handleImportedFile(f) {
     if (!f) return;
+    notify('Import en cours…');
+    let txt;
     try {
-      const txt = await f.text();
-      const json = ensureSchema(JSON.parse(txt));
-      data = json;
-      selectedTemplateId = data.templates[0]?.id || null;
-      saveDraft();
-      afterDataLoad();
-      notify('Fichier importé et brouillon mis à jour.');
-    } catch (err) {
-      notify('Fichier invalide.', 'warn');
-      console.error(err);
-    } finally {
-      fileInput.value = '';
+      txt = await readFileAsText(f);
+    } catch (e) {
+      notify('Erreur de lecture du fichier.', 'warn');
+      console.error('readFile error', e);
+      return;
     }
-  };
+    let parsed;
+    try {
+      parsed = JSON.parse(txt);
+    } catch (pe) {
+      notify('JSON invalide: impossible d\'analyser le fichier.', 'warn');
+      console.error('JSON parse error', pe);
+      return;
+    }
+    const json = ensureSchema(parsed);
+    const tplCount = Array.isArray(json.templates) ? json.templates.length : 0;
+    const varCount = json.variables ? Object.keys(json.variables).length : 0;
+    const catCount = Array.isArray(json.metadata?.categories) ? json.metadata.categories.length : 0;
+
+    showModal({
+      title: 'Importer ce JSON ? ',
+      bodyHtml: `
+        <div class="hint">Le brouillon local sera remplacé par le contenu du fichier.</div>
+        <ul style="margin:8px 0 0 18px">
+          <li><strong>Templates:</strong> ${tplCount}</li>
+          <li><strong>Variables:</strong> ${varCount}</li>
+          <li><strong>Catégories:</strong> ${catCount}</li>
+        </ul>
+      `,
+      confirmText: 'Importer',
+      onConfirm: () => {
+        try {
+          data = json;
+          selectedTemplateId = data.templates[0]?.id || null;
+          saveDraft();
+          afterDataLoad();
+          notify('Fichier importé et brouillon mis à jour.');
+        } catch (e2) {
+          notify('Échec lors de l\'application des données importées.', 'warn');
+          console.error(e2);
+        }
+      }
+    });
+  }
+
+  function startImportFlow() {
+    // Most reliable: create an ephemeral input and click it
+    const tmp = document.createElement('input');
+    tmp.type = 'file';
+    tmp.accept = '.json,application/json';
+    tmp.style.position = 'fixed';
+    tmp.style.left = '-9999px';
+    tmp.onchange = async (e) => {
+      const f = e.target.files?.[0];
+      await handleImportedFile(f);
+      tmp.remove();
+    };
+    document.body.appendChild(tmp);
+    try {
+      if (typeof tmp.showPicker === 'function') tmp.showPicker(); else tmp.click();
+    } catch {
+      // Fallbacks to existing hidden input/label if the ephemeral input is blocked
+      const lbl = document.getElementById('file-input-label');
+      if (lbl) lbl.click(); else try { (document.getElementById('file-input')||{}).click?.(); } catch {}
+      tmp.remove();
+    }
+  }
+
+  if (btnImport && fileInput) {
+    btnImport.onclick = () => startImportFlow();
+    fileInput.onchange = async (e) => {
+      const f = e.target.files?.[0];
+      await handleImportedFile(f);
+      // allow re-importing the same file by resetting the input
+      fileInput.value = '';
+    };
+  }
 
   btnExport.onclick = () => {
     data.metadata.totalTemplates = data.templates.length;
@@ -1389,13 +1533,143 @@
     download('complete_email_templates.json', pretty);
   };
 
+  async function githubPublishFlow() {
+    try {
+      if (!data) { notify('Aucune donnée à publier.', 'warn'); return; }
+      const repo = 'snarky1980/email-assistant-v8-'; // adjust if forked
+      const rootPath = 'complete_email_templates.json';
+      const publicPath = 'public/complete_email_templates.json';
+      const owner = repo.split('/')[0];
+      const repoName = repo.split('/')[1];
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+      const bodyHtml = `
+  <div class="hint" style="margin-bottom:8px;">Cette action va créer une <strong>branche</strong> depuis <code>main</code>, y mettre à jour <code>${rootPath}</code> et <code>${publicPath}</code>, puis ouvrir une <strong>Pull Request</strong> vers <code>main</code>.</div>
+        <div style="display:grid; gap:8px;">
+          <label>GitHub Token (PAT – minimum repo:contents write):<br>
+            <input id="gh-token" type="password" placeholder="ghp_..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;">
+          </label>
+          <label>Message de commit:<br>
+            <input id="gh-message" type="text" value="chore(admin): update complete_email_templates.json" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;">
+          </label>
+          <label>Titre de la PR:<br>
+            <input id="gh-pr-title" type="text" value="feat(templates): update complete_email_templates.json" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;">
+          </label>
+        </div>`;
+      showModal({ title: 'Publier sur GitHub', bodyHtml, confirmText: 'Publier', onConfirm: async () => {
+        const token = (document.getElementById('gh-token')||{}).value || '';
+        const message = (document.getElementById('gh-message')||{}).value || 'update templates';
+        const prTitle = (document.getElementById('gh-pr-title')||{}).value || 'Update templates';
+        if (!token) { notify('Token requis.', 'warn'); return; }
+        try {
+          const headers = { 'Accept':'application/vnd.github+json', 'Authorization': `Bearer ${token}` };
+          const baseBranch = 'main';
+          const now = new Date();
+          const pad = (n) => String(n).padStart(2, '0');
+          const branchName = `chore/templates-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+
+          async function getJson(url) {
+            const res = await fetch(url, { headers });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+          }
+
+          // 1) Get base branch SHA
+          const refInfo = await getJson(`https://api.github.com/repos/${owner}/${repoName}/git/refs/heads/${encodeURIComponent(baseBranch)}`);
+          const baseSha = refInfo?.object?.sha;
+          if (!baseSha) throw new Error('Base branch SHA introuvable');
+
+          // 2) Create new branch from base
+          let createdBranch = branchName;
+          async function tryCreateBranch(name) {
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/refs`, {
+              method: 'POST',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ref: `refs/heads/${name}`, sha: baseSha })
+            });
+            if (res.ok) return name;
+            const err = await res.json().catch(()=>({}));
+            if (res.status === 422 && /already exists/i.test(err?.message||'')) {
+              // fallback suffix
+              return null;
+            }
+            throw new Error(err?.message || 'Échec création de branche');
+          }
+          let attempt = 0;
+          while (attempt < 3) {
+            const name = attempt === 0 ? branchName : `${branchName}-${attempt}`;
+            const okName = await tryCreateBranch(name);
+            if (okName) { createdBranch = okName; break; }
+            attempt++;
+          }
+
+          // helper: get current sha for path on the new branch
+          async function getSha(path) {
+            try {
+              const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(createdBranch)}`, { headers });
+              if (res.ok) {
+                const j = await res.json();
+                return j.sha;
+              }
+            } catch {}
+            return undefined;
+          }
+
+          async function putFile(path, sha) {
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${encodeURIComponent(path)}`, {
+              method: 'PUT',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message, content, branch: createdBranch, sha })
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(()=>({message:'Erreur inconnue'}));
+              throw new Error(`${path}: ${err.message || 'Échec GitHub'}`);
+            }
+            return res.json().catch(()=>({}));
+          }
+
+          // 3) Update both files on the branch
+          const [rootSha, publicSha] = await Promise.all([getSha(rootPath), getSha(publicPath)]);
+          const [rootRes, pubRes] = await Promise.all([
+            putFile(rootPath, rootSha),
+            putFile(publicPath, publicSha)
+          ]);
+
+          // 4) Open Pull Request
+          const prBody = `This PR updates the templates JSON files.\n\n- Templates: ${Array.isArray(data.templates)?data.templates.length:0}\n- Variables: ${data.variables?Object.keys(data.variables).length:0}\n- Categories: ${Array.isArray(data.metadata?.categories)?data.metadata.categories.length:0}`;
+          const prRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/pulls`, {
+            method: 'POST',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: prTitle || message, head: createdBranch, base: baseBranch, body: prBody })
+          });
+          if (!prRes.ok) {
+            const err = await prRes.json().catch(()=>({message:'Erreur inconnue'}));
+            throw new Error(`PR: ${err.message || 'Échec création PR'}`);
+          }
+          const pr = await prRes.json();
+          notify(`PR créée: ${pr.html_url}`);
+        } catch (e) {
+          console.error('GitHub publish failed', e);
+          notify('Échec de la publication GitHub: ' + (e?.message || e), 'warn');
+        }
+      }});
+    } catch (e) {
+      console.error(e);
+      notify('Erreur dans le flux GitHub.', 'warn');
+    }
+  }
+
+  if (btnGithub) {
+    btnGithub.onclick = githubPublishFlow;
+  }
+
   btnReset.onclick = () => {
     if (!confirm('Effacer le brouillon local et recharger le fichier original ?')) return;
     localStorage.removeItem(DRAFT_KEY);
     location.reload();
   };
 
-  btnHelp.onclick = () => {
+  if (btnHelp) btnHelp.onclick = () => {
     try { window.open('./help.html', '_blank', 'noopener'); } catch {}
     const code = (s) => `<pre style="background:#0b1020;color:#e5e7eb;padding:10px;border-radius:10px;overflow:auto;"><code>${escapeHtml(s)}</code></pre>`;
     const copyBtn = (s) => `<button data-copy="${escapeAttr(s)}" style="margin-top:6px;">Copier</button>`;
@@ -1516,6 +1790,83 @@
         e.target.value = '';
       }
     };
+  }
+
+  // Bulk import for variables (CSV / JSON)
+  window.importVariablesFromFile = async (file) => {
+    if (!file) return;
+    try {
+      const txt = await file.text();
+      const variables = parseVariablesCsv(txt);
+      if (!variables || !Object.keys(variables).length) { 
+        notify('Aucune variable détectée dans le fichier.', 'warn'); 
+        return; 
+      }
+      const added = mergeImportedVariables(variables);
+      if (added > 0) {
+        saveDraft();
+        updateKpis();
+        renderVariablesEditor();
+        renderTemplateEditor();
+        renderWarnings();
+        notify(`${added} variable(s) importée(s).`);
+      } else {
+        notify('Aucune variable ajoutée (toutes existaient déjà).', 'warn');
+      }
+    } catch (err) {
+      console.error(err);
+      notify('Import de variables échoué: format non reconnu ou contenu invalide.', 'warn');
+    }
+  };
+
+  function parseVariablesCsv(csvText) {
+    // Expected headers: name, description_fr, description_en, format, example_fr, example_en (or example)
+    const vars = {};
+    const lines = csvText.split(/\r?\n/);
+    if (!lines.length) return vars;
+    const header = lines.shift();
+    if (!header) return vars;
+    const sep = header.includes(';') && !header.includes(',') ? ';' : ',';
+    const keys = header.split(sep).map(s => s.trim().toLowerCase());
+    
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const cells = splitCsvLine(line, sep);
+      const obj = {};
+      keys.forEach((k, i) => obj[k] = cells[i] ?? '');
+      
+      const name = (obj.name || obj.variable || obj.var || obj.key || '').trim();
+      if (!name) continue;
+      
+      const desc_fr = (obj.description_fr || obj.desc_fr || obj.descriptionfr || '').trim();
+      const desc_en = (obj.description_en || obj.desc_en || obj.descriptionen || '').trim();
+      const format = (obj.format || 'text').trim();
+      const example = (obj.example || obj.example_fr || obj.exemple || '').trim();
+      
+      vars[name] = {
+        description: { fr: desc_fr, en: desc_en },
+        format: format,
+        example: example
+      };
+    }
+    return vars;
+  }
+
+  function mergeImportedVariables(newVars) {
+    let added = 0;
+    const lib = data.variables || (data.variables = {});
+    for (const [name, meta] of Object.entries(newVars)) {
+      if (!lib[name]) {
+        lib[name] = meta;
+        added++;
+      } else {
+        // Update existing variable metadata
+        lib[name].description = meta.description || lib[name].description;
+        lib[name].format = meta.format || lib[name].format;
+        lib[name].example = meta.example || lib[name].example;
+      }
+    }
+    return added;
   }
 
   function parseBulkTemplates(text, extHint) {
@@ -1682,7 +2033,6 @@
     renderSidebar();
   };
 
-<<<<<<< Updated upstream
   // Segmented toggle handler
   if (langSwitch) {
     langSwitch.addEventListener('click', (e) => {
@@ -1726,14 +2076,6 @@
       }
     }
   });
-=======
-  langSwitch.onchange = (e) => {
-    lang = e.target.value;
-    try { localStorage.setItem('ea_admin_lang', lang); } catch {}
-    renderSidebar();
-    renderMain();
-  };
->>>>>>> Stashed changes
 
   // Tabs
   function setTab(active) {
@@ -1768,5 +2110,59 @@
     notify('Erreur de chargement du JSON.', 'warn');
     console.error(err);
   });
+  // Visible boot signal
+  try { notify('Console admin prête'); } catch {}
+
+  // Event delegation safety net: ensures core buttons work even if direct bindings failed
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (!t) return;
+    const resetBtn = t.closest && t.closest('#btn-reset');
+    if (resetBtn) {
+      e.preventDefault();
+      if (confirm('Effacer le brouillon local et recharger le fichier original ?')) {
+        try { localStorage.removeItem(DRAFT_KEY); } catch {}
+        location.reload();
+      }
+      return;
+    }
+    const importBtn = t.closest && t.closest('#btn-import');
+    if (importBtn) {
+      e.preventDefault();
+      startImportFlow();
+      return;
+    }
+    const helpBtn = t.closest && t.closest('#btn-help');
+    if (helpBtn) {
+      e.preventDefault();
+      if (typeof btnHelp?.onclick === 'function') {
+        try { btnHelp.onclick(); } catch {}
+      } else {
+        try { window.open('./help.html', '_blank', 'noopener'); } catch {}
+      }
+      return;
+    }
+  }, { capture: true });
+
+  // Drag-and-drop import fallback
+  try {
+    window.addEventListener('dragover', (e) => {
+      if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files')) {
+        e.preventDefault();
+      }
+    });
+    window.addEventListener('drop', async (e) => {
+      if (!e.dataTransfer) return;
+      const files = Array.from(e.dataTransfer.files || []);
+      if (!files.length) return;
+      const f = files[0];
+      if (!/\.json$/i.test(f.name)) {
+        // Allow non-.json too, but warn
+        notify('Fichier sans extension .json – tentative d\'import…');
+      }
+      e.preventDefault();
+      await handleImportedFile(f);
+    });
+  } catch {}
 })();
 
