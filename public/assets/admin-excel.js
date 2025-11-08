@@ -48,7 +48,13 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     .replace(/[^A-Za-z0-9_]/g,'');
   function uniqueId(base, taken){ let id = base || 'modele'; let i=2; const lowTaken = new Set([...taken].map(x=>x.toLowerCase())); while(lowTaken.has(id.toLowerCase())) id = `${base}_${i++}`; return id; }
 
-  const normKey = (s) => String(s||'').trim().toLowerCase().replace(/[_.:]/g,' ').replace(/\s+/g,' ');
+  const normKey = (s) => String(s||'')
+    .replace(/\uFEFF/g,'')
+    .trim()
+    .toLowerCase()
+    .replace(/[_.:]/g,' ')
+    .replace(/\s+/g,' ');
+  const canonicalKey = (s) => normKey(s).replace(/\s+/g,'_');
   const H = new Map([
     ['id','id'],
     ['category en','category_en'], ['category fr','category_fr'], ['categorie en','category_en'], ['categorie fr','category_fr'], ['catégorie en','category_en'], ['catégorie fr','category_fr'],
@@ -82,14 +88,38 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
 
   function rowsToObjects(rows){
     if (!rows?.length) return [];
-    // Find first non-empty row as header (robust to leading blanks)
-    let headIdx = rows.findIndex(r => Array.isArray(r) && r.some(c => String(c||'').trim() !== ''));
-    if (headIdx < 0) return [];
-    const header = rows[headIdx].map(h => H.get(normKey(h)) || normKey(h));
-    const headerSet = new Set(header);
-    const missingColumns = REQUIRED_KEYS.filter(key => !headerSet.has(key));
-    if (missingColumns.length) {
-      throw new Error(`Colonnes obligatoires manquantes: ${missingColumns.join(', ')}`);
+    const attempts = [];
+    let headIdx = -1;
+    let rawHeader = [];
+    let normalizedHeader = [];
+    let header = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      if (!Array.isArray(row) || !row.some(c => String(c||'').trim() !== '')) continue;
+      const raw = row.map(h => String(h ?? '').trim());
+      const normalized = raw.map(h => normKey(h));
+      const mapped = normalized.map(h => H.get(h) || canonicalKey(h));
+      const canonicalSet = new Set(mapped.map(k => canonicalKey(k)));
+      const missing = REQUIRED_KEYS.filter(key => !canonicalSet.has(key));
+      attempts.push({ index: i, rawHeader: raw, normalizedHeader: mapped, missingColumns: missing });
+      if (!missing.length) {
+        headIdx = i;
+        rawHeader = raw;
+        normalizedHeader = normalized;
+        header = mapped;
+        break;
+      }
+    }
+    if (headIdx < 0) {
+      const best = attempts.sort((a,b)=>a.missingColumns.length - b.missingColumns.length)[0];
+      const err = new Error('Impossible de trouver une ligne d’en-têtes contenant toutes les colonnes requises.');
+      if (best) {
+        err.rawHeader = best.rawHeader;
+        err.normalizedHeader = best.normalizedHeader;
+        err.missingColumns = best.missingColumns;
+        err.headerRowIndex = best.index;
+      }
+      throw err;
     }
     const out = [];
     for (let i=headIdx+1;i<rows.length;i++){
@@ -108,7 +138,7 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     const t = String(txt||''); const set = new Set([...(t.matchAll(/<<([^>]+)>>/g))].map(m=>m[1])); return Array.from(set);
   }
   function canonicalVar(name){
-    const s = toAscii(String(name||'')).trim();
+    const s = toAscii(String(name||'')).trim().toLowerCase();
     if (!s) return '';
     return s.replace(/[^A-Za-z0-9_]+/g,'_').replace(/_+/g,'_').replace(/^_+|_+$/g,'');
   }
@@ -189,7 +219,10 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
       if (!rawId) { addErr('ID manquant pour une ligne du tableau.'); continue; }
       let id = idSanitize(rawId);
       if (!id) { addErr(`ID invalide pour « ${rawId} ». Utilisez lettres, chiffres ou soulignés.`); continue; }
-      if (id !== rawId) addWarn(`ID normalisé: ${rawId} -> ${id}`);
+      if (id !== rawId) {
+        const lowerRaw = toAscii(rawId).trim().toLowerCase();
+        if (id !== lowerRaw) addWarn(`ID normalisé: ${rawId} -> ${id}`);
+      }
       if (takenIds.has(id.toLowerCase())) { addErr(`ID en double: ${id}`); continue; }
       takenIds.add(id.toLowerCase());
 
@@ -234,10 +267,22 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
       const varsFr = Array.from(varsFrSet).sort();
       const varsEn = Array.from(varsEnSet).sort();
 
-      varsFr.forEach(v => { if (!varDescFr.has(v)) addWarn(`[${id}] VARIABLES_Description_FR sans entrée pour ${v}`); });
-      varsEn.forEach(v => { if (!varDescEn.has(v)) addWarn(`[${id}] VARIABLES_Description_EN sans entrée pour ${v}`); });
-      for (const key of varDescFr.keys()) { if (!varsFrSet.has(key)) addWarn(`[${id}] Variable FR ${key} décrite mais absente du template FR`); }
-      for (const key of varDescEn.keys()) { if (!varsEnSet.has(key)) addWarn(`[${id}] Variable EN ${key} décrite mais absente du template EN`); }
+      const missingDescFr = varsFr.filter(v => !varDescFr.has(v));
+      if (missingDescFr.length) {
+        addWarn(`[${id}] VARIABLES_Description_FR sans entrée pour ${missingDescFr.join(', ')}`);
+      }
+      const missingDescEn = varsEn.filter(v => !varDescEn.has(v));
+      if (missingDescEn.length) {
+        addWarn(`[${id}] VARIABLES_Description_EN sans entrée pour ${missingDescEn.join(', ')}`);
+      }
+      const unusedDescFr = Array.from(varDescFr.keys()).filter(key => !varsFrSet.has(key));
+      if (unusedDescFr.length) {
+        addWarn(`[${id}] Variables FR décrites mais absentes du template FR: ${unusedDescFr.join(', ')}`);
+      }
+      const unusedDescEn = Array.from(varDescEn.keys()).filter(key => !varsEnSet.has(key));
+      if (unusedDescEn.length) {
+        addWarn(`[${id}] Variables EN décrites mais absentes du template EN: ${unusedDescEn.join(', ')}`);
+      }
 
       function ensureVar(key){
         if (!key) return;
@@ -367,7 +412,21 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
       objs = rowsToObjects(rows);
     } catch (err) {
       show(boxErr);
-      boxErr.innerHTML = `<div><strong>Colonnes invalides</strong></div><div class="hint" style="margin-top:6px;white-space:pre-wrap">${escapeHtml(err?.message || String(err))}\n\nColonnes attendues (sans casse):\n- ${escapeHtml(REQUIRED_KEYS.map(k=>k.toUpperCase()).join(', '))}</div>`;
+      const rawHeader = Array.isArray(err?.rawHeader) ? err.rawHeader : null;
+      const normalizedHeader = Array.isArray(err?.normalizedHeader) ? err.normalizedHeader : null;
+      const headerSection = rawHeader
+        ? `\n\nEntêtes détectées:\n- ${escapeHtml(rawHeader.join(' | ') || '—')}`
+        : '';
+      const normalizedSection = normalizedHeader
+        ? `\n\nCorrespondances après normalisation:\n- ${escapeHtml(normalizedHeader.join(' | ') || '—')}`
+        : '';
+      const missingSection = Array.isArray(err?.missingColumns) && err.missingColumns.length
+        ? `\n\nColonnes manquantes après normalisation:\n- ${escapeHtml(err.missingColumns.join(', '))}`
+        : '';
+      const rowIdxSection = Number.isInteger(err?.headerRowIndex)
+        ? `\n\nLigne analysée: ${err.headerRowIndex + 1}`
+        : '';
+      boxErr.innerHTML = `<div><strong>Colonnes invalides</strong></div><div class="hint" style="margin-top:6px;white-space:pre-wrap">${escapeHtml(err?.message || String(err))}\n\nColonnes attendues (sans casse):\n- ${escapeHtml(REQUIRED_KEYS.map(k=>k.toUpperCase()).join(', '))}${headerSection}${normalizedSection}${missingSection}${rowIdxSection}</div>`;
       notify('Colonnes invalides.', 'warn');
       return;
     }
