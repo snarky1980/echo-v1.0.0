@@ -20,10 +20,23 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
   const pvBody = $('#pv-body');
   const btnDlTpl = $('#btn-dl-template');
 
+  const show = (el, display='block') => {
+    if (!el) return;
+    el.classList.remove('hidden');
+    el.style.display = display;
+  };
+  const hide = (el) => {
+    if (!el) return;
+    el.style.display = 'none';
+    el.classList.add('hidden');
+  };
+
   const notify = (msg, type='info') => {
-    if (!notice) return; notice.textContent = msg; notice.style.display='block';
+    if (!notice) return;
+    notice.textContent = msg;
     notice.style.background = (type==='warn') ? '#7c2d12' : '#111827';
-    clearTimeout(notify._t); notify._t = setTimeout(()=>{ notice.style.display='none'; }, 2600);
+    show(notice);
+    clearTimeout(notify._t); notify._t = setTimeout(()=>{ hide(notice); }, 2600);
   };
 
   const toAscii = (s) => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -38,14 +51,14 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
   const normKey = (s) => String(s||'').trim().toLowerCase().replace(/[_.:]/g,' ').replace(/\s+/g,' ');
   const H = new Map([
     ['id','id'],
-    ['category fr','category_fr'], ['category en','category_en'], ['catégorie fr','category_fr'], ['catégorie en','category_en'], ['categorie fr','category_fr'], ['categorie en','category_en'],
-    ['title fr','title_fr'], ['title en','title_en'], ['titre fr','title_fr'], ['titre en','title_en'],
-    ['description fr','description_fr'], ['description en','description_en'], ['desc fr','description_fr'], ['desc en','description_en'],
-    ['subject fr','subject_fr'], ['subject en','subject_en'], ['objet fr','subject_fr'], ['objet en','subject_en'],
-    ['body fr','body_fr'], ['body en','body_en'], ['corps fr','body_fr'], ['corps en','body_en'],
-    ['vars fr','vars_fr'], ['vars en','vars_en'], ['variables fr','vars_fr'], ['variables en','vars_en'],
-    ['vars desc fr','vars_desc_fr'], ['vars desc en','vars_desc_en'], ['variables desc fr','vars_desc_fr'], ['variables desc en','vars_desc_en']
+    ['category en','category_en'], ['category fr','category_fr'], ['categorie en','category_en'], ['categorie fr','category_fr'], ['catégorie en','category_en'], ['catégorie fr','category_fr'],
+    ['description en','description_en'], ['description fr','description_fr'],
+    ['title en','title_en'], ['title fr','title_fr'], ['titre en','title_en'], ['titre fr','title_fr'],
+    ['template en','template_en'], ['template fr','template_fr'], ['modèle en','template_en'], ['modèle fr','template_fr'],
+    ['variables description en','variables_description_en'], ['variables description fr','variables_description_fr'],
+    ['variables_description_en','variables_description_en'], ['variables_description_fr','variables_description_fr']
   ]);
+  const REQUIRED_KEYS = ['id','category_en','category_fr','description_en','description_fr','title_en','title_fr','template_en','template_fr','variables_description_en','variables_description_fr'];
 
   function readXlsx(file){
     return new Promise((resolve, reject) => {
@@ -73,10 +86,19 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     let headIdx = rows.findIndex(r => Array.isArray(r) && r.some(c => String(c||'').trim() !== ''));
     if (headIdx < 0) return [];
     const header = rows[headIdx].map(h => H.get(normKey(h)) || normKey(h));
+    const headerSet = new Set(header);
+    const missingColumns = REQUIRED_KEYS.filter(key => !headerSet.has(key));
+    if (missingColumns.length) {
+      throw new Error(`Colonnes obligatoires manquantes: ${missingColumns.join(', ')}`);
+    }
     const out = [];
     for (let i=headIdx+1;i<rows.length;i++){
       const r = rows[i]; if (!r || r.every(c => String(c||'').trim()==='')) continue;
-      const obj = {}; for (let c=0;c<header.length;c++){ const k = header[c]; if (!k) continue; obj[k] = r[c] != null ? String(r[c]) : ''; }
+      const obj = {};
+      for (let c=0;c<header.length;c++){
+        const k = header[c]; if (!k) continue;
+        obj[k] = r[c] != null ? String(r[c]).trim() : '';
+      }
       out.push(obj);
     }
     return out;
@@ -86,11 +108,9 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     const t = String(txt||''); const set = new Set([...(t.matchAll(/<<([^>]+)>>/g))].map(m=>m[1])); return Array.from(set);
   }
   function canonicalVar(name){
-    const s = toAscii(String(name||'')).replace(/[^A-Za-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
+    const s = toAscii(String(name||'')).trim();
     if (!s) return '';
-    // camelCase
-    const parts = s.split(' ');
-    return parts.map((p,idx)=> idx===0 ? p.charAt(0).toUpperCase()+p.slice(1) : p.charAt(0).toUpperCase()+p.slice(1)).join('');
+    return s.replace(/[^A-Za-z0-9_]+/g,'_').replace(/_+/g,'_').replace(/^_+|_+$/g,'');
   }
   function inferFormat(n){
     if (/Montant|Nb|Nombre/i.test(n)) return 'number';
@@ -99,6 +119,60 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     return 'text';
   }
   function exampleFor(fmt){ return fmt==='number' ? '0' : fmt==='time' ? '17:00' : fmt==='date' ? '2025-01-01' : 'Exemple'; }
+
+  function parseVariableDescriptionEntries(raw){
+    const map = new Map();
+    const issues = [];
+    const text = String(raw||'').trim();
+    if (!text) return { map, issues };
+    const chunks = text
+      .split(/\r?\n/)
+      .flatMap(line => line.split(/(?=<<)/))
+      .map(part => part.trim())
+      .filter(Boolean);
+    chunks.forEach((entry, idx) => {
+      if (!entry.startsWith('<<')) {
+        issues.push({ entry, reason: 'Format manquant (<<var>>:description)' });
+        return;
+      }
+      const closeIdx = entry.indexOf('>>');
+      if (closeIdx === -1) {
+        issues.push({ entry, reason: 'Délimiteur " >> " manquant' });
+        return;
+      }
+      const varNameRaw = entry.slice(2, closeIdx).trim();
+      let rest = entry.slice(closeIdx + 2).trim();
+      if (!rest.startsWith(':')) {
+        issues.push({ entry, reason: 'Deux-points manquant après le nom de variable' });
+        return;
+      }
+      rest = rest.slice(1).trim();
+      if (!rest) {
+        issues.push({ entry, reason: 'Description de variable manquante' });
+        return;
+      }
+      let description = rest;
+      let defaultValue = '';
+      const lastOpen = rest.lastIndexOf('(');
+      const lastClose = rest.lastIndexOf(')');
+      if (lastOpen !== -1 && lastClose > lastOpen && lastClose === rest.length - 1) {
+        defaultValue = rest.slice(lastOpen + 1, lastClose).trim();
+        description = rest.slice(0, lastOpen).trim();
+      }
+      const key = canonicalVar(varNameRaw);
+      if (!key) {
+        issues.push({ entry, reason: 'Nom de variable vide' });
+        return;
+      }
+      if (!description) {
+        issues.push({ entry, reason: `Description vide pour ${key}` });
+      }
+      if (!map.has(key)) {
+        map.set(key, { description, defaultValue });
+      }
+    });
+    return { map, issues };
+  }
 
   function buildOutput(objs, options){
     const takenIds = new Set();
@@ -111,81 +185,108 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
 
     const normalizedRows = [];
     for (const row of objs){
-      // titles
-      let title_fr = row.title_fr || row.subject_fr || '';
-      let title_en = row.title_en || row.subject_en || '';
-      if (!title_fr && title_en) title_fr = translateTitleDeterministic(title_en, 'en_to_fr');
-      if (!title_en && title_fr) title_en = translateTitleDeterministic(title_fr, 'fr_to_en');
-      // id
-      let id = String(row.id||'').trim();
-      if (!id) {
-        if (!title_fr) { addErr('Ligne sans ID et sans TITLE_FR/SUBJECT_FR.'); continue; }
-        const base = idSanitize(title_fr); id = uniqueId(base || 'modele', takenIds); addWarn(`ID généré: ${id}`);
-      } else {
-        const norm = idSanitize(id); if (norm !== id){ addWarn(`ID normalisé: ${id} -> ${norm}`); id = norm; }
-        id = uniqueId(id, takenIds);
+      const rawId = String(row.id||'').trim();
+      if (!rawId) { addErr('ID manquant pour une ligne du tableau.'); continue; }
+      let id = idSanitize(rawId);
+      if (!id) { addErr(`ID invalide pour « ${rawId} ». Utilisez lettres, chiffres ou soulignés.`); continue; }
+      if (id !== rawId) addWarn(`ID normalisé: ${rawId} -> ${id}`);
+      if (takenIds.has(id.toLowerCase())) { addErr(`ID en double: ${id}`); continue; }
+      takenIds.add(id.toLowerCase());
+
+      const category_fr = String(row.category_fr||'').trim();
+      const category_en = String(row.category_en||'').trim();
+      const title_fr = String(row.title_fr||'').trim();
+      const title_en = String(row.title_en||'').trim();
+      const description_fr = String(row.description_fr||'').trim();
+      const description_en = String(row.description_en||'').trim();
+      const template_fr = String(row.template_fr||'').trim();
+      const template_en = String(row.template_en||'').trim();
+      const variablesDescFrRaw = row.variables_description_fr || '';
+      const variablesDescEnRaw = row.variables_description_en || '';
+
+      const mandatoryFields = [
+        ['CATEGORY_FR', category_fr],
+        ['Category_EN', category_en],
+        ['TITLE_FR', title_fr],
+        ['TITLE_EN', title_en],
+        ['DESCRIPTION_FR', description_fr],
+        ['Description_EN', description_en],
+        ['TEMPLATE_FR', template_fr],
+        ['TEMPLATE_EN', template_en],
+        ['VARIABLES_Description_FR', String(variablesDescFrRaw).trim()],
+        ['VARIABLES_Description_EN', String(variablesDescEnRaw).trim()]
+      ];
+      const missing = mandatoryFields.filter(([,value]) => !value);
+      if (missing.length) {
+        missing.forEach(([label]) => addErr(`${label} manquant pour ${id}`));
+        continue;
       }
-      takenIds.add(id);
 
-      // categories: prefer FR then EN, else default
-      let category = String(row.category_fr || row.category_en || options.defaultCategory || '').trim();
-      if (!category) addWarn(`Catégorie vide pour ${id}`);
+      const category = category_fr || category_en || options.defaultCategory || '';
 
-      // subjects/bodies
-      const subj = { fr: row.subject_fr || '', en: row.subject_en || '' };
-      const body = { fr: row.body_fr || '', en: row.body_en || '' };
+      const { map: varDescEn, issues: varIssuesEn } = parseVariableDescriptionEntries(variablesDescEnRaw);
+      const { map: varDescFr, issues: varIssuesFr } = parseVariableDescriptionEntries(variablesDescFrRaw);
+      varIssuesEn.forEach(({ entry, reason }) => addWarn(`[${id}] Variable EN invalide « ${entry} » (${reason})`));
+      varIssuesFr.forEach(({ entry, reason }) => addWarn(`[${id}] Variable FR invalide « ${entry} » (${reason})`));
 
-      // descriptions
-      let desc_fr = row.description_fr || '';
-      let desc_en = row.description_en || '';
-      if (!desc_fr) desc_fr = genShortDesc(title_fr || category);
-      if (!desc_en) desc_en = translateDesc(desc_fr);
+      const varsFrSet = new Set(extractPlaceholders(template_fr).map(canonicalVar).filter(Boolean));
+      const varsEnSet = new Set(extractPlaceholders(template_en).map(canonicalVar).filter(Boolean));
+      const varsFr = Array.from(varsFrSet).sort();
+      const varsEn = Array.from(varsEnSet).sort();
 
-      // placeholders & canonical var lists
-  const phFR = new Set([...extractPlaceholders(subj.fr), ...extractPlaceholders(body.fr)].map(canonicalVar).filter(Boolean));
-  const phEN = new Set([...extractPlaceholders(subj.en), ...extractPlaceholders(body.en)].map(canonicalVar).filter(Boolean));
-      // Vars columns
-      const listedFR = (row.vars_fr||'').split(/[;,]/).map(s=>canonicalVar(s)).filter(Boolean);
-      const listedEN = (row.vars_en||'').split(/[;,]/).map(s=>canonicalVar(s)).filter(Boolean);
-      listedFR.forEach(v => phFR.add(v)); listedEN.forEach(v => phEN.add(v));
-      const varsFr = Array.from(phFR).sort();
-      const varsEn = Array.from(phEN).sort();
+      varsFr.forEach(v => { if (!varDescFr.has(v)) addWarn(`[${id}] VARIABLES_Description_FR sans entrée pour ${v}`); });
+      varsEn.forEach(v => { if (!varDescEn.has(v)) addWarn(`[${id}] VARIABLES_Description_EN sans entrée pour ${v}`); });
+      for (const key of varDescFr.keys()) { if (!varsFrSet.has(key)) addWarn(`[${id}] Variable FR ${key} décrite mais absente du template FR`); }
+      for (const key of varDescEn.keys()) { if (!varsEnSet.has(key)) addWarn(`[${id}] Variable EN ${key} décrite mais absente du template EN`); }
 
-      // global variable catalog entries
-      function ensureVar(key, lang){
-        if (!key) return; if (!variables[key]) variables[key] = { description:{fr:'',en:''}, format:'text', example:'' };
-        const fmt = inferFormat(key); variables[key].format = fmt; if (!variables[key].example) variables[key].example = exampleFor(fmt);
-        // descriptions: try from rows vars_desc
-        const descFR = (row.vars_desc_fr||''); const descEN = (row.vars_desc_en||'');
-        if (descFR && !variables[key].description.fr) variables[key].description.fr = descFR;
-        if (descEN && !variables[key].description.en) variables[key].description.en = descEN;
+      function ensureVar(key){
+        if (!key) return;
+        if (!variables[key]) variables[key] = { description:{fr:'',en:''}, format:'text', example:'' };
+        const metaFr = varDescFr.get(key);
+        const metaEn = varDescEn.get(key);
+        const fmt = inferFormat(key);
+        variables[key].format = fmt;
+        if (metaFr?.description) variables[key].description.fr = metaFr.description;
+        if (metaEn?.description) variables[key].description.en = metaEn.description;
         if (!variables[key].description.fr) variables[key].description.fr = `Valeur pour ${key}`;
         if (!variables[key].description.en) variables[key].description.en = `Value for ${key}`;
-        // Synonym hints between FR/EN canonical names
-        const twin = synonymFor(key);
-        if (twin) {
-          variables[key].description.en = variables[key].description.en || `Equivalent in FR: ${twin}`;
-          variables[key].description.fr = variables[key].description.fr || `Équivalent en EN: ${twin}`;
+        const sample = metaFr?.defaultValue || metaEn?.defaultValue;
+        if (sample) {
+          variables[key].example = sample;
+        } else if (!variables[key].example) {
+          variables[key].example = exampleFor(fmt);
         }
       }
-      varsFr.forEach(v => ensureVar(v,'fr')); varsEn.forEach(v => ensureVar(v,'en'));
+      varsFr.forEach(v => ensureVar(v));
+      varsEn.forEach(v => ensureVar(v));
 
-      // build template object per app schema (variables as array; we also store bilingual arrays for export assistant needs)
-      const t = {
+      const variablesUnion = Array.from(new Set([...varsFr, ...varsEn]));
+      const subject = { fr: title_fr, en: title_en }; // Pas de colonne Subject : on utilise le titre.
+      const body = { fr: template_fr, en: template_en };
+
+      templates.push({
         id,
         category,
         title: { fr: title_fr, en: title_en },
-        description: { fr: desc_fr, en: desc_en },
-        subject: subj,
-        body: body,
-        variables: Array.from(new Set([...varsFr, ...varsEn]))
-      };
+        description: { fr: description_fr, en: description_en },
+        subject,
+        body,
+        variables: variablesUnion
+      });
 
-      // Validation: mandatory minimal content
-      const hasAny = Boolean(t.subject.fr || t.subject.en || t.body.fr || t.body.en);
-      if (!hasAny) { addErr(`Contenu vide pour ${id}`); continue; }
-      templates.push(t);
-      normalizedRows.push({ id, category, title_fr, title_en, subject_fr: subj.fr, subject_en: subj.en, body_fr: body.fr, body_en: body.en, varsFr, varsEn });
+      normalizedRows.push({
+        id,
+        category_fr,
+        category_en,
+        title_fr,
+        title_en,
+        description_fr,
+        description_en,
+        template_fr,
+        template_en,
+        varsFr,
+        varsEn
+      });
     }
     // Optional: suggestions generation when requested
     let suggestions = [];
@@ -260,18 +361,27 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
   async function parseAndValidate(){
     const f = inpFile?.files?.[0]; if (!f) { notify('Sélectionnez un fichier .xlsx', 'warn'); return; }
     const client = (inpClient?.value||'client').trim().toLowerCase().replace(/[^a-z0-9_]+/g,'');
-    const rows = await readXlsx(f); const objs = rowsToObjects(rows);
+    const rows = await readXlsx(f);
+    let objs;
+    try {
+      objs = rowsToObjects(rows);
+    } catch (err) {
+      show(boxErr);
+      boxErr.innerHTML = `<div><strong>Colonnes invalides</strong></div><div class="hint" style="margin-top:6px;white-space:pre-wrap">${escapeHtml(err?.message || String(err))}\n\nColonnes attendues (sans casse):\n- ${escapeHtml(REQUIRED_KEYS.map(k=>k.toUpperCase()).join(', '))}</div>`;
+      notify('Colonnes invalides.', 'warn');
+      return;
+    }
     if (!objs.length) {
       try {
         let headIdx = rows.findIndex(r => Array.isArray(r) && r.some(c => String(c||'').trim() !== ''));
         if (headIdx >= 0) {
           const rawHeader = rows[headIdx].map(c => String(c||''));
           const mapped = rawHeader.map(h => H.get(normKey(h)) || normKey(h));
-          boxErr.style.display = 'block';
+          show(boxErr);
           boxErr.innerHTML = `<div><strong>Impossible de lire des lignes après l’entête</strong></div>
-            <div class="hint" style="margin-top:6px;white-space:pre-wrap">Entêtes détectées:\n- ${escapeHtml(rawHeader.join(' | '))}\n\nCorrespondances internes:\n- ${escapeHtml(mapped.join(' | '))}\n\nColonnes acceptées: ID, CATEGORY_FR|CATEGORY_EN, TITLE_FR|TITLE_EN, DESCRIPTION_FR|DESCRIPTION_EN, SUBJECT_FR|SUBJECT_EN, BODY_FR|BODY_EN, VARS_FR|VARS_EN, VARS_DESC_FR|VARS_DESC_EN.</div>`;
+            <div class="hint" style="margin-top:6px;white-space:pre-wrap">Entêtes détectées:\n- ${escapeHtml(rawHeader.join(' | '))}\n\nCorrespondances internes:\n- ${escapeHtml(mapped.join(' | '))}\n\nColonnes attendues: ${escapeHtml(REQUIRED_KEYS.map(k=>k.toUpperCase()).join(', '))}.</div>`;
         } else {
-          boxErr.style.display = 'block';
+          show(boxErr);
           boxErr.innerHTML = `<div><strong>Aucune entête détectée</strong></div><div class="hint" style="margin-top:6px">Vérifiez que la première ligne non vide contient les noms de colonnes.</div>`;
         }
       } catch {}
@@ -281,12 +391,22 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     const { templates, variables, warnings, errors, normalizedRows, suggestions } = buildOutput(objs, { defaultCategory: inpDefaultCat?.value || '' });
 
     // Show summary
-    boxSummary.style.display = 'block';
+    show(boxSummary);
     boxSummary.innerHTML = `<div><strong>${templates.length}</strong> modèles prêts • <strong>${Object.keys(variables).length}</strong> variables au catalogue</div>`;
-    boxWarn.style.display = warnings.length ? 'block' : 'none';
-    boxWarn.innerHTML = warnings.length ? `<div><strong>Avertissements (${warnings.length})</strong></div><ul style="margin:6px 0 0 18px">${warnings.map(w=>`<li>${escapeHtml(w)}</li>`).join('')}</ul>` : '';
-    boxErr.style.display = errors.length ? 'block' : 'none';
-    boxErr.innerHTML = errors.length ? `<div><strong>Erreurs (${errors.length})</strong> — corriger avant export</div><ul style="margin:6px 0 0 18px">${errors.map(w=>`<li>${escapeHtml(w)}</li>`).join('')}</ul>` : '';
+    if (warnings.length) {
+      show(boxWarn);
+      boxWarn.innerHTML = `<div><strong>Avertissements (${warnings.length})</strong></div><ul style="margin:6px 0 0 18px">${warnings.map(w=>`<li>${escapeHtml(w)}</li>`).join('')}</ul>`;
+    } else {
+      boxWarn.innerHTML = '';
+      hide(boxWarn);
+    }
+    if (errors.length) {
+      show(boxErr);
+      boxErr.innerHTML = `<div><strong>Erreurs (${errors.length})</strong> — corriger avant export</div><ul style="margin:6px 0 0 18px">${errors.map(w=>`<li>${escapeHtml(w)}</li>`).join('')}</ul>`;
+    } else {
+      boxErr.innerHTML = '';
+      hide(boxErr);
+    }
 
     // Render rows list for inline preview
     rowsBox.innerHTML = normalizedRows.map((r, idx) => `<button data-row="${idx}" style="text-align:left;border:1px solid var(--border);background:#fff;padding:8px;border-radius:10px;cursor:pointer">${escapeHtml(r.id)} — ${escapeHtml(r.title_fr || r.title_en || '')}</button>`).join('');
@@ -294,16 +414,21 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
       btn.onclick = () => {
         const i = parseInt(btn.getAttribute('data-row'),10);
         const r = normalizedRows[i]; if (!r) return;
-        pv.style.display = '';
+        show(pv);
         pvBody.innerHTML = `
           <div class="row">
-            <div class="field"><label>Objet FR</label><input value="${escapeHtml(r.subject_fr||'')}" readonly /></div>
-            <div class="field"><label>Subject EN</label><input value="${escapeHtml(r.subject_en||'')}" readonly /></div>
+            <div class="field"><label>Titre FR</label><input value="${escapeHtml(r.title_fr||'')}" readonly /></div>
+            <div class="field"><label>Title EN</label><input value="${escapeHtml(r.title_en||'')}" readonly /></div>
           </div>
           <div class="row">
-            <div class="field"><label>Corps FR</label><textarea readonly>${escapeHtml(r.body_fr||'')}</textarea></div>
-            <div class="field"><label>Body EN</label><textarea readonly>${escapeHtml(r.body_en||'')}</textarea></div>
+            <div class="field"><label>Description FR</label><textarea readonly>${escapeHtml(r.description_fr||'')}</textarea></div>
+            <div class="field"><label>Description EN</label><textarea readonly>${escapeHtml(r.description_en||'')}</textarea></div>
           </div>
+          <div class="row">
+            <div class="field"><label>Template FR</label><textarea readonly>${escapeHtml(r.template_fr||'')}</textarea></div>
+            <div class="field"><label>Template EN</label><textarea readonly>${escapeHtml(r.template_en||'')}</textarea></div>
+          </div>
+          <div class="chips" style="margin-top:8px"><span class="chip">Cat FR: ${escapeHtml(r.category_fr)}</span><span class="chip">Cat EN: ${escapeHtml(r.category_en)}</span></div>
           <div class="chips" style="margin-top:8px"><span class="chip">Vars FR: ${escapeHtml((r.varsFr||[]).join(', '))}</span><span class="chip">Vars EN: ${escapeHtml((r.varsEn||[]).join(', '))}</span></div>
         `;
       };
@@ -326,7 +451,10 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     });
     sugBox.querySelectorAll('button[data-skip]')?.forEach(b => b.onclick = () => { b.closest('.tile')?.remove(); });
 
-    function updateSummary(){ boxSummary.innerHTML = `<div><strong>${templates.length}</strong> modèles prêts • <strong>${Object.keys(variables).length}</strong> variables au catalogue</div>`; }
+    function updateSummary(){
+      show(boxSummary);
+      boxSummary.innerHTML = `<div><strong>${templates.length}</strong> modèles prêts • <strong>${Object.keys(variables).length}</strong> variables au catalogue</div>`;
+    }
 
     // Save in memory for export
     window._excelAssistant = { templates, variables, client };
@@ -361,7 +489,7 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
   if (btnParse) btnParse.onclick = () => { parseAndValidate().catch(e => {
     console.error(e);
     try {
-      boxErr.style.display = 'block';
+      show(boxErr);
       boxErr.innerHTML = `<div><strong>Erreur d’analyse</strong></div><div class="hint" style="margin-top:6px;white-space:pre-wrap">${escapeHtml(e?.stack || e?.message || String(e))}</div>`;
     } catch {}
     notify('Échec de l’analyse', 'warn');
@@ -404,8 +532,22 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
   if (btnDlTpl) btnDlTpl.onclick = () => {
     // Build a tiny starter Excel in-memory via CSV fallback for simplicity
     const csv = [
-      ['ID','CATEGORY_FR','CATEGORY_EN','TITLE_FR','TITLE_EN','DESCRIPTION_FR','DESCRIPTION_EN','SUBJECT_FR','SUBJECT_EN','BODY_FR','BODY_EN','VARS_FR','VARS_EN','VARS_DESC_FR','VARS_DESC_EN'].join(','),
-      ['','','','Confirmation de rendez-vous','Appointment confirmation','Confirme un rendez-vous planifié','Confirms a scheduled appointment','Confirmation pour <<NumeroProjet>>','Appointment confirmation for <<ProjectNumber>>','Bonjour...','Hello...','NumeroProjet;NouvelleDate','ProjectNumber;NewDate','Identifiant de projet et nouvelle date','Project identifier and new date'].map(v=>`"${v}"`).join(',')
+      ['ID','CATEGORY_EN','CATEGORY_FR','DESCRIPTION_EN','DESCRIPTION_FR','TITLE_EN','TITLE_FR','TEMPLATE_EN','TEMPLATE_FR','VARIABLES_DESCRIPTION_EN','VARIABLES_DESCRIPTION_FR'].join(','),
+      [
+        'welcome_email',
+        'Customer Care',
+        'Service client',
+        'Welcome email for a new customer',
+        'Courriel de bienvenue pour un nouveau client',
+        'Welcome – New customer onboarding',
+        'Bienvenue – Arrivée d’un nouveau client',
+        `Hello <<customer_name_EN>>,
+Thank you for joining us. Your account number is <<account_number_EN>>.`,
+        `Bonjour <<customer_name_FR>>,
+Merci de vous être joint à nous. Votre numéro de compte est <<account_number_FR>>.`,
+        ['<<customer_name_EN>>:Customer name(Emily Roy)','<<account_number_EN>>:Account number(AC-12345)'].join('\n'),
+        ['<<customer_name_FR>>:Nom du client(Emily Roy)','<<account_number_FR>>:Numéro de compte(AC-12345)'].join('\n')
+      ].map(v=>`"${v}"`).join(',')
     ].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'assistant_excel_modele.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000); a.remove();
