@@ -96,7 +96,13 @@ npm run preview
 
 ### User Guides
 - **[Admin Console Guide](docs/ADMIN-CSV-IMPORT-GUIDE.md)**: Import/export templates and variables
-	- **Simple Admin Mode (`admin-simple.html`)**: Minimal interface for quick JSON edit/import/export (no advanced warnings, GitHub publish, or bulk CSV). Use when you only need to adjust a few template fields or sync variables. Data is stored as a local draft in `localStorage` under a separate key and won't affect the full admin until you export.
+	- **Unified Simple Admin (`admin-simple.html`)**: The sole admin interface. Provides quick JSON edit/import/export plus integrated Excel (.xlsx) import & export template generation. Use it to:
+	  - Edit titles, descriptions, subjects, and body text in FR/EN
+	  - Detect placeholders and sync template variables
+	  - Add missing variables to the global catalog
+	  - Import Excel to bulk add/update templates & variables
+	  - Export current state to JSON or Excel (Templates + Variables + Metadata sheets)
+	  All changes are stored locally as a draft (in `localStorage`) until you export the JSON.
 - **[AI Usage Guide](docs/AI-USAGE-QUICK-REFERENCE.md)**: Use AI to generate content
 - **[Help Center](help.html)**: In-app help and troubleshooting
 
@@ -217,7 +223,10 @@ echo-v1.0.0/
 ├── docs/                          # Documentation
 ├── imports/                       # Example CSV files
 ├── scripts/                       # Utility scripts
-├── admin.html                     # Admin console
+├── admin-simple.html              # Unified simple admin (Excel + JSON)
+├── admin-simple-help.html         # Popout help for simple admin
+├── admin.html                     # Legacy redirect to simple admin
+├── admin-excel.html               # Legacy redirect to simple admin
 ├── help.html                      # Help center
 └── index.html                     # Main entry point
 ```
