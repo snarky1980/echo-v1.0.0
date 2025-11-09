@@ -8430,7 +8430,7 @@ const getDefaultState = () => ({
   favoritesOnly: false
 });
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -8455,7 +8455,7 @@ const hasA11yProp = (props) => {
   }
 };
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -8472,7 +8472,7 @@ var defaultAttributes = {
   strokeLinejoin: "round"
 };
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -8507,7 +8507,7 @@ const Icon$1 = reactExports.forwardRef(
   )
 );
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -8529,25 +8529,73 @@ const createLucideIcon = (iconName, iconNode) => {
   return Component;
 };
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$N = [
-  [
-    "path",
-    { d: "M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8", key: "mg9rjx" }
-  ]
+  ["path", { d: "M17 12H7", key: "16if0g" }],
+  ["path", { d: "M19 18H5", key: "18s9l3" }],
+  ["path", { d: "M21 6H3", key: "1jwq7v" }]
 ];
-const Bold = createLucideIcon("bold", __iconNode$N);
+const AlignCenter = createLucideIcon("align-center", __iconNode$N);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$M = [
+  ["path", { d: "M3 12h18", key: "1i2n21" }],
+  ["path", { d: "M3 18h18", key: "1h113x" }],
+  ["path", { d: "M3 6h18", key: "d0wm0j" }]
+];
+const AlignJustify = createLucideIcon("align-justify", __iconNode$M);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$L = [
+  ["path", { d: "M21 12H9", key: "dn1m92" }],
+  ["path", { d: "M21 18H7", key: "1ygte8" }],
+  ["path", { d: "M21 6H3", key: "1jwq7v" }]
+];
+const AlignRight = createLucideIcon("align-right", __iconNode$L);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$K = [
+  ["path", { d: "M15 12H3", key: "6jk70r" }],
+  ["path", { d: "M17 18H3", key: "1amg6g" }],
+  ["path", { d: "M21 6H3", key: "1jwq7v" }]
+];
+const AlignLeft = createLucideIcon("align-left", __iconNode$K);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$J = [
+  [
+    "path",
+    { d: "M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8", key: "mg9rjx" }
+  ]
+];
+const Bold = createLucideIcon("bold", __iconNode$J);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$I = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
     "path",
@@ -8557,100 +8605,101 @@ const __iconNode$M = [
     }
   ]
 ];
-const BookOpen = createLucideIcon("book-open", __iconNode$M);
+const BookOpen = createLucideIcon("book-open", __iconNode$I);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$L = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const Check = createLucideIcon("check", __iconNode$L);
+const __iconNode$H = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const Check = createLucideIcon("check", __iconNode$H);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$K = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-const ChevronDown = createLucideIcon("chevron-down", __iconNode$K);
+const __iconNode$G = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+const ChevronDown = createLucideIcon("chevron-down", __iconNode$G);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$J = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-const ChevronUp = createLucideIcon("chevron-up", __iconNode$J);
+const __iconNode$F = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+const ChevronUp = createLucideIcon("chevron-up", __iconNode$F);
 /**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$I = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
-  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
-];
-const CircleAlert = createLucideIcon("circle-alert", __iconNode$I);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$H = [
-  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
-  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
-];
-const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$H);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$G = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
-];
-const CircleCheck = createLucideIcon("circle-check", __iconNode$G);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$F = [
-  ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
-  ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
-];
-const Copy = createLucideIcon("copy", __iconNode$F);
-/**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$E = [
-  [
-    "path",
-    {
-      d: "M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21",
-      key: "g5wo59"
-    }
-  ],
-  ["path", { d: "m5.082 11.09 8.828 8.828", key: "1wx5vj" }]
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ];
-const Eraser = createLucideIcon("eraser", __iconNode$E);
+const CircleAlert = createLucideIcon("circle-alert", __iconNode$E);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$D = [
+  ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+  ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+];
+const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$D);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$C = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+];
+const CircleCheck = createLucideIcon("circle-check", __iconNode$C);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$B = [
+  ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
+  ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
+];
+const Copy = createLucideIcon("copy", __iconNode$B);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$A = [
+  [
+    "path",
+    {
+      d: "m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21",
+      key: "182aya"
+    }
+  ],
+  ["path", { d: "M22 21H7", key: "t4ddhn" }],
+  ["path", { d: "m5 11 9 9", key: "1mo9qw" }]
+];
+const Eraser = createLucideIcon("eraser", __iconNode$A);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$z = [
   ["path", { d: "m15 15 6 6", key: "1s409w" }],
   ["path", { d: "m15 9 6-6", key: "ko1vev" }],
   ["path", { d: "M21 16v5h-5", key: "1ck2sf" }],
@@ -8660,40 +8709,40 @@ const __iconNode$D = [
   ["path", { d: "M3 8V3h5", key: "1ln10m" }],
   ["path", { d: "M9 9 3 3", key: "v551iv" }]
 ];
-const Expand = createLucideIcon("expand", __iconNode$D);
+const Expand = createLucideIcon("expand", __iconNode$z);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$C = [
+const __iconNode$y = [
   ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
   ["path", { d: "M10 14 21 3", key: "gplh6r" }],
   ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
 ];
-const ExternalLink = createLucideIcon("external-link", __iconNode$C);
+const ExternalLink = createLucideIcon("external-link", __iconNode$y);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$B = [
+const __iconNode$x = [
   ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
   ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
   ["path", { d: "M10 9H8", key: "b1mrlr" }],
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
 ];
-const FileText = createLucideIcon("file-text", __iconNode$B);
+const FileText = createLucideIcon("file-text", __iconNode$x);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$A = [
+const __iconNode$w = [
   [
     "path",
     {
@@ -8702,61 +8751,61 @@ const __iconNode$A = [
     }
   ]
 ];
-const Funnel = createLucideIcon("funnel", __iconNode$A);
+const Funnel = createLucideIcon("funnel", __iconNode$w);
 /**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$z = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
-  ["path", { d: "M2 12h20", key: "9i4pu4" }]
-];
-const Globe = createLucideIcon("globe", __iconNode$z);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$y = [
-  ["path", { d: "m9 11-6 6v3h9l3-3", key: "1a3l36" }],
-  ["path", { d: "m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4", key: "14a9rk" }]
-];
-const Highlighter = createLucideIcon("highlighter", __iconNode$y);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$x = [
-  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-  ["path", { d: "M12 16v-4", key: "1dtifu" }],
-  ["path", { d: "M12 8h.01", key: "e9boi3" }]
-];
-const Info = createLucideIcon("info", __iconNode$x);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$w = [
-  ["line", { x1: "19", x2: "10", y1: "4", y2: "4", key: "15jd3p" }],
-  ["line", { x1: "14", x2: "5", y1: "20", y2: "20", key: "bu0au3" }],
-  ["line", { x1: "15", x2: "9", y1: "4", y2: "20", key: "uljnxc" }]
-];
-const Italic = createLucideIcon("italic", __iconNode$w);
-/**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$v = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+  ["path", { d: "M2 12h20", key: "9i4pu4" }]
+];
+const Globe = createLucideIcon("globe", __iconNode$v);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$u = [
+  ["path", { d: "m9 11-6 6v3h9l3-3", key: "1a3l36" }],
+  ["path", { d: "m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4", key: "14a9rk" }]
+];
+const Highlighter = createLucideIcon("highlighter", __iconNode$u);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$t = [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
+];
+const Info = createLucideIcon("info", __iconNode$t);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$s = [
+  ["line", { x1: "19", x2: "10", y1: "4", y2: "4", key: "15jd3p" }],
+  ["line", { x1: "14", x2: "5", y1: "20", y2: "20", key: "bu0au3" }],
+  ["line", { x1: "15", x2: "9", y1: "4", y2: "20", key: "uljnxc" }]
+];
+const Italic = createLucideIcon("italic", __iconNode$s);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$r = [
   ["path", { d: "m5 8 6 6", key: "1wu5hv" }],
   ["path", { d: "m4 14 6-6 2-3", key: "1k1g8d" }],
   ["path", { d: "M2 5h12", key: "or177f" }],
@@ -8764,14 +8813,14 @@ const __iconNode$v = [
   ["path", { d: "m22 22-5-10-5 10", key: "don7ne" }],
   ["path", { d: "M14 18h6", key: "1m8k6r" }]
 ];
-const Languages = createLucideIcon("languages", __iconNode$v);
+const Languages = createLucideIcon("languages", __iconNode$r);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$u = [
+const __iconNode$q = [
   [
     "path",
     {
@@ -8782,114 +8831,108 @@ const __iconNode$u = [
   ["path", { d: "M9 18h6", key: "x1upvd" }],
   ["path", { d: "M10 22h4", key: "ceow96" }]
 ];
-const Lightbulb = createLucideIcon("lightbulb", __iconNode$u);
+const Lightbulb = createLucideIcon("lightbulb", __iconNode$q);
 /**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$t = [
-  ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
-  ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
-];
-const Link = createLucideIcon("link", __iconNode$t);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$s = [
-  ["path", { d: "M11 5h10", key: "1cz7ny" }],
-  ["path", { d: "M11 12h10", key: "1438ji" }],
-  ["path", { d: "M11 19h10", key: "11t30w" }],
-  ["path", { d: "M4 4h1v5", key: "10yrso" }],
-  ["path", { d: "M4 9h2", key: "r1h2o0" }],
-  ["path", { d: "M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02", key: "xtkcd5" }]
-];
-const ListOrdered = createLucideIcon("list-ordered", __iconNode$s);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$r = [
-  ["path", { d: "M3 5h.01", key: "18ugdj" }],
-  ["path", { d: "M3 12h.01", key: "nlz23k" }],
-  ["path", { d: "M3 19h.01", key: "noohij" }],
-  ["path", { d: "M8 5h13", key: "1pao27" }],
-  ["path", { d: "M8 12h13", key: "1za7za" }],
-  ["path", { d: "M8 19h13", key: "m83p4d" }]
-];
-const List = createLucideIcon("list", __iconNode$r);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$q = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
-const LoaderCircle = createLucideIcon("loader-circle", __iconNode$q);
-/**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$p = [
-  ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
-  ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
+  ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
+  ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
 ];
-const Mail = createLucideIcon("mail", __iconNode$p);
+const Link = createLucideIcon("link", __iconNode$p);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$o = [
-  [
-    "path",
-    {
-      d: "M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719",
-      key: "1sd12s"
-    }
-  ]
+  ["path", { d: "M10 12h11", key: "6m4ad9" }],
+  ["path", { d: "M10 18h11", key: "11hvi2" }],
+  ["path", { d: "M10 6h11", key: "c7qv1k" }],
+  ["path", { d: "M4 10h2", key: "16xx2s" }],
+  ["path", { d: "M4 6h1v4", key: "cnovpq" }],
+  ["path", { d: "M6 18H4c0-1 2-2 2-3s-1-1.5-2-1", key: "m9a95d" }]
 ];
-const MessageCircle = createLucideIcon("message-circle", __iconNode$o);
+const ListOrdered = createLucideIcon("list-ordered", __iconNode$o);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$n = [
-  ["path", { d: "m14 10 7-7", key: "oa77jy" }],
-  ["path", { d: "M20 10h-6V4", key: "mjg0md" }],
-  ["path", { d: "m3 21 7-7", key: "tjx5ai" }],
-  ["path", { d: "M4 14h6v6", key: "rmj7iw" }]
+  ["path", { d: "M3 12h.01", key: "nlz23k" }],
+  ["path", { d: "M3 18h.01", key: "1tta3j" }],
+  ["path", { d: "M3 6h.01", key: "1rqtza" }],
+  ["path", { d: "M8 12h13", key: "1za7za" }],
+  ["path", { d: "M8 18h13", key: "1lx6n3" }],
+  ["path", { d: "M8 6h13", key: "ik3vkj" }]
 ];
-const Minimize2 = createLucideIcon("minimize-2", __iconNode$n);
+const List = createLucideIcon("list", __iconNode$n);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$m = [
-  ["path", { d: "M18 8L22 12L18 16", key: "1r0oui" }],
-  ["path", { d: "M2 12H22", key: "1m8cig" }]
-];
-const MoveRight = createLucideIcon("move-right", __iconNode$m);
+const __iconNode$m = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "13zald" }]];
+const LoaderCircle = createLucideIcon("loader-circle", __iconNode$m);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$l = [
+  ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+  ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
+];
+const Mail = createLucideIcon("mail", __iconNode$l);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$k = [
+  ["path", { d: "M7.9 20A9 9 0 1 0 4 16.1L2 22Z", key: "vv11sd" }]
+];
+const MessageCircle = createLucideIcon("message-circle", __iconNode$k);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$j = [
+  ["polyline", { points: "4 14 10 14 10 20", key: "11kfnr" }],
+  ["polyline", { points: "20 10 14 10 14 4", key: "rlmsce" }],
+  ["line", { x1: "14", x2: "21", y1: "10", y2: "3", key: "o5lafz" }],
+  ["line", { x1: "3", x2: "10", y1: "21", y2: "14", key: "1atl0r" }]
+];
+const Minimize2 = createLucideIcon("minimize-2", __iconNode$j);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$i = [
+  ["path", { d: "M18 8L22 12L18 16", key: "1r0oui" }],
+  ["path", { d: "M2 12H22", key: "1m8cig" }]
+];
+const MoveRight = createLucideIcon("move-right", __iconNode$i);
+/**
+ * @license lucide-react v0.510.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const __iconNode$h = [
   [
     "path",
     {
@@ -8902,31 +8945,31 @@ const __iconNode$l = [
   ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
   ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
 ];
-const Palette = createLucideIcon("palette", __iconNode$l);
+const Palette = createLucideIcon("palette", __iconNode$h);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$k = [
-  ["path", { d: "M13 21h8", key: "1jsn5i" }],
+const __iconNode$g = [
+  ["path", { d: "M12 20h9", key: "t2du7b" }],
   [
     "path",
     {
-      d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
-      key: "1a8usu"
+      d: "M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z",
+      key: "1ykcvy"
     }
   ]
 ];
-const PenLine = createLucideIcon("pen-line", __iconNode$k);
+const PenLine = createLucideIcon("pen-line", __iconNode$g);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$j = [
+const __iconNode$f = [
   ["path", { d: "M12 17v5", key: "bb1du9" }],
   ["path", { d: "M15 9.34V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H7.89", key: "znwnzq" }],
   ["path", { d: "m2 2 20 20", key: "1ooewy" }],
@@ -8938,14 +8981,14 @@ const __iconNode$j = [
     }
   ]
 ];
-const PinOff = createLucideIcon("pin-off", __iconNode$j);
+const PinOff = createLucideIcon("pin-off", __iconNode$f);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$i = [
+const __iconNode$e = [
   ["path", { d: "M12 17v5", key: "bb1du9" }],
   [
     "path",
@@ -8955,36 +8998,36 @@ const __iconNode$i = [
     }
   ]
 ];
-const Pin = createLucideIcon("pin", __iconNode$i);
+const Pin = createLucideIcon("pin", __iconNode$e);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$h = [
+const __iconNode$d = [
   ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
   ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
 ];
-const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$h);
+const RotateCcw = createLucideIcon("rotate-ccw", __iconNode$d);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$g = [
+const __iconNode$c = [
   ["path", { d: "m21 21-4.34-4.34", key: "14j7rj" }],
   ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }]
 ];
-const Search = createLucideIcon("search", __iconNode$g);
+const Search = createLucideIcon("search", __iconNode$c);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
-const __iconNode$f = [
+const __iconNode$b = [
   [
     "path",
     {
@@ -8994,74 +9037,9 @@ const __iconNode$f = [
   ],
   ["path", { d: "m21.854 2.147-10.94 10.939", key: "12cjpa" }]
 ];
-const Send = createLucideIcon("send", __iconNode$f);
+const Send = createLucideIcon("send", __iconNode$b);
 /**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$e = [
-  [
-    "path",
-    {
-      d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915",
-      key: "1i5ecw"
-    }
-  ],
-  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
-];
-const Settings = createLucideIcon("settings", __iconNode$e);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$d = [
-  [
-    "path",
-    {
-      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-      key: "oel41y"
-    }
-  ]
-];
-const Shield = createLucideIcon("shield", __iconNode$d);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$c = [
-  ["path", { d: "m15 15 6 6m-6-6v4.8m0-4.8h4.8", key: "17vawe" }],
-  ["path", { d: "M9 19.8V15m0 0H4.2M9 15l-6 6", key: "chjx8e" }],
-  ["path", { d: "M15 4.2V9m0 0h4.8M15 9l6-6", key: "lav6yq" }],
-  ["path", { d: "M9 4.2V9m0 0H4.2M9 9 3 3", key: "1pxi2q" }]
-];
-const Shrink = createLucideIcon("shrink", __iconNode$c);
-/**
- * @license lucide-react v0.546.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-const __iconNode$b = [
-  [
-    "path",
-    {
-      d: "M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z",
-      key: "1s2grr"
-    }
-  ],
-  ["path", { d: "M20 2v4", key: "1rf3ol" }],
-  ["path", { d: "M22 4h-4", key: "gwowj6" }],
-  ["circle", { cx: "4", cy: "20", r: "2", key: "6kqj1y" }]
-];
-const Sparkles = createLucideIcon("sparkles", __iconNode$b);
-/**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -9070,74 +9048,92 @@ const __iconNode$a = [
   [
     "path",
     {
-      d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
-      key: "r04s7s"
+      d: "M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z",
+      key: "1qme2f"
     }
-  ]
+  ],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
 ];
-const Star = createLucideIcon("star", __iconNode$a);
+const Settings = createLucideIcon("settings", __iconNode$a);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$9 = [
-  ["path", { d: "M16 4H9a3 3 0 0 0-2.83 4", key: "43sutm" }],
-  ["path", { d: "M14 12a4 4 0 0 1 0 8H6", key: "nlfj13" }],
-  ["line", { x1: "4", x2: "20", y1: "12", y2: "12", key: "1e0a9i" }]
+  [
+    "path",
+    {
+      d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+      key: "oel41y"
+    }
+  ]
 ];
-const Strikethrough = createLucideIcon("strikethrough", __iconNode$9);
+const Shield = createLucideIcon("shield", __iconNode$9);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$8 = [
-  ["path", { d: "M21 5H3", key: "1fi0y6" }],
-  ["path", { d: "M17 12H7", key: "16if0g" }],
-  ["path", { d: "M19 19H5", key: "vjpgq2" }]
+  ["path", { d: "m15 15 6 6m-6-6v4.8m0-4.8h4.8", key: "17vawe" }],
+  ["path", { d: "M9 19.8V15m0 0H4.2M9 15l-6 6", key: "chjx8e" }],
+  ["path", { d: "M15 4.2V9m0 0h4.8M15 9l6-6", key: "lav6yq" }],
+  ["path", { d: "M9 4.2V9m0 0H4.2M9 9 3 3", key: "1pxi2q" }]
 ];
-const TextAlignCenter = createLucideIcon("text-align-center", __iconNode$8);
+const Shrink = createLucideIcon("shrink", __iconNode$8);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$7 = [
-  ["path", { d: "M21 5H3", key: "1fi0y6" }],
-  ["path", { d: "M21 12H9", key: "dn1m92" }],
-  ["path", { d: "M21 19H7", key: "4cu937" }]
+  [
+    "path",
+    {
+      d: "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
+      key: "4pj2yx"
+    }
+  ],
+  ["path", { d: "M20 3v4", key: "1olli1" }],
+  ["path", { d: "M22 5h-4", key: "1gvqau" }],
+  ["path", { d: "M4 17v2", key: "vumght" }],
+  ["path", { d: "M5 18H3", key: "zchphs" }]
 ];
-const TextAlignEnd = createLucideIcon("text-align-end", __iconNode$7);
+const Sparkles = createLucideIcon("sparkles", __iconNode$7);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$6 = [
-  ["path", { d: "M3 5h18", key: "1u36vt" }],
-  ["path", { d: "M3 12h18", key: "1i2n21" }],
-  ["path", { d: "M3 19h18", key: "awlh7x" }]
+  [
+    "path",
+    {
+      d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
+      key: "r04s7s"
+    }
+  ]
 ];
-const TextAlignJustify = createLucideIcon("text-align-justify", __iconNode$6);
+const Star = createLucideIcon("star", __iconNode$6);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$5 = [
-  ["path", { d: "M21 5H3", key: "1fi0y6" }],
-  ["path", { d: "M15 12H3", key: "6jk70r" }],
-  ["path", { d: "M17 19H3", key: "z6ezky" }]
+  ["path", { d: "M16 4H9a3 3 0 0 0-2.83 4", key: "43sutm" }],
+  ["path", { d: "M14 12a4 4 0 0 1 0 8H6", key: "nlfj13" }],
+  ["line", { x1: "4", x2: "20", y1: "12", y2: "12", key: "1e0a9i" }]
 ];
-const TextAlignStart = createLucideIcon("text-align-start", __iconNode$5);
+const Strikethrough = createLucideIcon("strikethrough", __iconNode$5);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -9155,19 +9151,19 @@ const __iconNode$4 = [
 ];
 const TriangleAlert = createLucideIcon("triangle-alert", __iconNode$4);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$3 = [
-  ["path", { d: "M12 4v16", key: "1654pz" }],
-  ["path", { d: "M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2", key: "e0r10z" }],
-  ["path", { d: "M9 20h6", key: "s66wpe" }]
+  ["polyline", { points: "4 7 4 4 20 4 20 7", key: "1nosan" }],
+  ["line", { x1: "9", x2: "15", y1: "20", y2: "20", key: "swin9y" }],
+  ["line", { x1: "12", x2: "12", y1: "4", y2: "20", key: "1tx1rr" }]
 ];
 const Type = createLucideIcon("type", __iconNode$3);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -9178,7 +9174,7 @@ const __iconNode$2 = [
 ];
 const Underline = createLucideIcon("underline", __iconNode$2);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -9201,7 +9197,7 @@ const __iconNode$1 = [
 ];
 const WandSparkles = createLucideIcon("wand-sparkles", __iconNode$1);
 /**
- * @license lucide-react v0.546.0 - ISC
+ * @license lucide-react v0.510.0 - ISC
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
@@ -9246,24 +9242,13 @@ function composeRefs(...refs) {
 function useComposedRefs(...refs) {
   return reactExports.useCallback(composeRefs(...refs), refs);
 }
-var REACT_LAZY_TYPE = Symbol.for("react.lazy");
-var use = React$1[" use ".trim().toString()];
-function isPromiseLike(value) {
-  return typeof value === "object" && value !== null && "then" in value;
-}
-function isLazyComponent(element) {
-  return element != null && typeof element === "object" && "$$typeof" in element && element.$$typeof === REACT_LAZY_TYPE && "_payload" in element && isPromiseLike(element._payload);
-}
 // @__NO_SIDE_EFFECTS__
-function createSlot$3(ownerName) {
-  const SlotClone = /* @__PURE__ */ createSlotClone$3(ownerName);
+function createSlot(ownerName) {
+  const SlotClone = /* @__PURE__ */ createSlotClone(ownerName);
   const Slot2 = reactExports.forwardRef((props, forwardedRef) => {
-    let { children, ...slotProps } = props;
-    if (isLazyComponent(children) && typeof use === "function") {
-      children = use(children._payload);
-    }
+    const { children, ...slotProps } = props;
     const childrenArray = reactExports.Children.toArray(children);
-    const slottable = childrenArray.find(isSlottable$3);
+    const slottable = childrenArray.find(isSlottable);
     if (slottable) {
       const newElement = slottable.props.children;
       const newChildren = childrenArray.map((child) => {
@@ -9281,17 +9266,14 @@ function createSlot$3(ownerName) {
   Slot2.displayName = `${ownerName}.Slot`;
   return Slot2;
 }
-var Slot$1 = /* @__PURE__ */ createSlot$3("Slot");
+var Slot$1 = /* @__PURE__ */ createSlot("Slot");
 // @__NO_SIDE_EFFECTS__
-function createSlotClone$3(ownerName) {
+function createSlotClone(ownerName) {
   const SlotClone = reactExports.forwardRef((props, forwardedRef) => {
-    let { children, ...slotProps } = props;
-    if (isLazyComponent(children) && typeof use === "function") {
-      children = use(children._payload);
-    }
+    const { children, ...slotProps } = props;
     if (reactExports.isValidElement(children)) {
-      const childrenRef = getElementRef$4(children);
-      const props2 = mergeProps$3(slotProps, children.props);
+      const childrenRef = getElementRef$1(children);
+      const props2 = mergeProps(slotProps, children.props);
       if (children.type !== reactExports.Fragment) {
         props2.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
       }
@@ -9302,11 +9284,11 @@ function createSlotClone$3(ownerName) {
   SlotClone.displayName = `${ownerName}.SlotClone`;
   return SlotClone;
 }
-var SLOTTABLE_IDENTIFIER$3 = Symbol("radix.slottable");
-function isSlottable$3(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER$3;
+var SLOTTABLE_IDENTIFIER = Symbol("radix.slottable");
+function isSlottable(child) {
+  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER;
 }
-function mergeProps$3(slotProps, childProps) {
+function mergeProps(slotProps, childProps) {
   const overrideProps = { ...childProps };
   for (const propName in childProps) {
     const slotPropValue = slotProps[propName];
@@ -9330,7 +9312,7 @@ function mergeProps$3(slotProps, childProps) {
   }
   return { ...slotProps, ...overrideProps };
 }
-function getElementRef$4(element) {
+function getElementRef$1(element) {
   var _a, _b;
   let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
   let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
@@ -10367,7 +10349,7 @@ const RichTextToolbar = ({ onCommand, className = "", disabled = false }) => {
               onMouseDown: (e) => e.preventDefault(),
               onClick: () => executeCommand("justifyLeft"),
               title: "Align Left",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(TextAlignStart, { className: "h-5 w-5" })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlignLeft, { className: "h-5 w-5" })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -10380,7 +10362,7 @@ const RichTextToolbar = ({ onCommand, className = "", disabled = false }) => {
               onMouseDown: (e) => e.preventDefault(),
               onClick: () => executeCommand("justifyCenter"),
               title: "Align Center",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(TextAlignCenter, { className: "h-5 w-5" })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlignCenter, { className: "h-5 w-5" })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -10393,7 +10375,7 @@ const RichTextToolbar = ({ onCommand, className = "", disabled = false }) => {
               onMouseDown: (e) => e.preventDefault(),
               onClick: () => executeCommand("justifyRight"),
               title: "Align Right",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(TextAlignEnd, { className: "h-5 w-5" })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlignRight, { className: "h-5 w-5" })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -10406,7 +10388,7 @@ const RichTextToolbar = ({ onCommand, className = "", disabled = false }) => {
               onMouseDown: (e) => e.preventDefault(),
               onClick: () => executeCommand("justifyFull"),
               title: "Justify",
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(TextAlignJustify, { className: "h-5 w-5" })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(AlignJustify, { className: "h-5 w-5" })
             }
           )
         ] }),
@@ -11315,90 +11297,7 @@ ${emailText}`;
     ] }) })
   ] });
 };
-// @__NO_SIDE_EFFECTS__
-function createSlot$2(ownerName) {
-  const SlotClone = /* @__PURE__ */ createSlotClone$2(ownerName);
-  const Slot2 = reactExports.forwardRef((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
-    const childrenArray = reactExports.Children.toArray(children);
-    const slottable = childrenArray.find(isSlottable$2);
-    if (slottable) {
-      const newElement = slottable.props.children;
-      const newChildren = childrenArray.map((child) => {
-        if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
-        } else {
-          return child;
-        }
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
-  });
-  Slot2.displayName = `${ownerName}.Slot`;
-  return Slot2;
-}
-// @__NO_SIDE_EFFECTS__
-function createSlotClone$2(ownerName) {
-  const SlotClone = reactExports.forwardRef((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
-    if (reactExports.isValidElement(children)) {
-      const childrenRef = getElementRef$3(children);
-      const props2 = mergeProps$2(slotProps, children.props);
-      if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
-      }
-      return reactExports.cloneElement(children, props2);
-    }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
-  });
-  SlotClone.displayName = `${ownerName}.SlotClone`;
-  return SlotClone;
-}
-var SLOTTABLE_IDENTIFIER$2 = Symbol("radix.slottable");
-function isSlottable$2(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER$2;
-}
-function mergeProps$2(slotProps, childProps) {
-  const overrideProps = { ...childProps };
-  for (const propName in childProps) {
-    const slotPropValue = slotProps[propName];
-    const childPropValue = childProps[propName];
-    const isHandler = /^on[A-Z]/.test(propName);
-    if (isHandler) {
-      if (slotPropValue && childPropValue) {
-        overrideProps[propName] = (...args) => {
-          const result = childPropValue(...args);
-          slotPropValue(...args);
-          return result;
-        };
-      } else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
-      }
-    } else if (propName === "style") {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
-    }
-  }
-  return { ...slotProps, ...overrideProps };
-}
-function getElementRef$3(element) {
-  var _a, _b;
-  let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
-  let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-  if (mayWarn) {
-    return element.ref;
-  }
-  getter = (_b = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b.get;
-  mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-  if (mayWarn) {
-    return element.props.ref;
-  }
-  return element.props.ref || element.ref;
-}
-var NODES$1 = [
+var NODES = [
   "a",
   "button",
   "div",
@@ -11417,8 +11316,8 @@ var NODES$1 = [
   "svg",
   "ul"
 ];
-var Primitive$1 = NODES$1.reduce((primitive, node) => {
-  const Slot2 = /* @__PURE__ */ createSlot$2(`Primitive.${node}`);
+var Primitive = NODES.reduce((primitive, node) => {
+  const Slot2 = /* @__PURE__ */ createSlot(`Primitive.${node}`);
   const Node2 = reactExports.forwardRef((props, forwardedRef) => {
     const { asChild, ...primitiveProps } = props;
     const Comp = asChild ? Slot2 : node;
@@ -11445,7 +11344,7 @@ var Presence = (props) => {
   const { present, children } = props;
   const presence = usePresence(present);
   const child = typeof children === "function" ? children({ present: presence.isPresent }) : reactExports.Children.only(children);
-  const ref = useComposedRefs(presence.ref, getElementRef$2(child));
+  const ref = useComposedRefs(presence.ref, getElementRef(child));
   const forceMount = typeof children === "function";
   return forceMount || presence.isPresent ? reactExports.cloneElement(child, { ref }) : null;
 };
@@ -11544,7 +11443,7 @@ function usePresence(present) {
 function getAnimationName(styles) {
   return (styles == null ? void 0 : styles.animationName) || "none";
 }
-function getElementRef$2(element) {
+function getElementRef(element) {
   var _a, _b;
   let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
   let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
@@ -11695,7 +11594,7 @@ var ScrollArea$1 = reactExports.forwardRef(
         onCornerWidthChange: setCornerWidth,
         onCornerHeightChange: setCornerHeight,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Primitive$1.div,
+          Primitive.div,
           {
             dir: direction,
             ...scrollAreaProps,
@@ -11732,7 +11631,7 @@ var ScrollAreaViewport = reactExports.forwardRef(
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive$1.div,
+        Primitive.div,
         {
           "data-radix-scroll-area-viewport": "",
           ...viewportProps,
@@ -12118,7 +12017,7 @@ var ScrollAreaScrollbarImpl = reactExports.forwardRef((props, forwardedRef) => {
       onThumbPositionChange: handleThumbPositionChange,
       onThumbPointerDown: useCallbackRef$1(onThumbPointerDown),
       children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive$1.div,
+        Primitive.div,
         {
           ...scrollbarProps,
           ref: composeRefs2,
@@ -12192,7 +12091,7 @@ var ScrollAreaThumbImpl = reactExports.forwardRef(
       }
     }, [scrollAreaContext.viewport, debounceScrollEnd, onThumbPositionChange]);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.div,
+      Primitive.div,
       {
         "data-state": scrollbarContext.hasThumb ? "visible" : "hidden",
         ...thumbProps,
@@ -12244,7 +12143,7 @@ var ScrollAreaCornerImpl = reactExports.forwardRef((props, forwardedRef) => {
     setWidth(width2);
   });
   return hasSize ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive$1.div,
+    Primitive.div,
     {
       ...cornerProps,
       ref: forwardedRef,
@@ -12394,38 +12293,6 @@ const ScrollBar = reactExports.forwardRef(({ className, orientation = "vertical"
   }
 ));
 ScrollBar.displayName = ScrollAreaScrollbar.displayName;
-var NODES = [
-  "a",
-  "button",
-  "div",
-  "form",
-  "h2",
-  "h3",
-  "img",
-  "input",
-  "label",
-  "li",
-  "nav",
-  "ol",
-  "p",
-  "select",
-  "span",
-  "svg",
-  "ul"
-];
-var Primitive = NODES.reduce((primitive, node) => {
-  const Slot2 = /* @__PURE__ */ createSlot$3(`Primitive.${node}`);
-  const Node2 = reactExports.forwardRef((props, forwardedRef) => {
-    const { asChild, ...primitiveProps } = props;
-    const Comp = asChild ? Slot2 : node;
-    if (typeof window !== "undefined") {
-      window[Symbol.for("radix-ui")] = true;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Comp, { ...primitiveProps, ref: forwardedRef });
-  });
-  Node2.displayName = `Primitive.${node}`;
-  return { ...primitive, [node]: Node2 };
-}, {});
 var NAME$2 = "Separator";
 var DEFAULT_ORIENTATION = "horizontal";
 var ORIENTATIONS = ["horizontal", "vertical"];
@@ -12514,7 +12381,8 @@ const translations = {
         heading: "Copier & Outlook",
         points: [
           "Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles.",
-          "« Ouvrir dans Outlook » compose un nouveau message avec votre client par défaut. Certaines organisations bloquent les liens mailto:.",
+          "Deux options Outlook: « Ouvrir dans Outlook classique » (application de bureau) et « Ouvrir dans Outlook Web » (navigateur).",
+          "« Ouvrir dans Outlook classique » tente d'utiliser l'application de bureau via les protocoles outlook:// et ms-outlook:. Si votre organisation bloque ces liens, utilisez Copier tout ou le bouton Web.",
           "Le lien direct (icône de lien) inclut l'identifiant et la langue dans l'URL."
         ]
       },
@@ -12583,7 +12451,8 @@ const translations = {
           title: "Le bouton “Ouvrir dans Outlook” ne fait rien",
           steps: [
             "Confirmez qu'un modèle est sélectionné. Le bouton s'active uniquement quand un contenu final est disponible.",
-            "Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook."
+            "Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook.",
+            "Si cela ouvre Outlook (nouveau) ou le web, définissez « Outlook (classique) » comme application Courriel par défaut dans Windows et comme gestionnaire pour les protocoles outlook et ms-outlook."
           ]
         }
       ]
@@ -12686,7 +12555,8 @@ const translations = {
         heading: "Copying & Outlook",
         points: [
           "Copy Subject / Copy Body / Copy All buttons include your current values.",
-          "“Open in Outlook” composes a draft with your default client. Some orgs block mailto: links.",
+          "Two Outlook options: “Open in Outlook Classic” (desktop app) and “Open in Outlook Web” (browser).",
+          "“Open in Outlook Classic” tries desktop via outlook:// and ms-outlook: protocols. If your org blocks these, use Copy All or the Web button.",
           "The direct-link icon includes id & language in the URL."
         ]
       },
@@ -12755,7 +12625,8 @@ const translations = {
           title: "“Open in Outlook” button does nothing",
           steps: [
             "Confirm that a template is selected. The button is enabled only when final content is available.",
-            "Some organizations block `mailto:` links. If that's the case, use Copy all and paste into Outlook manually."
+            "Some organizations block `mailto:` links. If that's the case, use Copy all and paste into Outlook manually.",
+            "If this opens New Outlook or the web, set “Outlook (Classic)” as the default Email app on Windows and as the handler for outlook and ms-outlook protocols."
           ]
         }
       ]
@@ -13280,89 +13151,6 @@ const badgeVariants = cva(
 function Badge({ className, variant, ...props }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cn(badgeVariants({ variant }), className), ...props });
 }
-// @__NO_SIDE_EFFECTS__
-function createSlot$1(ownerName) {
-  const SlotClone = /* @__PURE__ */ createSlotClone$1(ownerName);
-  const Slot2 = reactExports.forwardRef((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
-    const childrenArray = reactExports.Children.toArray(children);
-    const slottable = childrenArray.find(isSlottable$1);
-    if (slottable) {
-      const newElement = slottable.props.children;
-      const newChildren = childrenArray.map((child) => {
-        if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
-        } else {
-          return child;
-        }
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
-  });
-  Slot2.displayName = `${ownerName}.Slot`;
-  return Slot2;
-}
-// @__NO_SIDE_EFFECTS__
-function createSlotClone$1(ownerName) {
-  const SlotClone = reactExports.forwardRef((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
-    if (reactExports.isValidElement(children)) {
-      const childrenRef = getElementRef$1(children);
-      const props2 = mergeProps$1(slotProps, children.props);
-      if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
-      }
-      return reactExports.cloneElement(children, props2);
-    }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
-  });
-  SlotClone.displayName = `${ownerName}.SlotClone`;
-  return SlotClone;
-}
-var SLOTTABLE_IDENTIFIER$1 = Symbol("radix.slottable");
-function isSlottable$1(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER$1;
-}
-function mergeProps$1(slotProps, childProps) {
-  const overrideProps = { ...childProps };
-  for (const propName in childProps) {
-    const slotPropValue = slotProps[propName];
-    const childPropValue = childProps[propName];
-    const isHandler = /^on[A-Z]/.test(propName);
-    if (isHandler) {
-      if (slotPropValue && childPropValue) {
-        overrideProps[propName] = (...args) => {
-          const result = childPropValue(...args);
-          slotPropValue(...args);
-          return result;
-        };
-      } else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
-      }
-    } else if (propName === "style") {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
-    }
-  }
-  return { ...slotProps, ...overrideProps };
-}
-function getElementRef$1(element) {
-  var _a, _b;
-  let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
-  let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-  if (mayWarn) {
-    return element.ref;
-  }
-  getter = (_b = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b.get;
-  mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-  if (mayWarn) {
-    return element.props.ref;
-  }
-  return element.props.ref || element.ref;
-}
 function createCollection(name) {
   const PROVIDER_NAME = name + "CollectionProvider";
   const [createCollectionContext, createCollectionScope2] = createContextScope(PROVIDER_NAME);
@@ -13378,7 +13166,7 @@ function createCollection(name) {
   };
   CollectionProvider.displayName = PROVIDER_NAME;
   const COLLECTION_SLOT_NAME = name + "CollectionSlot";
-  const CollectionSlotImpl = /* @__PURE__ */ createSlot$1(COLLECTION_SLOT_NAME);
+  const CollectionSlotImpl = /* @__PURE__ */ createSlot(COLLECTION_SLOT_NAME);
   const CollectionSlot = React.forwardRef(
     (props, forwardedRef) => {
       const { scope, children } = props;
@@ -13390,7 +13178,7 @@ function createCollection(name) {
   CollectionSlot.displayName = COLLECTION_SLOT_NAME;
   const ITEM_SLOT_NAME = name + "CollectionItemSlot";
   const ITEM_DATA_ATTR = "data-radix-collection-item";
-  const CollectionItemSlotImpl = /* @__PURE__ */ createSlot$1(ITEM_SLOT_NAME);
+  const CollectionItemSlotImpl = /* @__PURE__ */ createSlot(ITEM_SLOT_NAME);
   const CollectionItemSlot = React.forwardRef(
     (props, forwardedRef) => {
       const { scope, children, ...itemData } = props;
@@ -13525,7 +13313,7 @@ var DismissableLayer = reactExports.forwardRef(
       return () => document.removeEventListener(CONTEXT_UPDATE, handleUpdate);
     }, []);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.div,
+      Primitive.div,
       {
         ...layerProps,
         ref: composedRefs,
@@ -13558,7 +13346,7 @@ var DismissableLayerBranch = reactExports.forwardRef((props, forwardedRef) => {
       };
     }
   }, [context.branches]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { ...props, ref: composedRefs });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...props, ref: composedRefs });
 });
 DismissableLayerBranch.displayName = BRANCH_NAME;
 function usePointerDownOutside(onPointerDownOutside, ownerDocument = globalThis == null ? void 0 : globalThis.document) {
@@ -13780,7 +13568,7 @@ var FocusScope = reactExports.forwardRef((props, forwardedRef) => {
     },
     [loop, trapped, focusScope.paused]
   );
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { tabIndex: -1, ...scopeProps, ref: composedRefs, onKeyDown: handleKeyDown });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { tabIndex: -1, ...scopeProps, ref: composedRefs, onKeyDown: handleKeyDown });
 });
 FocusScope.displayName = FOCUS_SCOPE_NAME;
 function focusFirst(candidates, { select = false } = {}) {
@@ -15753,7 +15541,7 @@ var NAME$1 = "Arrow";
 var Arrow$1 = reactExports.forwardRef((props, forwardedRef) => {
   const { children, width = 10, height = 5, ...arrowProps } = props;
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive$1.svg,
+    Primitive.svg,
     {
       ...arrowProps,
       ref: forwardedRef,
@@ -15825,7 +15613,7 @@ var PopperAnchor = reactExports.forwardRef(
         context.onAnchorChange(anchorRef.current);
       }
     });
-    return virtualRef ? null : /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { ...anchorProps, ref: composedRefs });
+    return virtualRef ? null : /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...anchorProps, ref: composedRefs });
   }
 );
 PopperAnchor.displayName = ANCHOR_NAME;
@@ -15953,7 +15741,7 @@ var PopperContent = reactExports.forwardRef(
             arrowY,
             shouldHideArrow: cannotCenterArrow,
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Primitive$1.div,
+              Primitive.div,
               {
                 "data-side": placedSide,
                 "data-align": placedAlign,
@@ -16079,92 +15867,9 @@ var Portal$1 = reactExports.forwardRef((props, forwardedRef) => {
   const [mounted, setMounted] = reactExports.useState(false);
   useLayoutEffect2(() => setMounted(true), []);
   const container = containerProp || mounted && ((_a = globalThis == null ? void 0 : globalThis.document) == null ? void 0 : _a.body);
-  return container ? ReactDOM.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { ...portalProps, ref: forwardedRef }), container) : null;
+  return container ? ReactDOM.createPortal(/* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { ...portalProps, ref: forwardedRef }), container) : null;
 });
 Portal$1.displayName = PORTAL_NAME$1;
-// @__NO_SIDE_EFFECTS__
-function createSlot(ownerName) {
-  const SlotClone = /* @__PURE__ */ createSlotClone(ownerName);
-  const Slot2 = reactExports.forwardRef((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
-    const childrenArray = reactExports.Children.toArray(children);
-    const slottable = childrenArray.find(isSlottable);
-    if (slottable) {
-      const newElement = slottable.props.children;
-      const newChildren = childrenArray.map((child) => {
-        if (child === slottable) {
-          if (reactExports.Children.count(newElement) > 1) return reactExports.Children.only(null);
-          return reactExports.isValidElement(newElement) ? newElement.props.children : null;
-        } else {
-          return child;
-        }
-      });
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children: reactExports.isValidElement(newElement) ? reactExports.cloneElement(newElement, void 0, newChildren) : null });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SlotClone, { ...slotProps, ref: forwardedRef, children });
-  });
-  Slot2.displayName = `${ownerName}.Slot`;
-  return Slot2;
-}
-// @__NO_SIDE_EFFECTS__
-function createSlotClone(ownerName) {
-  const SlotClone = reactExports.forwardRef((props, forwardedRef) => {
-    const { children, ...slotProps } = props;
-    if (reactExports.isValidElement(children)) {
-      const childrenRef = getElementRef(children);
-      const props2 = mergeProps(slotProps, children.props);
-      if (children.type !== reactExports.Fragment) {
-        props2.ref = forwardedRef ? composeRefs(forwardedRef, childrenRef) : childrenRef;
-      }
-      return reactExports.cloneElement(children, props2);
-    }
-    return reactExports.Children.count(children) > 1 ? reactExports.Children.only(null) : null;
-  });
-  SlotClone.displayName = `${ownerName}.SlotClone`;
-  return SlotClone;
-}
-var SLOTTABLE_IDENTIFIER = Symbol("radix.slottable");
-function isSlottable(child) {
-  return reactExports.isValidElement(child) && typeof child.type === "function" && "__radixId" in child.type && child.type.__radixId === SLOTTABLE_IDENTIFIER;
-}
-function mergeProps(slotProps, childProps) {
-  const overrideProps = { ...childProps };
-  for (const propName in childProps) {
-    const slotPropValue = slotProps[propName];
-    const childPropValue = childProps[propName];
-    const isHandler = /^on[A-Z]/.test(propName);
-    if (isHandler) {
-      if (slotPropValue && childPropValue) {
-        overrideProps[propName] = (...args) => {
-          const result = childPropValue(...args);
-          slotPropValue(...args);
-          return result;
-        };
-      } else if (slotPropValue) {
-        overrideProps[propName] = slotPropValue;
-      }
-    } else if (propName === "style") {
-      overrideProps[propName] = { ...slotPropValue, ...childPropValue };
-    } else if (propName === "className") {
-      overrideProps[propName] = [slotPropValue, childPropValue].filter(Boolean).join(" ");
-    }
-  }
-  return { ...slotProps, ...overrideProps };
-}
-function getElementRef(element) {
-  var _a, _b;
-  let getter = (_a = Object.getOwnPropertyDescriptor(element.props, "ref")) == null ? void 0 : _a.get;
-  let mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-  if (mayWarn) {
-    return element.ref;
-  }
-  getter = (_b = Object.getOwnPropertyDescriptor(element, "ref")) == null ? void 0 : _b.get;
-  mayWarn = getter && "isReactWarning" in getter && getter.isReactWarning;
-  if (mayWarn) {
-    return element.props.ref;
-  }
-  return element.props.ref || element.ref;
-}
 var useInsertionEffect = React$1[" useInsertionEffect ".trim().toString()] || useLayoutEffect2;
 function useControllableState({
   prop,
@@ -16258,7 +15963,7 @@ var NAME = "VisuallyHidden";
 var VisuallyHidden = reactExports.forwardRef(
   (props, forwardedRef) => {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.span,
+      Primitive.span,
       {
         ...props,
         ref: forwardedRef,
@@ -17182,7 +16887,7 @@ var SelectTrigger$1 = reactExports.forwardRef(
       }
     };
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Anchor, { asChild: true, ...popperScope, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.button,
+      Primitive.button,
       {
         type: "button",
         role: "combobox",
@@ -17241,7 +16946,7 @@ var SelectValue$1 = reactExports.forwardRef(
       onValueNodeHasChildrenChange(hasChildren);
     }, [onValueNodeHasChildrenChange, hasChildren]);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.span,
+      Primitive.span,
       {
         ...valueProps,
         ref: composedRefs,
@@ -17256,7 +16961,7 @@ var ICON_NAME = "SelectIcon";
 var SelectIcon = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, children, ...iconProps } = props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { "aria-hidden": true, ...iconProps, ref: forwardedRef, children: children || "▼" });
   }
 );
 SelectIcon.displayName = ICON_NAME;
@@ -17667,7 +17372,7 @@ var SelectItemAlignedPosition = reactExports.forwardRef((props, forwardedRef) =>
             zIndex: contentZIndex
           },
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Primitive$1.div,
+            Primitive.div,
             {
               ...popperProps,
               ref: composedRefs,
@@ -17741,7 +17446,7 @@ var SelectViewport = reactExports.forwardRef(
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Collection.Slot, { scope: __scopeSelect, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Primitive$1.div,
+        Primitive.div,
         {
           "data-radix-select-viewport": "",
           role: "presentation",
@@ -17796,7 +17501,7 @@ var SelectGroup = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...groupProps } = props;
     const groupId = useId();
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(SelectGroupContextProvider, { scope: __scopeSelect, id: groupId, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { role: "group", "aria-labelledby": groupId, ...groupProps, ref: forwardedRef }) });
   }
 );
 SelectGroup.displayName = GROUP_NAME;
@@ -17805,7 +17510,7 @@ var SelectLabel$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...labelProps } = props;
     const groupContext = useSelectGroupContext(LABEL_NAME, __scopeSelect);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { id: groupContext.id, ...labelProps, ref: forwardedRef });
   }
 );
 SelectLabel$1.displayName = LABEL_NAME;
@@ -17864,7 +17569,7 @@ var SelectItem$1 = reactExports.forwardRef(
             disabled,
             textValue,
             children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Primitive$1.div,
+              Primitive.div,
               {
                 role: "option",
                 "aria-labelledby": textId,
@@ -17947,7 +17652,7 @@ var SelectItemText = reactExports.forwardRef(
       return () => onNativeOptionRemove(nativeOption);
     }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
       itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? reactDomExports.createPortal(itemTextProps.children, context.valueNode) : null
     ] });
   }
@@ -17958,7 +17663,7 @@ var SelectItemIndicator = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...itemIndicatorProps } = props;
     const itemContext = useSelectItemContext(ITEM_INDICATOR_NAME, __scopeSelect);
-    return itemContext.isSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
+    return itemContext.isSelected ? /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.span, { "aria-hidden": true, ...itemIndicatorProps, ref: forwardedRef }) : null;
   }
 );
 SelectItemIndicator.displayName = ITEM_INDICATOR_NAME;
@@ -18049,7 +17754,7 @@ var SelectScrollButtonImpl = reactExports.forwardRef((props, forwardedRef) => {
     (_a = activeItem == null ? void 0 : activeItem.ref.current) == null ? void 0 : _a.scrollIntoView({ block: "nearest" });
   }, [getItems]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Primitive$1.div,
+    Primitive.div,
     {
       "aria-hidden": true,
       ...scrollIndicatorProps,
@@ -18077,7 +17782,7 @@ var SEPARATOR_NAME = "SelectSeparator";
 var SelectSeparator$1 = reactExports.forwardRef(
   (props, forwardedRef) => {
     const { __scopeSelect, ...separatorProps } = props;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive$1.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Primitive.div, { "aria-hidden": true, ...separatorProps, ref: forwardedRef });
   }
 );
 SelectSeparator$1.displayName = SEPARATOR_NAME;
@@ -18114,7 +17819,7 @@ var SelectBubbleInput = reactExports.forwardRef(
       }
     }, [prevValue, value]);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      Primitive$1.select,
+      Primitive.select,
       {
         ...props,
         style: { ...VISUALLY_HIDDEN_STYLES, ...props.style },
@@ -18815,8 +18520,10 @@ const interfaceTexts = {
     copied: "Copié !",
     copyLink: "Copier le lien",
     copyLinkTitle: "Copier le lien direct vers ce modèle",
-    openInOutlook: "Ouvrir dans Outlook",
-    openInOutlookTitle: "Composer avec Outlook",
+    openInOutlookClassic: "Ouvrir dans Outlook classique",
+    openInOutlookClassicTitle: "Composer avec Outlook classique",
+    openInOutlookWeb: "Ouvrir dans Outlook Web",
+    openInOutlookWebTitle: "Composer avec Outlook Web",
     sendEmail: "Envoyer",
     favorites: "Favoris",
     showFavoritesOnly: "Afficher uniquement les favoris",
@@ -18854,8 +18561,10 @@ const interfaceTexts = {
     copied: "Copied!",
     copyLink: "Copy link",
     copyLinkTitle: "Copy direct link to this template",
-    openInOutlook: "Open in Outlook",
-    openInOutlookTitle: "Compose in Outlook",
+    openInOutlookClassic: "Open in Outlook Classic",
+    openInOutlookClassicTitle: "Compose in Outlook Classic",
+    openInOutlookWeb: "Open in Outlook Web",
+    openInOutlookWebTitle: "Compose in Outlook Web",
     sendEmail: "Send",
     favorites: "Favorites",
     showFavoritesOnly: "Show only favorites",
@@ -18893,6 +18602,14 @@ function App() {
   const [finalSubject, setFinalSubject] = reactExports.useState("");
   const [finalBody, setFinalBody] = reactExports.useState("");
   const [variables, setVariables] = reactExports.useState(savedState.variables || {});
+  const [strictClassic, setStrictClassic] = reactExports.useState(() => {
+    if (typeof savedState.strictClassic !== "undefined") return !!savedState.strictClassic;
+    try {
+      return localStorage.getItem("ea_strict_classic") === "1";
+    } catch {
+      return false;
+    }
+  });
   const variablesRef = reactExports.useRef(variables);
   const finalSubjectRef = reactExports.useRef(finalSubject);
   const finalBodyRef = reactExports.useRef(finalBody);
@@ -18910,6 +18627,12 @@ function App() {
   reactExports.useEffect(() => {
     finalBodyRef.current = finalBody;
   }, [finalBody]);
+  reactExports.useEffect(() => {
+    try {
+      localStorage.setItem("ea_strict_classic", strictClassic ? "1" : "0");
+    } catch {
+    }
+  }, [strictClassic]);
   reactExports.useEffect(() => {
     selectedTemplateRef.current = selectedTemplate;
   }, [selectedTemplate]);
@@ -19093,7 +18816,8 @@ function App() {
         selectedCategory,
         variables,
         favorites,
-        favoritesOnly
+        favoritesOnly,
+        strictClassic
       });
     }, 300);
     return () => clearTimeout(timeoutId);
@@ -19677,23 +19401,37 @@ function App() {
   }, [templatesData]);
   reactExports.useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "Enter") {
         e.preventDefault();
         if (selectedTemplate) {
           copyToClipboard("all");
         }
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === "b") {
-        e.preventDefault();
-        if (selectedTemplate) {
-          copyToClipboard("body");
-        }
+        return;
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "j") {
         e.preventDefault();
         if (selectedTemplate) {
           copyToClipboard("subject");
         }
+      }
+      if (strictClassic) {
+        setTimeout(() => {
+          if (templateLanguage === "fr") {
+            toast.info('Mode "Classique strict" actif : ms-outlook et mailto ignorés pour éviter Outlook Web/Nouveau.', 6e3);
+          } else {
+            toast.info('"Strict Classic" mode active: skipping ms-outlook & mailto to avoid New/Web Outlook.', 6e3);
+          }
+        }, 400);
+      } else {
+        setTimeout(() => {
+          if (!strictClassic) {
+            if (templateLanguage === "fr") {
+              toast.info('Essai des protocoles ms-outlook (peut ouvrir le nouvel Outlook ou Web). Activez "Classique strict" pour limiter.', 6e3);
+            } else {
+              toast.info('Trying ms-outlook protocols (may open New/Web Outlook). Enable "Strict Classic" to limit.', 6e3);
+            }
+          }
+        }, 900);
       }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "Enter") {
         e.preventDefault();
@@ -20748,7 +20486,7 @@ ${cleanBodyHtml}
     setShowResetWarning(false);
   };
   const openInOutlook = () => {
-    var _a2, _b;
+    var _a2, _b, _c;
     if (debug) console.log("Opening email client with subject:", finalSubject);
     const resolvedSubject = replaceVariablesWithValues(finalSubject, variables);
     const resolvedBodyText = replaceVariablesWithValues(finalBody, variables);
@@ -20759,6 +20497,157 @@ ${cleanBodyHtml}
       return;
     }
     const subject = resolvedSubject || "";
+    const plainBody = (bodyResult.text || "").replace(/\r?\n/g, "\r\n");
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(plainBody);
+    const isWindows = /Windows/i.test(navigator.userAgent);
+    const isMac = /Macintosh|Mac OS X/i.test(navigator.userAgent);
+    const canTryDesktop = isWindows || isMac;
+    if (bodyResult.html) {
+      try {
+        (_c = navigator.clipboard) == null ? void 0 : _c.writeText(bodyResult.html);
+      } catch {
+      }
+    }
+    const giveFeedback = (textFr, textEn, swapBackLabel) => {
+      if (!document.activeElement) return;
+      const btn = document.activeElement;
+      const original = btn.textContent;
+      btn.textContent = templateLanguage === "fr" ? textFr : textEn;
+      setTimeout(() => {
+        if (btn.textContent === (templateLanguage === "fr" ? textFr : textEn)) btn.textContent = original;
+      }, 2500);
+    };
+    const desktopSchemes = [
+      // Legacy ms-outlook compose (classic Outlook often registers this)
+      `ms-outlook:compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
+      // Unified ms-outlook scheme (handled by classic and new Outlook builds)
+      `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
+      // Prefer classic Outlook handler (Windows classic)
+      `outlook://compose?subject=${encodedSubject}&body=${encodedBody}`,
+      // Single-slash variant seen in some environments
+      `outlook:/compose?subject=${encodedSubject}&body=${encodedBody}`,
+      // Older/legacy compose verb (very old builds)
+      `outlook:compose?subject=${encodedSubject}&body=${encodedBody}`
+    ];
+    let launched = false;
+    const onBlur = () => {
+      launched = true;
+      window.removeEventListener("blur", onBlur);
+    };
+    if (canTryDesktop) window.addEventListener("blur", onBlur);
+    const launchViaAnchorClick = (url) => {
+      try {
+        const a = document.createElement("a");
+        a.href = url;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch {
+        try {
+          window.location.href = url;
+        } catch {
+        }
+      }
+    };
+    const tryProtocolsSequentially = (index2 = 0) => {
+      if (!canTryDesktop || index2 >= desktopSchemes.length) return;
+      launchViaAnchorClick(desktopSchemes[index2]);
+      setTimeout(() => {
+        if (!launched) tryProtocolsSequentially(index2 + 1);
+      }, 550);
+    };
+    if (canTryDesktop) {
+      giveFeedback("Ouverture Outlook…", "Opening Outlook…");
+      tryProtocolsSequentially();
+      setTimeout(() => {
+        if (templateLanguage === "fr") {
+          toast.info("📬 Tentative d'ouverture d'Outlook classique…", 5e3);
+        } else {
+          toast.info("📬 Attempting Outlook Classic launch…", 5e3);
+        }
+      }, 200);
+    }
+    setTimeout(() => {
+      if (launched) return;
+      if (templateLanguage === "fr") {
+        toast.info("🌐 Bascule vers Outlook Web…", 5e3);
+      } else {
+        toast.info("🌐 Switching to Outlook Web…", 5e3);
+      }
+      try {
+        openInOutlookWeb();
+      } catch {
+      }
+    }, canTryDesktop ? 1800 : 75);
+  };
+  const openInOutlookWeb = () => {
+    var _a2, _b, _c;
+    if (debug) console.log("Opening Outlook Web with subject:", finalSubject);
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables);
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables);
+    const bodyHtmlSource = ((_b = (_a2 = bodyEditorRef.current) == null ? void 0 : _a2.getHtml) == null ? void 0 : _b.call(_a2)) ?? finalBody;
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText);
+    if (!resolvedSubject && !bodyResult.text) {
+      alert(templateLanguage === "fr" ? "Veuillez d'abord sélectionner un modèle et remplir le contenu." : "Please first select a template and fill in the content.");
+      return;
+    }
+    const subject = resolvedSubject || "";
+    const plainBody = (bodyResult.text || "").replace(/\r?\n/g, "\r\n");
+    const encodedSubject = encodeURIComponent(subject);
+    const encodedBody = encodeURIComponent(plainBody);
+    if (bodyResult.html) (_c = navigator.clipboard) == null ? void 0 : _c.writeText(bodyResult.html).catch(() => {
+    });
+    const webCompose = `https://outlook.office.com/mail/deeplink/compose?subject=${encodedSubject}&body=${encodedBody}`;
+    const consumerCompose = `https://outlook.live.com/mail/0/deeplink/compose?subject=${encodedSubject}&body=${encodedBody}`;
+    const urlLengthLimit = 1800;
+    const openWeb = (url) => {
+      if (document.activeElement) {
+        const btn = document.activeElement;
+        const original = btn.textContent;
+        btn.textContent = templateLanguage === "fr" ? "Ouverture…" : "Opening…";
+        setTimeout(() => {
+          if (btn.textContent === (templateLanguage === "fr" ? "Ouverture…" : "Opening…")) btn.textContent = original;
+        }, 2500);
+      }
+      const w = window.open(url, "_blank", "noopener,noreferrer");
+      if (!w) window.location.href = url;
+    };
+    if (webCompose.length < urlLengthLimit && plainBody.length) {
+      openWeb(webCompose);
+      if (templateLanguage === "fr") {
+        toast.info(`🌐 Ouverture Outlook Web…${bodyResult.html ? "\nHTML copié — collez si besoin." : ""}`, 6e3);
+      } else {
+        toast.info(`🌐 Opening Outlook Web…${bodyResult.html ? "\nHTML copied — paste if needed." : ""}`, 6e3);
+      }
+      return;
+    }
+    if (consumerCompose.length < urlLengthLimit && plainBody.length) {
+      openWeb(consumerCompose);
+      if (templateLanguage === "fr") {
+        toast.info(`🌐 Ouverture Outlook.com…${bodyResult.html ? "\nHTML copié." : ""}`, 6e3);
+      } else {
+        toast.info(`🌐 Opening Outlook.com…${bodyResult.html ? "\nHTML copied." : ""}`, 6e3);
+      }
+      return;
+    }
+    const mailtoUrl = `mailto:?subject=${encodedSubject}&body=${encodedBody}`;
+    const mailtoLengthLimit = 1800;
+    if (mailtoUrl.length < mailtoLengthLimit && plainBody.length > 0) {
+      const a = document.createElement("a");
+      a.href = mailtoUrl;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      if (templateLanguage === "fr") {
+        toast.info(`✉️ Fenêtre de composition ouverte.${bodyResult.html ? "\nHTML copié — collez si besoin." : ""}`, 6e3);
+      } else {
+        toast.info(`✉️ Compose window opened.${bodyResult.html ? "\nHTML copied — paste if needed." : ""}`, 6e3);
+      }
+      return;
+    }
     const boundary = "----=_NextPart_000_0000_01DA1234.56789ABC";
     const cleanBodyHtml = bodyResult.html || "";
     const eml = [
@@ -20776,16 +20665,16 @@ ${cleanBodyHtml}
       "Content-Type: text/html; charset=UTF-8",
       "Content-Transfer-Encoding: quoted-printable",
       "",
-      `<!DOCTYPE html>`,
-      `<html>`,
-      `<head>`,
-      `<meta charset="UTF-8">`,
-      `<meta name="viewport" content="width=device-width, initial-scale=1.0">`,
-      `</head>`,
-      `<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">`,
+      "<!DOCTYPE html>",
+      "<html>",
+      "<head>",
+      '<meta charset="UTF-8">',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+      "</head>",
+      '<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">',
       cleanBodyHtml,
-      `</body>`,
-      `</html>`,
+      "</body>",
+      "</html>",
       "",
       `--${boundary}--`
     ].join("\r\n");
@@ -20796,32 +20685,22 @@ ${cleanBodyHtml}
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
-      a.target = "_blank";
+      a.style.display = "none";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(() => {
+        URL.revokeObjectURL(url);
         if (templateLanguage === "fr") {
           toast.success(`✉️ Fichier téléchargé: ${filename}
 
-Ouvrez le fichier depuis vos Téléchargements pour l'ouvrir dans votre client email.`, 5e3);
+Ouvrez ce fichier pour lancer Outlook avec la mise en forme préservée.`, 6e3);
         } else {
           toast.success(`✉️ File downloaded: ${filename}
 
-Open the file from your Downloads folder to launch it in your email client.`, 5e3);
+Open this file to launch Outlook with formatting preserved.`, 6e3);
         }
-        URL.revokeObjectURL(url);
       }, 500);
-      if (document.activeElement) {
-        const button = document.activeElement;
-        const originalText = button.textContent;
-        button.textContent = templateLanguage === "fr" ? "Ouverture..." : "Opening...";
-        setTimeout(() => {
-          if (button.textContent === (templateLanguage === "fr" ? "Ouverture..." : "Opening...")) {
-            button.textContent = originalText;
-          }
-        }, 2e3);
-      }
     } catch (error) {
       console.error("Error creating .eml file:", error);
       alert(templateLanguage === "fr" ? "Erreur lors de la création du fichier email." : "Error creating email file.");
@@ -21592,22 +21471,71 @@ Open the file from your Downloads folder to launch it in your email client.`, 5e
                       ]
                     }
                   ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      Button,
+                      {
+                        onClick: openInOutlook,
+                        className: "font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3",
+                        style: { background: "#2c3d50", borderRadius: "12px" },
+                        onMouseEnter: (e) => {
+                          e.currentTarget.style.transform = "translateY(-1px)";
+                        },
+                        onMouseLeave: (e) => {
+                          e.currentTarget.style.transform = "translateY(0)";
+                        },
+                        title: t.openInOutlookClassicTitle || "Compose in Outlook Classic",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { className: "h-5 w-5 mr-2" }),
+                          t.openInOutlookClassic || "Open in Outlook Classic"
+                        ]
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center text-xs font-medium text-[#2c3d50] select-none cursor-pointer", title: interfaceLanguage === "fr" ? "Limiter aux protocoles outlook:// pour éviter le nouvel Outlook / Web" : "Limit to outlook:// protocols to avoid New/Web Outlook", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "input",
+                        {
+                          type: "checkbox",
+                          checked: strictClassic,
+                          onChange: (e) => {
+                            setStrictClassic(e.target.checked);
+                            if (e.target.checked) {
+                              if (interfaceLanguage === "fr") {
+                                toast.success("Mode Classique strict activé", 3500);
+                              } else {
+                                toast.success("Strict Classic mode enabled", 3500);
+                              }
+                            } else {
+                              if (interfaceLanguage === "fr") {
+                                toast.info("Mode Classique strict désactivé", 3500);
+                              } else {
+                                toast.info("Strict Classic mode disabled", 3500);
+                              }
+                            }
+                          },
+                          className: "mr-1 accent-[#2c3d50]",
+                          style: { width: 14, height: 14 }
+                        }
+                      ),
+                      interfaceLanguage === "fr" ? "Classique strict" : "Strict Classic"
+                    ] })
+                  ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Button,
                     {
-                      onClick: openInOutlook,
-                      className: "font-bold transition-all duration-200 shadow-soft text-white btn-pill",
-                      style: { background: "#2c3d50", borderRadius: "12px" },
+                      onClick: openInOutlookWeb,
+                      className: "font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3",
+                      style: { background: "#5a88b5", borderRadius: "12px" },
                       onMouseEnter: (e) => {
                         e.currentTarget.style.transform = "translateY(-1px)";
                       },
                       onMouseLeave: (e) => {
                         e.currentTarget.style.transform = "translateY(0)";
                       },
-                      title: "Open in your default email client (Ctrl+Shift+Enter)",
+                      title: t.openInOutlookWebTitle || "Compose in Outlook Web",
                       children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { className: "h-5 w-5 mr-2" }),
-                        t.openInOutlook
+                        t.openInOutlookWeb || "Open in Outlook Web"
                       ]
                     }
                   )
@@ -22684,4 +22612,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DTOuU-tF.js.map
+//# sourceMappingURL=main-bJCZdhUQ.js.map

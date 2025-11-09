@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.17 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.16 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
@@ -1894,7 +1894,7 @@
   }
 
   .bg-\[\#aca868\]\/20 {
-    background-color: oklab(72.0023% -.0223322 .0819527 / .2);
+    background-color: oklab(72.0023% -.0223324 .0819528 / .2);
   }
 
   .bg-\[\#e6eef5\] {
@@ -2885,6 +2885,10 @@
   .subpixel-antialiased {
     -webkit-font-smoothing: auto;
     -moz-osx-font-smoothing: auto;
+  }
+
+  .accent-\[\#2c3d50\] {
+    accent-color: #2c3d50;
   }
 
   .opacity-0 {
