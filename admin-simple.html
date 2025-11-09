@@ -51,10 +51,6 @@
   <body>
     <div class="topbar">
       <div class="brand">Admin (simple)</div>
-      <div class="seg" id="lang">
-        <button type="button" data-lang="fr" aria-pressed="true">FR</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-      </div>
       <div class="spacer"></div>
       <button class="btn" id="btn-import">Importer JSON</button>
       <input id="file" type="file" class="hidden" accept=".json,application/json" style="position:absolute;left:-9999px" />
@@ -94,16 +90,20 @@
             <div class="field"><label>Catégorie</label><input id="tpl-cat" /></div>
           </div>
           <div class="row">
-            <div class="field"><label>Titre</label><input id="tpl-title" /></div>
-            <div class="field"><label>Description</label><input id="tpl-desc" /></div>
+            <div class="field"><label>Titre (FR)</label><input id="tpl-title-fr" /></div>
+            <div class="field"><label>Titre (EN)</label><input id="tpl-title-en" /></div>
           </div>
           <div class="row">
-            <div class="field"><label>Objet</label><input id="tpl-subj" /></div>
-            <div class="field"><label>Corps</label><textarea id="tpl-body"></textarea></div>
+            <div class="field"><label>Description (FR)</label><input id="tpl-desc-fr" /></div>
+            <div class="field"><label>Description (EN)</label><input id="tpl-desc-en" /></div>
           </div>
-          <div class="field">
-            <label>Placeholders détectés</label>
-            <div id="ph" class="chips"></div>
+          <div class="row">
+            <div class="field"><label>Objet (FR)</label><input id="tpl-subj-fr" /></div>
+            <div class="field"><label>Objet (EN)</label><input id="tpl-subj-en" /></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Corps (FR)</label><textarea id="tpl-body-fr"></textarea></div>
+            <div class="field"><label>Corps (EN)</label><textarea id="tpl-body-en"></textarea></div>
           </div>
           <div class="field">
             <label style="display:flex;align-items:center;gap:8px">Variables du modèle – Descriptions FR / EN</label>
