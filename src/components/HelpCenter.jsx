@@ -41,7 +41,8 @@ const translations = {
         heading: 'Copier & Outlook',
         points: [
           'Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles.',
-          '« Ouvrir dans Outlook » compose un nouveau message avec votre client par défaut. Certaines organisations bloquent les liens mailto:.',
+          'Deux options Outlook: « Ouvrir dans Outlook classique » (application de bureau) et « Ouvrir dans Outlook Web » (navigateur).',
+          '« Ouvrir dans Outlook classique » tente d\'utiliser l\'application de bureau via les protocoles outlook:// et ms-outlook:. Si votre organisation bloque ces liens, utilisez Copier tout ou le bouton Web.',
           'Le lien direct (icône de lien) inclut l\'identifiant et la langue dans l\'URL.'
         ]
       },
@@ -110,7 +111,8 @@ const translations = {
           title: 'Le bouton “Ouvrir dans Outlook” ne fait rien',
           steps: [
             'Confirmez qu\'un modèle est sélectionné. Le bouton s\'active uniquement quand un contenu final est disponible.',
-            'Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook.'
+            'Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook.',
+            'Si cela ouvre Outlook (nouveau) ou le web, définissez « Outlook (classique) » comme application Courriel par défaut dans Windows et comme gestionnaire pour les protocoles outlook et ms-outlook.'
           ]
         }
       ]
@@ -213,7 +215,8 @@ const translations = {
         heading: 'Copying & Outlook',
         points: [
           'Copy Subject / Copy Body / Copy All buttons include your current values.',
-          '“Open in Outlook” composes a draft with your default client. Some orgs block mailto: links.',
+          'Two Outlook options: “Open in Outlook Classic” (desktop app) and “Open in Outlook Web” (browser).',
+          '“Open in Outlook Classic” tries desktop via outlook:// and ms-outlook: protocols. If your org blocks these, use Copy All or the Web button.',
           'The direct-link icon includes id & language in the URL.'
         ]
       },
@@ -282,7 +285,8 @@ const translations = {
           title: '“Open in Outlook” button does nothing',
           steps: [
             'Confirm that a template is selected. The button is enabled only when final content is available.',
-            'Some organizations block `mailto:` links. If that\'s the case, use Copy all and paste into Outlook manually.'
+            'Some organizations block `mailto:` links. If that\'s the case, use Copy all and paste into Outlook manually.',
+            'If this opens New Outlook or the web, set “Outlook (Classic)” as the default Email app on Windows and as the handler for outlook and ms-outlook protocols.'
           ]
         }
       ]

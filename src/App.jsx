@@ -705,6 +705,11 @@ function App() {
   const [finalSubject, setFinalSubject] = useState('') // Final editable version
   const [finalBody, setFinalBody] = useState('') // Final editable version
   const [variables, setVariables] = useState(savedState.variables || {})
+  // Preference: Strict Classic Outlook (avoid ms-outlook/mailto to reduce New Outlook/Web)
+  const [strictClassic, setStrictClassic] = useState(() => {
+    if (typeof savedState.strictClassic !== 'undefined') return !!savedState.strictClassic
+    try { return localStorage.getItem('ea_strict_classic') === '1' } catch { return false }
+  })
 
   const variablesRef = useRef(variables)
   const finalSubjectRef = useRef(finalSubject)
@@ -718,6 +723,11 @@ function App() {
   useEffect(() => { variablesRef.current = variables }, [variables])
   useEffect(() => { finalSubjectRef.current = finalSubject }, [finalSubject])
   useEffect(() => { finalBodyRef.current = finalBody }, [finalBody])
+
+  // Persist Strict Classic preference
+  useEffect(() => {
+    try { localStorage.setItem('ea_strict_classic', strictClassic ? '1' : '0') } catch {}
+  }, [strictClassic])
   useEffect(() => { selectedTemplateRef.current = selectedTemplate }, [selectedTemplate])
   useEffect(() => { templateLanguageRef.current = templateLanguage }, [templateLanguage])
   const [favorites, setFavorites] = useState(savedState.favorites || [])
@@ -904,7 +914,8 @@ function App() {
         selectedCategory,
         variables,
         favorites,
-        favoritesOnly
+        favoritesOnly,
+        strictClassic
       })
     }, 300) // 300ms debounce
     
@@ -1575,37 +1586,51 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Ctrl/Cmd + Enter: Copy all (main quick action)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'Enter') {
         e.preventDefault()
         if (selectedTemplate) {
           copyToClipboard('all')
         }
+        return
       }
       
-      // Ctrl/Cmd + B: Copy body only (Body)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-        e.preventDefault()
-        if (selectedTemplate) {
-          copyToClipboard('body')
-        }
-      }
-      
-      // Ctrl/Cmd + J: Copy subject only (subJect)
+      // Ctrl/Cmd + J: Copy subject only
       if ((e.ctrlKey || e.metaKey) && e.key === 'j') {
         e.preventDefault()
         if (selectedTemplate) {
           copyToClipboard('subject')
         }
       }
+    // Inform user about strict mode effect
+    if (strictClassic) {
+      setTimeout(() => {
+        if (templateLanguage === 'fr') {
+          toast.info('Mode "Classique strict" actif : ms-outlook et mailto ignorés pour éviter Outlook Web/Nouveau.', 6000)
+        } else {
+          toast.info('"Strict Classic" mode active: skipping ms-outlook & mailto to avoid New/Web Outlook.', 6000)
+        }
+      }, 400)
+    } else {
+      // Warn when we are about to try ms-outlook variants (which may trigger New Outlook)
+      setTimeout(() => {
+        if (!strictClassic) {
+          if (templateLanguage === 'fr') {
+            toast.info('Essai des protocoles ms-outlook (peut ouvrir le nouvel Outlook ou Web). Activez "Classique strict" pour limiter.', 6000)
+          } else {
+            toast.info('Trying ms-outlook protocols (may open New/Web Outlook). Enable "Strict Classic" to limit.', 6000)
+          }
+        }
+      }, 900)
+    }
       
-      // Ctrl/Cmd + Shift + Enter: Send email (Enhanced send action)
+      // Ctrl/Cmd + Shift + Enter: Open Outlook (classic pref then web auto-fallback)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Enter') {
         e.preventDefault()
         if (selectedTemplate) {
           openInOutlook()
         }
       }
-      
+  // (Removed stray conditional referencing undefined variables from earlier experimental code)
       // Ctrl/Cmd + /: Focus on search (search shortcut)
       if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault()
@@ -2868,8 +2893,10 @@ ${cleanBodyHtml}
     const isMac = /Macintosh|Mac OS X/i.test(navigator.userAgent)
     const canTryDesktop = isWindows || isMac
 
-    // Copy rich HTML to clipboard early (user can paste if protocol strips formatting)
-    if (bodyResult.html) navigator.clipboard?.writeText(bodyResult.html).catch(() => {})
+    // Copy rich HTML to clipboard so user can paste in Outlook if protocols/length limits prevent full prefill
+    if (bodyResult.html) {
+      try { navigator.clipboard?.writeText(bodyResult.html) } catch {}
+    }
 
     const giveFeedback = (textFr, textEn, swapBackLabel) => {
       if (!document.activeElement) return
@@ -2879,24 +2906,43 @@ ${cleanBodyHtml}
       setTimeout(() => { if (btn.textContent === (templateLanguage === 'fr' ? textFr : textEn)) btn.textContent = swapBackLabel || original }, 2500)
     }
 
+    // Try multiple protocol variants that are known to be handled by Outlook (Classic) on Windows
+    // and older Outlook on macOS. Exact support varies by tenant/policy; we try several safely.
     const desktopSchemes = [
-      // Prefer classic Outlook handler first where registered
-      `outlook://compose?subject=${encodedSubject}&body=${encodedBody}`,
-      // Legacy/Classic handler variant
+      // Legacy ms-outlook compose (classic Outlook often registers this)
       `ms-outlook:compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
-      // Newer unified scheme (can be handled by new Outlook too)
-      `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`
+      // Unified ms-outlook scheme (handled by classic and new Outlook builds)
+      `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
+      // Prefer classic Outlook handler (Windows classic)
+      `outlook://compose?subject=${encodedSubject}&body=${encodedBody}`,
+      // Single-slash variant seen in some environments
+      `outlook:/compose?subject=${encodedSubject}&body=${encodedBody}`,
+      // Older/legacy compose verb (very old builds)
+      `outlook:compose?subject=${encodedSubject}&body=${encodedBody}`
     ]
 
     let launched = false
     const onBlur = () => { launched = true; window.removeEventListener('blur', onBlur) }
     if (canTryDesktop) window.addEventListener('blur', onBlur)
 
+    const launchViaAnchorClick = (url) => {
+      try {
+        const a = document.createElement('a')
+        a.href = url
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+      } catch {
+        try { window.location.href = url } catch {}
+      }
+    }
+
     const tryProtocolsSequentially = (index = 0) => {
       if (!canTryDesktop || index >= desktopSchemes.length) return
-      try { window.location.href = desktopSchemes[index] } catch {}
-      // If launch not detected after short delay, attempt next
-      setTimeout(() => { if (!launched) tryProtocolsSequentially(index + 1) }, 400)
+      launchViaAnchorClick(desktopSchemes[index])
+      // If launch not detected after short delay, attempt next protocol.
+      setTimeout(() => { if (!launched) tryProtocolsSequentially(index + 1) }, 550)
     }
 
     if (canTryDesktop) {
@@ -2904,92 +2950,25 @@ ${cleanBodyHtml}
       tryProtocolsSequentially()
       setTimeout(() => {
         if (templateLanguage === 'fr') {
-          toast.info(`📬 Tentative d'ouverture d'Outlook…${bodyResult.html ? '\nHTML copié — collez pour conserver la mise en forme.' : ''}`, 5000)
+          toast.info('📬 Tentative d\'ouverture d\'Outlook classique…', 5000)
         } else {
-          toast.info(`📬 Attempting Outlook launch…${bodyResult.html ? '\nHTML copied — paste to keep formatting.' : ''}`, 5000)
+          toast.info('📬 Attempting Outlook Classic launch…', 5000)
         }
-      }, 250)
+      }, 200)
     }
 
-    // After waiting to see if desktop Outlook took focus, fall back chain
+    // After waiting to see if desktop Outlook took focus, auto-switch to Outlook Web if not launched
     setTimeout(() => {
       if (launched) return // Desktop succeeded
-      // Do NOT auto-open Outlook Web if the goal is classic Outlook.
-      // Prefer mailto (may still target classic if default) then .eml.
-      // mailto fallback (short plain text only)
-      const mailtoUrl = `mailto:?subject=${encodedSubject}&body=${encodedBody}`
-      const mailtoLengthLimit = 1800
-      if (mailtoUrl.length < mailtoLengthLimit && plainBody.length > 0) {
-        giveFeedback('Ouverture…', 'Opening…')
-        const a = document.createElement('a')
-        a.href = mailtoUrl
-        a.style.display = 'none'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        if (templateLanguage === 'fr') {
-          toast.info(`✉️ Fenêtre de composition ouverte.${bodyResult.html ? '\nHTML copié — collez si besoin.' : ''}`, 6000)
-        } else {
-          toast.info(`✉️ Compose window opened.${bodyResult.html ? '\nHTML copied — paste if needed.' : ''}`, 6000)
-        }
-        return
+      // Auto-switch to Outlook Web compose when desktop doesn't launch.
+      if (templateLanguage === 'fr') {
+        toast.info('🌐 Bascule vers Outlook Web…', 5000)
+      } else {
+        toast.info('🌐 Switching to Outlook Web…', 5000)
       }
-
-      // Final fallback: generate .eml preserving rich HTML
-      const boundary = '----=_NextPart_000_0000_01DA1234.56789ABC'
-      const cleanBodyHtml = bodyResult.html || ''
-      const eml = [
-        `Subject: ${subject}`,
-        'MIME-Version: 1.0',
-        `Content-Type: multipart/alternative; boundary="${boundary}"`,
-        '',
-        `--${boundary}`,
-        'Content-Type: text/plain; charset=UTF-8',
-        'Content-Transfer-Encoding: quoted-printable',
-        '',
-        bodyResult.text || '',
-        '',
-        `--${boundary}`,
-        'Content-Type: text/html; charset=UTF-8',
-        'Content-Transfer-Encoding: quoted-printable',
-        '',
-        '<!DOCTYPE html>',
-        '<html>',
-        '<head>',
-        '<meta charset="UTF-8">',
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-        '</head>',
-        '<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">',
-        cleanBodyHtml,
-        '</body>',
-        '</html>',
-        '',
-        `--${boundary}--`
-      ].join('\r\n')
-      try {
-        const blob = new Blob([eml], { type: 'message/rfc822' })
-        const url = URL.createObjectURL(blob)
-        const filename = `${(subject || 'email').replace(/[^a-z0-9]/gi, '_')}.eml`
-        const a = document.createElement('a')
-        a.href = url
-        a.download = filename
-        a.style.display = 'none'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        setTimeout(() => {
-          URL.revokeObjectURL(url)
-          if (templateLanguage === 'fr') {
-            toast.success(`✉️ Fichier téléchargé: ${filename}\n\nOuvrez ce fichier pour lancer Outlook avec la mise en forme préservée.`, 6000)
-          } else {
-            toast.success(`✉️ File downloaded: ${filename}\n\nOpen this file to launch Outlook with formatting preserved.`, 6000)
-          }
-        }, 500)
-      } catch (error) {
-        console.error('Error creating .eml file:', error)
-        alert(templateLanguage === 'fr' ? 'Erreur lors de la création du fichier email.' : 'Error creating email file.')
-      }
-  }, canTryDesktop ? 1400 : 50) // Wait a bit longer for desktop handlers
+      try { openInOutlookWeb() } catch {}
+      // Nothing else to do after switching; remaining fallbacks removed for simplicity
+  }, canTryDesktop ? 1800 : 75) // Wait a bit longer for desktop handlers
   }
 
   // Force Outlook Web compose (no desktop protocol). Falls back to mailto or .eml if URL too long.
@@ -3887,18 +3866,44 @@ ${cleanBodyHtml}
                       {copySuccess === 'all' ? t.copied : (t.copyAll || 'All')}
                     </Button>
 
-                    {/* Classic Outlook Button */}
-                    <Button 
-                      onClick={openInOutlook}
-                      className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3"
-                      style={{ background: '#2c3d50', borderRadius: '12px' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-                      title={t.openInOutlookClassicTitle || 'Compose in Outlook Classic'}
-                    >
-                      <Send className="h-5 w-5 mr-2" />
-                      {t.openInOutlookClassic || 'Open in Outlook Classic'}
-                    </Button>
+                    {/* Classic Outlook Button + Strict toggle */}
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        onClick={openInOutlook}
+                        className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3"
+                        style={{ background: '#2c3d50', borderRadius: '12px' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                        title={t.openInOutlookClassicTitle || 'Compose in Outlook Classic'}
+                      >
+                        <Send className="h-5 w-5 mr-2" />
+                        {t.openInOutlookClassic || 'Open in Outlook Classic'}
+                      </Button>
+                      <label className="flex items-center text-xs font-medium text-[#2c3d50] select-none cursor-pointer" title={interfaceLanguage === 'fr' ? 'Limiter aux protocoles outlook:// pour éviter le nouvel Outlook / Web' : 'Limit to outlook:// protocols to avoid New/Web Outlook'}>
+                        <input
+                          type="checkbox"
+                          checked={strictClassic}
+                          onChange={(e) => {
+                            setStrictClassic(e.target.checked)
+                            if (e.target.checked) {
+                              if (interfaceLanguage === 'fr') {
+                                toast.success('Mode Classique strict activé', 3500)
+                              } else {
+                                toast.success('Strict Classic mode enabled', 3500)
+                              }
+                            } else {
+                              if (interfaceLanguage === 'fr') {
+                                toast.info('Mode Classique strict désactivé', 3500)
+                              } else {
+                                toast.info('Strict Classic mode disabled', 3500)
+                              }
+                            }
+                          }}
+                          className="mr-1 accent-[#2c3d50]" style={{ width: 14, height: 14 }}
+                        />
+                        {interfaceLanguage === 'fr' ? 'Classique strict' : 'Strict Classic'}
+                      </label>
+                    </div>
 
                     {/* Outlook Web Button */}
                     <Button 
