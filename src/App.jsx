@@ -615,8 +615,10 @@ const interfaceTexts = {
     copied: 'Copié !',
     copyLink: 'Copier le lien',
     copyLinkTitle: 'Copier le lien direct vers ce modèle',
-    openInOutlook: 'Ouvrir dans Outlook',
-    openInOutlookTitle: 'Composer avec Outlook',
+  openInOutlookClassic: 'Ouvrir dans Outlook classique',
+  openInOutlookClassicTitle: 'Composer avec Outlook classique',
+  openInOutlookWeb: 'Ouvrir dans Outlook Web',
+  openInOutlookWebTitle: 'Composer avec Outlook Web',
     sendEmail: 'Envoyer',
   favorites: 'Favoris',
   showFavoritesOnly: 'Afficher uniquement les favoris',
@@ -654,8 +656,10 @@ const interfaceTexts = {
     copied: 'Copied!',
     copyLink: 'Copy link',
     copyLinkTitle: 'Copy direct link to this template',
-    openInOutlook: 'Open in Outlook',
-    openInOutlookTitle: 'Compose in Outlook',
+  openInOutlookClassic: 'Open in Outlook Classic',
+  openInOutlookClassicTitle: 'Compose in Outlook Classic',
+  openInOutlookWeb: 'Open in Outlook Web',
+  openInOutlookWebTitle: 'Compose in Outlook Web',
     sendEmail: 'Send',
   favorites: 'Favorites',
   showFavoritesOnly: 'Show only favorites',
@@ -2857,137 +2861,203 @@ ${cleanBodyHtml}
     }
 
     const subject = resolvedSubject || ''
-    const plainBody = (bodyResult.text || '').replace(/\r?\n/g, '\r\n') // normalize newlines
+    const plainBody = (bodyResult.text || '').replace(/\r?\n/g, '\r\n') // normalize newlinesOK 
+    const encodedSubject = encodeURIComponent(subject)
+    const encodedBody = encodeURIComponent(plainBody)
     const isWindows = /Windows/i.test(navigator.userAgent)
+    const isMac = /Macintosh|Mac OS X/i.test(navigator.userAgent)
+    const canTryDesktop = isWindows || isMac
 
-    // WINDOWS ONLY: Try ms-outlook compose first (launches desktop Outlook directly)
-    // Works only if Outlook is installed and registered. Supports subject/body (plain text).
-    if (isWindows) {
-      const encodedSubject = encodeURIComponent(subject)
-      const encodedBody = encodeURIComponent(plainBody)
-      // Use compose verb + empty to= param (helps force draft window in some Outlook builds)
-      const outlookCompose = `ms-outlook:compose?to=&subject=${encodedSubject}&body=${encodedBody}`
+    // Copy rich HTML to clipboard early (user can paste if protocol strips formatting)
+    if (bodyResult.html) navigator.clipboard?.writeText(bodyResult.html).catch(() => {})
 
-      // Copy HTML to clipboard for user to paste if formatting matters
-      if (bodyResult.html) {
-        navigator.clipboard?.writeText(bodyResult.html).catch(() => {})
-      }
+    const giveFeedback = (textFr, textEn, swapBackLabel) => {
+      if (!document.activeElement) return
+      const btn = document.activeElement
+      const original = btn.textContent
+      btn.textContent = templateLanguage === 'fr' ? textFr : textEn
+      setTimeout(() => { if (btn.textContent === (templateLanguage === 'fr' ? textFr : textEn)) btn.textContent = swapBackLabel || original }, 2500)
+    }
 
-      // Visual feedback
-      if (document.activeElement) {
-        const btn = document.activeElement
-        const original = btn.textContent
-        btn.textContent = templateLanguage === 'fr' ? 'Ouverture Outlook…' : 'Opening Outlook…'
-        setTimeout(() => { if (btn.textContent === (templateLanguage === 'fr' ? 'Ouverture Outlook…' : 'Opening Outlook…')) btn.textContent = original }, 2500)
-      }
+    const desktopSchemes = [
+      // Prefer classic Outlook handler first where registered
+      `outlook://compose?subject=${encodedSubject}&body=${encodedBody}`,
+      // Legacy/Classic handler variant
+      `ms-outlook:compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
+      // Newer unified scheme (can be handled by new Outlook too)
+      `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`
+    ]
 
-      // Heuristic: consider protocol launched if the page loses focus shortly after
-      let launched = false
-      const onBlur = () => { launched = true; window.removeEventListener('blur', onBlur) }
-      window.addEventListener('blur', onBlur)
-      try { window.location.href = outlookCompose } catch (e) {}
+    let launched = false
+    const onBlur = () => { launched = true; window.removeEventListener('blur', onBlur) }
+    if (canTryDesktop) window.addEventListener('blur', onBlur)
 
-      // Brief guidance toast
+    const tryProtocolsSequentially = (index = 0) => {
+      if (!canTryDesktop || index >= desktopSchemes.length) return
+      try { window.location.href = desktopSchemes[index] } catch {}
+      // If launch not detected after short delay, attempt next
+      setTimeout(() => { if (!launched) tryProtocolsSequentially(index + 1) }, 400)
+    }
+
+    if (canTryDesktop) {
+      giveFeedback('Ouverture Outlook…', 'Opening Outlook…')
+      tryProtocolsSequentially()
       setTimeout(() => {
-        window.removeEventListener('blur', onBlur)
         if (templateLanguage === 'fr') {
-          toast.info(`📬 Tentative d'ouverture d'Outlook (bureau)…${bodyResult.html ? '\nHTML copié — collez pour la mise en forme.' : ''}`, 5000)
+          toast.info(`📬 Tentative d'ouverture d'Outlook…${bodyResult.html ? '\nHTML copié — collez pour conserver la mise en forme.' : ''}`, 5000)
         } else {
-          toast.info(`📬 Attempting to open Outlook (desktop)…${bodyResult.html ? '\nHTML copied — paste to keep formatting.' : ''}`, 5000)
+          toast.info(`📬 Attempting Outlook launch…${bodyResult.html ? '\nHTML copied — paste to keep formatting.' : ''}`, 5000)
         }
       }, 250)
+    }
 
-      // If compose didn't seem to take focus, fall back to mailto (faster than .eml)
-      setTimeout(() => {
-        if (launched) return
-        const mailtoUrl = `mailto:?subject=${encodedSubject}&body=${encodedBody}`
-        const mailtoLengthLimit = 1800
-        if (mailtoUrl.length < mailtoLengthLimit && plainBody.length > 0) {
-          const a = document.createElement('a')
-          a.href = mailtoUrl
-          a.style.display = 'none'
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-          if (templateLanguage === 'fr') {
-            toast.info(`✉️ Mode secours mailto (texte brut). Le HTML reste dans le presse-papiers.`, 6000)
-          } else {
-            toast.info(`✉️ Fallback mailto (plain text). HTML is still in clipboard.`, 6000)
-          }
-          return
+    // After waiting to see if desktop Outlook took focus, fall back chain
+    setTimeout(() => {
+      if (launched) return // Desktop succeeded
+      // Do NOT auto-open Outlook Web if the goal is classic Outlook.
+      // Prefer mailto (may still target classic if default) then .eml.
+      // mailto fallback (short plain text only)
+      const mailtoUrl = `mailto:?subject=${encodedSubject}&body=${encodedBody}`
+      const mailtoLengthLimit = 1800
+      if (mailtoUrl.length < mailtoLengthLimit && plainBody.length > 0) {
+        giveFeedback('Ouverture…', 'Opening…')
+        const a = document.createElement('a')
+        a.href = mailtoUrl
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        if (templateLanguage === 'fr') {
+          toast.info(`✉️ Fenêtre de composition ouverte.${bodyResult.html ? '\nHTML copié — collez si besoin.' : ''}`, 6000)
+        } else {
+          toast.info(`✉️ Compose window opened.${bodyResult.html ? '\nHTML copied — paste if needed.' : ''}`, 6000)
         }
-        // Last resort: .eml for very large content
-        const boundary = '----=_NextPart_000_0000_01DA1234.56789ABC'
-        const cleanBodyHtml = bodyResult.html || ''
-        const eml = [
-          `Subject: ${subject}`,
-          'MIME-Version: 1.0',
-          `Content-Type: multipart/alternative; boundary="${boundary}"`,
-          '',
-          `--${boundary}`,
-          'Content-Type: text/plain; charset=UTF-8',
-          'Content-Transfer-Encoding: quoted-printable',
-          '',
-          bodyResult.text || '',
-          '',
-          `--${boundary}`,
-          'Content-Type: text/html; charset=UTF-8',
-          'Content-Transfer-Encoding: quoted-printable',
-          '',
-          '<!DOCTYPE html>',
-          '<html>',
-          '<head>',
-          '<meta charset="UTF-8">',
-          '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-          '</head>',
-          '<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">',
-          cleanBodyHtml,
-          '</body>',
-          '</html>',
-          '',
-          `--${boundary}--`
-        ].join('\r\n')
-        try {
-          const blob = new Blob([eml], { type: 'message/rfc822' })
-          const url = URL.createObjectURL(blob)
-          const filename = `${(subject || 'email').replace(/[^a-z0-9]/gi, '_')}.eml`
-          const a = document.createElement('a')
-          a.href = url
-          a.download = filename
-          a.style.display = 'none'
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-          setTimeout(() => { URL.revokeObjectURL(url) }, 500)
-        } catch {}
-      }, 900) // give Outlook ~900ms to take focus
+        return
+      }
 
+      // Final fallback: generate .eml preserving rich HTML
+      const boundary = '----=_NextPart_000_0000_01DA1234.56789ABC'
+      const cleanBodyHtml = bodyResult.html || ''
+      const eml = [
+        `Subject: ${subject}`,
+        'MIME-Version: 1.0',
+        `Content-Type: multipart/alternative; boundary="${boundary}"`,
+        '',
+        `--${boundary}`,
+        'Content-Type: text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding: quoted-printable',
+        '',
+        bodyResult.text || '',
+        '',
+        `--${boundary}`,
+        'Content-Type: text/html; charset=UTF-8',
+        'Content-Transfer-Encoding: quoted-printable',
+        '',
+        '<!DOCTYPE html>',
+        '<html>',
+        '<head>',
+        '<meta charset="UTF-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        '</head>',
+        '<body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #000000;">',
+        cleanBodyHtml,
+        '</body>',
+        '</html>',
+        '',
+        `--${boundary}--`
+      ].join('\r\n')
+      try {
+        const blob = new Blob([eml], { type: 'message/rfc822' })
+        const url = URL.createObjectURL(blob)
+        const filename = `${(subject || 'email').replace(/[^a-z0-9]/gi, '_')}.eml`
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setTimeout(() => {
+          URL.revokeObjectURL(url)
+          if (templateLanguage === 'fr') {
+            toast.success(`✉️ Fichier téléchargé: ${filename}\n\nOuvrez ce fichier pour lancer Outlook avec la mise en forme préservée.`, 6000)
+          } else {
+            toast.success(`✉️ File downloaded: ${filename}\n\nOpen this file to launch Outlook with formatting preserved.`, 6000)
+          }
+        }, 500)
+      } catch (error) {
+        console.error('Error creating .eml file:', error)
+        alert(templateLanguage === 'fr' ? 'Erreur lors de la création du fichier email.' : 'Error creating email file.')
+      }
+  }, canTryDesktop ? 1400 : 50) // Wait a bit longer for desktop handlers
+  }
+
+  // Force Outlook Web compose (no desktop protocol). Falls back to mailto or .eml if URL too long.
+  const openInOutlookWeb = () => {
+    if (debug) console.log('Opening Outlook Web with subject:', finalSubject)
+
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables)
+    const bodyHtmlSource = bodyEditorRef.current?.getHtml?.() ?? finalBody
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText)
+
+    if (!resolvedSubject && !bodyResult.text) {
+      alert(templateLanguage === 'fr' ? 'Veuillez d\'abord sélectionner un modèle et remplir le contenu.' : 'Please first select a template and fill in the content.')
       return
     }
 
-    // NON-WINDOWS or fallback: Try generic mailto
+    const subject = resolvedSubject || ''
+    const plainBody = (bodyResult.text || '').replace(/\r?\n/g, '\r\n')
     const encodedSubject = encodeURIComponent(subject)
     const encodedBody = encodeURIComponent(plainBody)
-    const mailtoUrl = `mailto:?subject=${encodedSubject}&body=${encodedBody}`
-    const mailtoLengthLimit = 1800
-    
-    if (mailtoUrl.length < mailtoLengthLimit && plainBody.length > 0) {
-      if (bodyResult.html) {
-        navigator.clipboard?.writeText(bodyResult.html).catch(() => {})
-      }
+
+    if (bodyResult.html) navigator.clipboard?.writeText(bodyResult.html).catch(() => {})
+
+    const webCompose = `https://outlook.office.com/mail/deeplink/compose?subject=${encodedSubject}&body=${encodedBody}`
+    const consumerCompose = `https://outlook.live.com/mail/0/deeplink/compose?subject=${encodedSubject}&body=${encodedBody}`
+    const urlLengthLimit = 1800
+
+    const openWeb = (url) => {
       if (document.activeElement) {
         const btn = document.activeElement
         const original = btn.textContent
         btn.textContent = templateLanguage === 'fr' ? 'Ouverture…' : 'Opening…'
         setTimeout(() => { if (btn.textContent === (templateLanguage === 'fr' ? 'Ouverture…' : 'Opening…')) btn.textContent = original }, 2500)
       }
+      const w = window.open(url, '_blank', 'noopener,noreferrer')
+      if (!w) window.location.href = url
+    }
+
+    if ((webCompose.length < urlLengthLimit) && plainBody.length) {
+      openWeb(webCompose)
+      if (templateLanguage === 'fr') {
+        toast.info(`🌐 Ouverture Outlook Web…${bodyResult.html ? '\nHTML copié — collez si besoin.' : ''}`, 6000)
+      } else {
+        toast.info(`🌐 Opening Outlook Web…${bodyResult.html ? '\nHTML copied — paste if needed.' : ''}`, 6000)
+      }
+      return
+    }
+
+    if ((consumerCompose.length < urlLengthLimit) && plainBody.length) {
+      openWeb(consumerCompose)
+      if (templateLanguage === 'fr') {
+        toast.info(`🌐 Ouverture Outlook.com…${bodyResult.html ? '\nHTML copié.' : ''}`, 6000)
+      } else {
+        toast.info(`🌐 Opening Outlook.com…${bodyResult.html ? '\nHTML copied.' : ''}`, 6000)
+      }
+      return
+    }
+
+    // If too large for web compose URL, fall back to mailto or .eml
+    const mailtoUrl = `mailto:?subject=${encodedSubject}&body=${encodedBody}`
+    const mailtoLengthLimit = 1800
+    if (mailtoUrl.length < mailtoLengthLimit && plainBody.length > 0) {
       const a = document.createElement('a')
       a.href = mailtoUrl
       a.style.display = 'none'
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-      
       if (templateLanguage === 'fr') {
         toast.info(`✉️ Fenêtre de composition ouverte.${bodyResult.html ? '\nHTML copié — collez si besoin.' : ''}`, 6000)
       } else {
@@ -2996,7 +3066,7 @@ ${cleanBodyHtml}
       return
     }
 
-    // Fallback: build a .eml file preserving rich HTML formatting.
+    // Final: .eml preserving HTML
     const boundary = '----=_NextPart_000_0000_01DA1234.56789ABC'
     const cleanBodyHtml = bodyResult.html || ''
     const eml = [
@@ -3027,7 +3097,6 @@ ${cleanBodyHtml}
       '',
       `--${boundary}--`
     ].join('\r\n')
-
     try {
       const blob = new Blob([eml], { type: 'message/rfc822' })
       const url = URL.createObjectURL(blob)
@@ -3035,26 +3104,18 @@ ${cleanBodyHtml}
       const a = document.createElement('a')
       a.href = url
       a.download = filename
-      a.target = '_blank'
+      a.style.display = 'none'
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-
       setTimeout(() => {
+        URL.revokeObjectURL(url)
         if (templateLanguage === 'fr') {
           toast.success(`✉️ Fichier téléchargé: ${filename}\n\nOuvrez ce fichier pour lancer Outlook avec la mise en forme préservée.`, 6000)
         } else {
           toast.success(`✉️ File downloaded: ${filename}\n\nOpen this file to launch Outlook with formatting preserved.`, 6000)
         }
-        URL.revokeObjectURL(url)
       }, 500)
-
-      if (document.activeElement) {
-        const button = document.activeElement
-        const originalText = button.textContent
-        button.textContent = templateLanguage === 'fr' ? 'Préparation…' : 'Preparing…'
-        setTimeout(() => { if (button.textContent === (templateLanguage === 'fr' ? 'Préparation…' : 'Preparing…')) button.textContent = originalText }, 2500)
-      }
     } catch (error) {
       console.error('Error creating .eml file:', error)
       alert(templateLanguage === 'fr' ? 'Erreur lors de la création du fichier email.' : 'Error creating email file.')
@@ -3826,26 +3887,30 @@ ${cleanBodyHtml}
                       {copySuccess === 'all' ? t.copied : (t.copyAll || 'All')}
                     </Button>
 
-                    {/* Send Button - Teal primary action (moved CTA) */}
+                    {/* Classic Outlook Button */}
                     <Button 
                       onClick={openInOutlook}
-                      className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex flex-col items-center py-3"
+                      className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3"
                       style={{ background: '#2c3d50', borderRadius: '12px' }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
-                      title="Open in your default email client (Ctrl+Shift+Enter)"
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                      title={t.openInOutlookClassicTitle || 'Compose in Outlook Classic'}
                     >
-                      <div className="flex items-center">
-                        <Send className="h-5 w-5 mr-2" />
-                        {t.openInOutlook}
-                      </div>
-                      <span className="text-xs opacity-70 mt-1" style={{ fontWeight: 'normal' }}>
-                        {templateLanguage === 'fr' ? 'texte brut seulement' : 'plain text only'}
-                      </span>
+                      <Send className="h-5 w-5 mr-2" />
+                      {t.openInOutlookClassic || 'Open in Outlook Classic'}
+                    </Button>
+
+                    {/* Outlook Web Button */}
+                    <Button 
+                      onClick={openInOutlookWeb}
+                      className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3"
+                      style={{ background: '#5a88b5', borderRadius: '12px' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                      title={t.openInOutlookWebTitle || 'Compose in Outlook Web'}
+                    >
+                      <Send className="h-5 w-5 mr-2" />
+                      {t.openInOutlookWeb || 'Open in Outlook Web'}
                     </Button>
                   </div>
                   </div>
