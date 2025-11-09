@@ -96,6 +96,7 @@ npm run preview
 
 ### User Guides
 - **[Admin Console Guide](docs/ADMIN-CSV-IMPORT-GUIDE.md)**: Import/export templates and variables
+	- **Simple Admin Mode (`admin-simple.html`)**: Minimal interface for quick JSON edit/import/export (no advanced warnings, GitHub publish, or bulk CSV). Use when you only need to adjust a few template fields or sync variables. Data is stored as a local draft in `localStorage` under a separate key and won't affect the full admin until you export.
 - **[AI Usage Guide](docs/AI-USAGE-QUICK-REFERENCE.md)**: Use AI to generate content
 - **[Help Center](help.html)**: In-app help and troubleshooting
 
