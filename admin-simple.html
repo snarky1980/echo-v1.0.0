@@ -36,6 +36,15 @@
       .chips{display:flex;gap:6px;flex-wrap:wrap}
       .chip{background:#ecfeff;color:#0e7490;border:1px solid #bae6fd;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700}
       .notice{display:none;position:fixed;top:10px;right:10px;background:#111827;color:#fff;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.1);font-weight:700;z-index:1000}
+  .hidden{display:none!important}
+  /* Variables editor */
+  .vars-editor{margin-top:8px;border-top:1px dashed var(--border);padding-top:10px}
+  .vgrid{display:grid;grid-template-columns: minmax(140px, 240px) 1fr 1fr;gap:8px;align-items:start}
+  .vrow{display:contents}
+  .vkey{font-weight:700;padding:6px 8px;background:#f1f5f9;border:1px solid var(--border);border-radius:8px;color:#334155}
+  .vinput{border:1px solid var(--border);border-radius:10px;padding:8px 10px;font:inherit;width:100%}
+  .vhead{font-size:12px;color:var(--muted);font-weight:700}
+  @media (max-width: 900px){ .vgrid{grid-template-columns:1fr} .vkey{margin-bottom:2px} }
       @media (max-width: 1000px){ .frame{grid-template-columns:1fr} .row{grid-template-columns:1fr} }
     </style>
   </head>
@@ -97,8 +106,11 @@
             <div id="ph" class="chips"></div>
           </div>
           <div class="field">
-            <label>Variables (bibliothèque)</label>
+            <label style="display:flex;align-items:center;gap:8px">Variables (bibliothèque)
+              <button id="btn-edit-vars" class="btn" type="button" title="Modifier les descriptions FR/EN des variables">Éditer descriptions</button>
+            </label>
             <div id="vars" class="chips"></div>
+            <div id="vars-editor" class="vars-editor hidden"></div>
           </div>
         </div>
       </main>
