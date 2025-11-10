@@ -55,6 +55,11 @@
       <button class="btn" id="btn-import">Importer JSON</button>
       <input id="file" type="file" class="hidden" accept=".json,application/json" style="position:absolute;left:-9999px" />
       <button class="btn" id="btn-import-xlsx">Importer Excel</button>
+      <select id="import-mode" title="Mode d'import" style="border:1px solid var(--border);background:#fff;padding:6px 8px;border-radius:10px">
+        <option value="merge">Fusionner</option>
+        <option value="replace">Remplacer</option>
+      </select>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><input id="import-auto-export" type="checkbox" /> Auto-export JSON</label>
       <input id="file-xlsx" type="file" class="hidden" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="position:absolute;left:-9999px" />
       <button class="btn" id="btn-dl-template-csv" title="Télécharger un modèle CSV avec les colonnes requises">Modèle CSV</button>
       <button class="btn" id="btn-dl-template-xlsx" title="Télécharger un modèle Excel (.xlsx) avec les colonnes requises">Modèle XLSX</button>
