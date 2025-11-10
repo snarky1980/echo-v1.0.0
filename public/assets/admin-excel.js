@@ -142,15 +142,21 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
     if (!s) return '';
     return s.replace(/[^A-Za-z0-9_]+/g,'_').replace(/_+/g,'_').replace(/^_+|_+$/g,'');
   }
+  function splitVarName(name){
+    const canonical = canonicalVar(name);
+    if (!canonical) return { base:'', suffix:'', canonical:'' };
+    const match = canonical.match(/^(.*)_(fr|en)$/);
+    if (match) {
+      return { base: match[1], suffix: match[2], canonical };
+    }
+    return { base: canonical, suffix: '', canonical };
+  }
   function inferFormat(n){
-    if (/Montant|Nb|Nombre/i.test(n)) return 'number';
-    if (/Heure/i.test(n)) return 'time';
-    if (/Date|Délai|NouvelleDate|DateInitiale/i.test(n)) return 'date';
     return 'text';
   }
   function exampleFor(fmt){ return fmt==='number' ? '0' : fmt==='time' ? '17:00' : fmt==='date' ? '2025-01-01' : 'Exemple'; }
 
-  function parseVariableDescriptionEntries(raw){
+  function parseVariableDescriptionEntries(raw, languageLabel){
     const map = new Map();
     const issues = [];
     const text = String(raw||'').trim();
@@ -189,17 +195,25 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
         defaultValue = rest.slice(lastOpen + 1, lastClose).trim();
         description = rest.slice(0, lastOpen).trim();
       }
-      const key = canonicalVar(varNameRaw);
-      if (!key) {
+      const { base, suffix, canonical } = splitVarName(varNameRaw);
+      if (!base) {
         issues.push({ entry, reason: 'Nom de variable vide' });
         return;
       }
+      if (!suffix) {
+        issues.push({ entry: canonical || entry, reason: 'Suffixe manquant (_FR ou _EN)' });
+      } else if (languageLabel && suffix !== languageLabel.toLowerCase()) {
+        issues.push({ entry: canonical || entry, reason: `Suffixe ${suffix.toUpperCase()} détecté dans la colonne ${languageLabel.toUpperCase()}` });
+      }
       if (!description) {
-        issues.push({ entry, reason: `Description vide pour ${key}` });
+        issues.push({ entry, reason: `Description vide pour ${canonical || base}` });
       }
-      if (!map.has(key)) {
-        map.set(key, { description, defaultValue });
+      if (!map.has(base)) {
+        map.set(base, { description: '', defaultValue: '' });
       }
+      const meta = map.get(base);
+      if (description) meta.description = description;
+      if (defaultValue) meta.defaultValue = defaultValue;
     });
     return { map, issues };
   }
@@ -257,23 +271,52 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
 
       const category = category_fr || category_en || options.defaultCategory || '';
 
-      const { map: varDescEn, issues: varIssuesEn } = parseVariableDescriptionEntries(variablesDescEnRaw);
-      const { map: varDescFr, issues: varIssuesFr } = parseVariableDescriptionEntries(variablesDescFrRaw);
+      const { map: varDescEn, issues: varIssuesEn } = parseVariableDescriptionEntries(variablesDescEnRaw, 'en');
+      const { map: varDescFr, issues: varIssuesFr } = parseVariableDescriptionEntries(variablesDescFrRaw, 'fr');
       varIssuesEn.forEach(({ entry, reason }) => addWarn(`[${id}] Variable EN invalide « ${entry} » (${reason})`));
       varIssuesFr.forEach(({ entry, reason }) => addWarn(`[${id}] Variable FR invalide « ${entry} » (${reason})`));
 
-      const varsFrSet = new Set(extractPlaceholders(template_fr).map(canonicalVar).filter(Boolean));
-      const varsEnSet = new Set(extractPlaceholders(template_en).map(canonicalVar).filter(Boolean));
-      const varsFr = Array.from(varsFrSet).sort();
-      const varsEn = Array.from(varsEnSet).sort();
+      const placeholdersFr = Array.from(new Set(extractPlaceholders(template_fr)));
+      const placeholdersEn = Array.from(new Set(extractPlaceholders(template_en)));
+      const varsFrSet = new Set();
+      const varsEnSet = new Set();
+      const varsFr = [];
+      const varsEn = [];
 
-      const missingDescFr = varsFr.filter(v => !varDescFr.has(v));
+      placeholdersFr.forEach((placeholder) => {
+        const { base, suffix, canonical } = splitVarName(placeholder);
+        if (!base) return;
+        if (!suffix) {
+          addWarn(`[${id}] Variable FR « ${placeholder} » devrait se terminer par _FR`);
+        } else if (suffix !== 'fr') {
+          addWarn(`[${id}] Variable FR « ${placeholder} » utilise _${suffix.toUpperCase()} (attendu: _FR)`);
+        }
+        varsFrSet.add(base);
+        varsFr.push(canonical || base);
+      });
+
+      placeholdersEn.forEach((placeholder) => {
+        const { base, suffix, canonical } = splitVarName(placeholder);
+        if (!base) return;
+        if (!suffix) {
+          addWarn(`[${id}] Variable EN « ${placeholder} » devrait se terminer par _EN`);
+        } else if (suffix !== 'en') {
+          addWarn(`[${id}] Variable EN « ${placeholder} » utilise _${suffix.toUpperCase()} (attendu: _EN)`);
+        }
+        varsEnSet.add(base);
+        varsEn.push(canonical || base);
+      });
+
+      const varsFrDisplay = Array.from(new Set(varsFr)).sort();
+      const varsEnDisplay = Array.from(new Set(varsEn)).sort();
+
+      const missingDescFr = Array.from(varsFrSet).filter(v => !varDescFr.has(v));
       if (missingDescFr.length) {
-        addWarn(`[${id}] VARIABLES_Description_FR sans entrée pour ${missingDescFr.join(', ')}`);
+        addWarn(`[${id}] VARIABLES_Description_FR sans entrée pour ${missingDescFr.map(v => `${v}_FR`).join(', ')}`);
       }
-      const missingDescEn = varsEn.filter(v => !varDescEn.has(v));
+      const missingDescEn = Array.from(varsEnSet).filter(v => !varDescEn.has(v));
       if (missingDescEn.length) {
-        addWarn(`[${id}] VARIABLES_Description_EN sans entrée pour ${missingDescEn.join(', ')}`);
+        addWarn(`[${id}] VARIABLES_Description_EN sans entrée pour ${missingDescEn.map(v => `${v}_EN`).join(', ')}`);
       }
       const unusedDescFr = Array.from(varDescFr.keys()).filter(key => !varsFrSet.has(key));
       if (unusedDescFr.length) {
@@ -284,28 +327,28 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
         addWarn(`[${id}] Variables EN décrites mais absentes du template EN: ${unusedDescEn.join(', ')}`);
       }
 
-      function ensureVar(key){
+      function ensureVar(baseKey){
+        const key = baseKey;
         if (!key) return;
         if (!variables[key]) variables[key] = { description:{fr:'',en:''}, format:'text', example:'' };
         const metaFr = varDescFr.get(key);
         const metaEn = varDescEn.get(key);
-        const fmt = inferFormat(key);
-        variables[key].format = fmt;
+        variables[key].format = 'text';
         if (metaFr?.description) variables[key].description.fr = metaFr.description;
         if (metaEn?.description) variables[key].description.en = metaEn.description;
         if (!variables[key].description.fr) variables[key].description.fr = `Valeur pour ${key}`;
         if (!variables[key].description.en) variables[key].description.en = `Value for ${key}`;
-        const sample = metaFr?.defaultValue || metaEn?.defaultValue;
+        const sample = metaEn?.defaultValue || metaFr?.defaultValue;
         if (sample) {
           variables[key].example = sample;
         } else if (!variables[key].example) {
-          variables[key].example = exampleFor(fmt);
+          variables[key].example = exampleFor('text');
         }
       }
-      varsFr.forEach(v => ensureVar(v));
-      varsEn.forEach(v => ensureVar(v));
+      varsFrSet.forEach(v => ensureVar(v));
+      varsEnSet.forEach(v => ensureVar(v));
 
-      const variablesUnion = Array.from(new Set([...varsFr, ...varsEn]));
+      const variablesUnion = Array.from(new Set([...varsFrSet, ...varsEnSet])).sort();
       const subject = { fr: title_fr, en: title_en }; // Pas de colonne Subject : on utilise le titre.
       const body = { fr: template_fr, en: template_en };
 
@@ -329,8 +372,8 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
         description_en,
         template_fr,
         template_en,
-        varsFr,
-        varsEn
+        varsFr: varsFrDisplay,
+        varsEn: varsEnDisplay
       });
     }
     // Optional: suggestions generation when requested
@@ -600,9 +643,9 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
         'Courriel de bienvenue pour un nouveau client',
         'Welcome – New customer onboarding',
         'Bienvenue – Arrivée d’un nouveau client',
-        `Hello <<customer_name_EN>>,
+  `Hello <<customer_name_EN>>,
 Thank you for joining us. Your account number is <<account_number_EN>>.`,
-        `Bonjour <<customer_name_FR>>,
+  `Bonjour <<customer_name_FR>>,
 Merci de vous être joint à nous. Votre numéro de compte est <<account_number_FR>>.`,
         ['<<customer_name_EN>>:Customer name(Emily Roy)','<<account_number_EN>>:Account number(AC-12345)'].join('\n'),
         ['<<customer_name_FR>>:Nom du client(Emily Roy)','<<account_number_FR>>:Numéro de compte(AC-12345)'].join('\n')

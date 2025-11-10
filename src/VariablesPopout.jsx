@@ -1,5 +1,67 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Edit3, X, RotateCcw, Pin, PinOff } from 'lucide-react'
+
+const LANGUAGE_SUFFIXES = ['FR', 'EN']
+
+const expandVariableAssignment = (varName, value) => {
+  const assignments = {}
+  if (!varName) return assignments
+  assignments[varName] = value
+  const match = varName.match(/^(.*)_(FR|EN)$/i)
+  if (match) {
+    const base = match[1]
+    assignments[base] = value
+  } else {
+    LANGUAGE_SUFFIXES.forEach((suffix) => {
+      assignments[`${varName}_${suffix}`] = value
+    })
+  }
+  return assignments
+}
+
+const applyAssignments = (prev = {}, assignments = {}) => {
+  const keys = Object.keys(assignments || {})
+  if (!keys.length) return prev
+  let hasDiff = false
+  const next = { ...prev }
+  keys.forEach((key) => {
+    const normalized = (assignments[key] ?? '').toString()
+    if ((next[key] ?? '') !== normalized) {
+      next[key] = normalized
+      hasDiff = true
+    }
+  })
+  return hasDiff ? next : prev
+}
+
+const resolveVariableInfo = (templatesData, name = '') => {
+  if (!templatesData?.variables || !name) return null
+  if (templatesData.variables[name]) return templatesData.variables[name]
+  const baseName = name.replace(/_(FR|EN)$/i, '')
+  return templatesData.variables[baseName] || null
+}
+
+const guessSampleValue = (templatesData, name = '') => {
+  const info = resolveVariableInfo(templatesData, name)
+  if (info?.example) return info.example
+  const normalized = (name || '').toLowerCase()
+  const format = info?.format || (
+    /date|jour|day/.test(normalized) ? 'date' :
+    /heure|time/.test(normalized) ? 'time' :
+    /montant|total|nombre|count|amount|num|quant/.test(normalized) ? 'number' :
+    'text'
+  )
+  switch (format) {
+    case 'date':
+      return new Date().toISOString().slice(0, 10)
+    case 'time':
+      return '09:00'
+    case 'number':
+      return '0'
+    default:
+      return '…'
+  }
+}
 
 /**
  * Standalone Variables Editor Popout Window
@@ -22,6 +84,12 @@ export default function VariablesPopout({
   })
   
   const [variables, setVariables] = useState(initialVariables || {})
+  const getVarValue = useCallback((name) => (
+    variables?.[name] ??
+    variables?.[`${name}_EN`] ??
+    variables?.[`${name}_FR`] ??
+    ''
+  ), [variables])
   const [isPinned, setIsPinned] = useState(() => {
     try {
       return localStorage.getItem('ea_popout_pinned') === 'true'
@@ -37,6 +105,8 @@ export default function VariablesPopout({
   const retryIntervalRef = useRef(null)
   const varInputRefs = useRef({})
   const focusedVarRef = useRef(focusedVar)
+  const sendTimerRef = useRef(null)
+  const lastSentAtRef = useRef(0)
 
   useEffect(() => {
     focusedVarRef.current = focusedVar
@@ -187,45 +257,70 @@ export default function VariablesPopout({
   }, [])
 
   // Sync variable changes to main window
-  const updateVariable = (varName, value) => {
-    const newVariables = { ...variables, [varName]: value }
-    setVariables(newVariables)
+  const enqueueVariableUpdate = (varName, value, allVariables) => {
+    if (!channelRef.current) return
 
-    // Send update to main window
-    if (channelRef.current) {
+    const sendNow = () => {
+      if (!channelRef.current) return
       try {
         channelRef.current.postMessage({
           type: 'variableChanged',
           varName,
           value,
-          allVariables: newVariables,
+          allVariables,
           sender: senderIdRef.current
         })
+        lastSentAtRef.current = Date.now()
       } catch (e) {
         console.error('Failed to send variable update:', e)
       }
     }
+
+    const since = Date.now() - lastSentAtRef.current
+    if (since > 60) {
+      sendNow()
+    } else {
+      clearTimeout(sendTimerRef.current)
+      sendTimerRef.current = setTimeout(sendNow, Math.max(0, 60 - since))
+    }
+  }
+
+  const updateVariable = (varName, value) => {
+    let pending = null
+    const assignments = expandVariableAssignment(varName, value)
+    setVariables(prev => {
+      const next = applyAssignments(prev, assignments)
+      if (next !== prev) {
+        pending = next
+      }
+      return next
+    })
+
+    const snapshot = pending || variables
+    enqueueVariableUpdate(varName, value, snapshot)
   }
 
   const removeVariable = (varName) => {
-    const newVariables = { ...variables, [varName]: '' }
-    setVariables(newVariables)
+    let pending = null
+    const assignments = expandVariableAssignment(varName, '')
+    setVariables(prev => {
+      const next = applyAssignments(prev, assignments)
+      if (next !== prev) {
+        pending = next
+      }
+      return next
+    })
+
+    const snapshot = pending || variables
+    enqueueVariableUpdate(varName, '', snapshot)
 
     if (!channelRef.current) return
 
     try {
       channelRef.current.postMessage({
-        type: 'variableChanged',
-        varName,
-        value: '',
-        allVariables: newVariables,
-        sender: senderIdRef.current
-      })
-
-      channelRef.current.postMessage({
         type: 'variableRemoved',
         varName,
-        allVariables: newVariables,
+        allVariables: snapshot,
         sender: senderIdRef.current
       })
     } catch (e) {
@@ -234,21 +329,23 @@ export default function VariablesPopout({
   }
 
   const reinitializeVariable = (varName) => {
-    const exampleValue = templatesData?.variables?.[varName]?.example || ''
-    const newVariables = { ...variables, [varName]: exampleValue }
-    setVariables(newVariables)
+    const exampleValue = guessSampleValue(templatesData, varName)
+    let pending = null
+    const assignments = expandVariableAssignment(varName, exampleValue)
+    setVariables(prev => {
+      const next = applyAssignments(prev, assignments)
+      if (next !== prev) {
+        pending = next
+      }
+      return next
+    })
+
+    const snapshot = pending || variables
+    enqueueVariableUpdate(varName, exampleValue, snapshot)
 
     if (!channelRef.current) return
 
     try {
-      channelRef.current.postMessage({
-        type: 'variableChanged',
-        varName,
-        value: exampleValue,
-        allVariables: newVariables,
-        sender: senderIdRef.current
-      })
-
       channelRef.current.postMessage({
         type: 'variableReinitialized',
         varName,
@@ -259,6 +356,8 @@ export default function VariablesPopout({
       console.error('Failed to send variable reinitialization:', e)
     }
   }
+
+  useEffect(() => () => { clearTimeout(sendTimerRef.current) }, [])
   
   // Auto-focus first empty variable on mount
   useEffect(() => {
@@ -266,7 +365,7 @@ export default function VariablesPopout({
     
     try {
       const firstEmpty = selectedTemplate.variables.find(
-        vn => !(variables[vn] || '').trim()
+        (vn) => !getVarValue(vn).trim()
       ) || selectedTemplate.variables[0]
       
       const el = varInputRefs.current?.[firstEmpty]
@@ -354,7 +453,7 @@ export default function VariablesPopout({
               return null
             }
 
-            const currentValue = variables[varName] || ''
+            const currentValue = getVarValue(varName)
             const isFocused = focusedVar === varName
             const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
 

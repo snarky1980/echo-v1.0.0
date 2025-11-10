@@ -460,6 +460,81 @@ const extractVariableWithAnchors = (text = '', templateText = '', varName = '') 
   return extracted
 }
 
+const LANGUAGE_SUFFIXES = ['FR', 'EN']
+
+const resolveVariableInfo = (templatesData, name = '') => {
+  if (!templatesData?.variables || !name) return null
+  if (templatesData.variables[name]) return templatesData.variables[name]
+  const base = name.replace(/_(FR|EN)$/i, '')
+  return templatesData.variables[base] || null
+}
+
+const guessSampleValue = (templatesData, name = '') => {
+  const info = resolveVariableInfo(templatesData, name)
+  if (info?.example) return info.example
+  const normalized = (name || '').toLowerCase()
+  const format = info?.format || (
+    /date|jour|day/.test(normalized) ? 'date' :
+    /heure|time/.test(normalized) ? 'time' :
+    /montant|total|nombre|count|amount|num|quant/.test(normalized) ? 'number' :
+    'text'
+  )
+  switch (format) {
+    case 'date':
+      return new Date().toISOString().slice(0, 10)
+    case 'time':
+      return '09:00'
+    case 'number':
+      return '0'
+    default:
+      return '…'
+  }
+}
+
+const buildInitialVariables = (template, templatesData) => {
+  const seed = {}
+  if (!template?.variables || !Array.isArray(template.variables)) return seed
+  template.variables.forEach((baseName) => {
+    const variants = new Set([baseName])
+    LANGUAGE_SUFFIXES.forEach((suffix) => variants.add(`${baseName}_${suffix}`))
+    variants.forEach((key) => {
+      seed[key] = guessSampleValue(templatesData, key)
+    })
+  })
+  return seed
+}
+
+const expandVariableAssignment = (varName, value) => {
+  const assignments = {}
+  if (!varName) return assignments
+  assignments[varName] = value
+  const match = varName.match(/^(.*)_(FR|EN)$/i)
+  if (match) {
+    const base = match[1]
+    assignments[base] = value
+  } else {
+    LANGUAGE_SUFFIXES.forEach((suffix) => {
+      assignments[`${varName}_${suffix}`] = value
+    })
+  }
+  return assignments
+}
+
+const applyAssignments = (prev = {}, assignments = {}) => {
+  const keys = Object.keys(assignments || {})
+  if (!keys.length) return prev
+  let hasDiff = false
+  const next = { ...prev }
+  keys.forEach((key) => {
+    const normalized = (assignments[key] ?? '').toString()
+    if ((next[key] ?? '') !== normalized) {
+      next[key] = normalized
+      hasDiff = true
+    }
+  })
+  return hasDiff ? next : prev
+}
+
 const escapeRegExp = (value = '') => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 const cleanupWhitespace = (text = '') => text
@@ -794,50 +869,63 @@ function App() {
   const popoutSenderIdRef = useRef(Math.random().toString(36).slice(2))
   const pendingPopoutSnapshotRef = useRef(null)
   const varsRemoteUpdateRef = useRef(false)
+  const skipPopoutBroadcastRef = useRef({ pending: false, templateId: null, templateLanguage: null })
   const manualEditRef = useRef({ subject: false, body: false })
   const pendingTemplateIdRef = useRef(null)
   const canUseBC = typeof window !== 'undefined' && 'BroadcastChannel' in window
-  // Focus → outline matching marks in subject/body; blur → fade out
-  useEffect(() => {
-    if (!focusedVar) return
+
+  const updateFocusHighlight = useCallback((varName) => {
     try {
-      const selector = `mark.var-highlight[data-var="${CSS.escape(focusedVar)}"]`
-      const nodes = document.querySelectorAll(selector)
-      nodes.forEach(n => n.classList.add('focused'))
-      return () => { nodes.forEach(n => n.classList.remove('focused')) }
-    } catch {}
-  }, [focusedVar])
+      const marks = document.querySelectorAll('mark.var-highlight.focused')
+      const pills = document.querySelectorAll('.var-pill.focused')
+      marks.forEach((n) => n.classList.remove('focused'))
+      pills.forEach((n) => n.classList.remove('focused'))
+      if (!varName) return
+      const safe = typeof CSS !== 'undefined' && CSS?.escape ? CSS.escape(varName) : varName
+      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add('focused'))
+      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add('focused'))
+    } catch (err) {
+      console.warn('Failed to update focus highlight', err)
+    }
+  }, [])
+
+  const flagSkipPopoutBroadcast = () => {
+    skipPopoutBroadcastRef.current = {
+      pending: true,
+      templateId: selectedTemplateRef.current?.id || null,
+      templateLanguage: templateLanguageRef.current || null
+    }
+  }
+  // Focus → outline matching marks/pills; blur removes highlights
+  useEffect(() => {
+    updateFocusHighlight(focusedVar)
+  }, [focusedVar, updateFocusHighlight])
+
+  // Listen for pill focus events dispatched from PillComponent
+  useEffect(() => {
+    const handler = (e) => {
+      const { key } = e.detail || {}
+      setFocusedVar(key || null)
+    }
+    window.addEventListener('ea-focus-variable', handler)
+    return () => window.removeEventListener('ea-focus-variable', handler)
+  }, [])
 
   const handleInlineVariableChange = useCallback((updates) => {
     if (!updates) return
-
-    setVariables(prev => {
-      let hasDiff = false
-      const next = { ...prev }
-
-      Object.entries(updates).forEach(([key, rawValue]) => {
-        const normalized = (rawValue ?? '').toString()
-        if ((next[key] ?? '') !== normalized) {
-          next[key] = normalized
-          hasDiff = true
-        }
-      })
-
-      return hasDiff ? next : prev
+    const assignments = {}
+    Object.entries(updates).forEach(([key, rawValue]) => {
+      const normalized = (rawValue ?? '').toString()
+      Object.assign(assignments, expandVariableAssignment(key, normalized))
     })
-  }, [setVariables])
+    setVariables(prev => applyAssignments(prev, assignments))
+  }, [])
 
   // Refresh outlines if content updates while focused
   useEffect(() => {
     if (!focusedVar) return
-    try {
-      requestAnimationFrame(() => {
-        const selector = `mark.var-highlight[data-var="${CSS.escape(focusedVar)}"]`
-        document.querySelectorAll('mark.var-highlight.focused').forEach(n => n.classList.remove('focused'))
-        document.querySelectorAll(selector).forEach(n => n.classList.add('focused'))
-      })
-    } catch {}
-  }, [variables, showHighlights, focusedVar])
+    requestAnimationFrame(() => updateFocusHighlight(focusedVar))
+  }, [variables, showHighlights, focusedVar, updateFocusHighlight])
   // Export menu state (replaces <details> for reliability)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const exportMenuRef = useRef(null)
@@ -1094,6 +1182,7 @@ function App() {
         // Handle variable changes from popout
         if (msg.type === 'variableChanged' && msg.allVariables) {
           varsRemoteUpdateRef.current = true
+          flagSkipPopoutBroadcast()
           const next = { ...msg.allVariables }
           variablesRef.current = next
           setVariables(next)
@@ -1103,6 +1192,7 @@ function App() {
         if (msg.type === 'variableRemoved' && msg.varName) {
           const { varName } = msg
           varsRemoteUpdateRef.current = true
+          flagSkipPopoutBroadcast()
           const next = msg.allVariables
             ? { ...msg.allVariables }
             : { ...variablesRef.current, [varName]: '' }
@@ -1129,9 +1219,10 @@ function App() {
         if (msg.type === 'variableReinitialized' && msg.varName) {
           const { varName, value = '' } = msg
           varsRemoteUpdateRef.current = true
+          flagSkipPopoutBroadcast()
           setVariables(prev => {
-            const base = prev || {}
-            const next = { ...base, [varName]: value }
+            const assignments = expandVariableAssignment(varName, value)
+            const next = applyAssignments(prev, assignments)
             variablesRef.current = next
             return next
           })
@@ -1265,11 +1356,12 @@ function App() {
     if (!canUseBC) return
     if (varsRemoteUpdateRef.current) { varsRemoteUpdateRef.current = false; return }
     
+    const snapshot = { ...variables }
     const timeoutId = setTimeout(() => {
       const ch = varsChannelRef.current
       if (!ch) return
-      try { ch.postMessage({ type: 'update', variables, sender: varsSenderIdRef.current }) } catch {}
-    }, 150) // 150ms debounce for real-time sync
+      try { ch.postMessage({ type: 'update', variables: snapshot, sender: varsSenderIdRef.current }) } catch {}
+    }, 90) // slightly faster to improve perceived latency
     
     return () => clearTimeout(timeoutId)
   }, [variables])
@@ -1280,17 +1372,31 @@ function App() {
     if (!canUseBC) return
     const ch = varsChannelRef.current
     if (!ch) return
-    try { ch.postMessage({ type: 'update', templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current }) } catch {}
+    const payload = { type: 'update', templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current }
+    try { ch.postMessage(payload) } catch {}
+    // Also notify popout channel directly for immediate template-language sync
+    const popCh = popoutChannelRef.current
+    if (popCh) {
+      try { popCh.postMessage({ type: 'variablesUpdated', variables: { ...variablesRef.current }, templateId: selectedTemplateId || null, templateLanguage, sender: popoutSenderIdRef.current }) } catch {}
+    }
   }, [selectedTemplateId, templateLanguage])
 
   useEffect(() => {
     if (!canUseBC) return
     const channel = popoutChannelRef.current
     if (!channel) return
+
+    const skipMeta = skipPopoutBroadcastRef.current
+    if (skipMeta?.pending && skipMeta.templateId === (selectedTemplateId || null) && skipMeta.templateLanguage === (templateLanguage || null)) {
+      skipPopoutBroadcastRef.current = { pending: false, templateId: null, templateLanguage: null }
+      return
+    }
+    skipPopoutBroadcastRef.current = { pending: false, templateId: null, templateLanguage: null }
+
     try {
       channel.postMessage({
         type: 'variablesUpdated',
-        variables,
+        variables: { ...variables }, // send fresh shallow copy to avoid mutation references
         templateId: selectedTemplateId || null,
         templateLanguage,
         sender: popoutSenderIdRef.current
@@ -1462,7 +1568,11 @@ function App() {
       if (target) map[target] = val
     }
     if (Object.keys(map).length) {
-      setVariables(prev => ({ ...prev, ...map }))
+      const assignments = {}
+      Object.entries(map).forEach(([varName, value]) => {
+        Object.assign(assignments, expandVariableAssignment(varName, value))
+      })
+      setVariables(prev => applyAssignments(prev, assignments))
       // focus first mapped field
       const first = Object.keys(map)[0]
       const el = varInputRefs.current[first]
@@ -1635,13 +1745,9 @@ function App() {
         // Ctrl/Cmd + R: Reset all fields to examples
         if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
           e.preventDefault()
-          if (templatesData?.variables) {
-            const initialVars = {}
-            selectedTemplate.variables.forEach(varName => {
-              const varInfo = templatesData.variables[varName]
-              if (varInfo) initialVars[varName] = varInfo.example || ''
-            })
-            setVariables(prev => ({ ...prev, ...initialVars }))
+          if (templatesData) {
+            const initialVars = buildInitialVariables(selectedTemplate, templatesData)
+            setVariables(prev => applyAssignments(prev, initialVars))
           }
         }
         
@@ -2143,25 +2249,45 @@ function App() {
       bodyTemplate: bodyTemplate?.substring(0, 100) + '...'
     })
 
-    // For any variables not found in pills, try template-based extraction
-    const missingVars = selectedTemplate.variables.filter(v => !extracted.hasOwnProperty(v))
-    
-    if (missingVars.length > 0 && (subjectTemplate && finalSubject)) {
-      const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, missingVars)
-      Object.assign(extracted, subjectValues)
+    // For any variables not found in pills, try template-based extraction using actual placeholders
+    const collectPlaceholders = (tpl = '') => {
+      if (!tpl) return []
+      return Array.from(tpl.matchAll(/<<([^>]+)>>/g), (match) => match[1])
     }
 
-    if (missingVars.length > 0 && (bodyTemplate && finalBody)) {
-      const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, missingVars.filter(v => !extracted.hasOwnProperty(v)))
-      Object.assign(extracted, bodyValues)
+    const templatePlaceholders = new Set([
+      ...collectPlaceholders(subjectTemplate),
+      ...collectPlaceholders(bodyTemplate)
+    ])
+
+    if (templatePlaceholders.size > 0) {
+      const missingPlaceholders = Array.from(templatePlaceholders).filter((name) => !extracted.hasOwnProperty(name))
+
+      if (missingPlaceholders.length > 0 && subjectTemplate && finalSubject) {
+        const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, missingPlaceholders)
+        Object.assign(extracted, subjectValues)
+      }
+
+      if (missingPlaceholders.length > 0 && bodyTemplate && finalBody) {
+        const bodyTargets = missingPlaceholders.filter((name) => !extracted.hasOwnProperty(name))
+        if (bodyTargets.length) {
+          const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, bodyTargets)
+          Object.assign(extracted, bodyValues)
+        }
+      }
     }
 
     console.log('🔄 Final extracted values:', extracted)
     
+    // Normalize extracted values using assignment helper to ensure suffix/base parity
+    const normalizedExtracted = {}
+    Object.entries(extracted).forEach(([name, value]) => {
+      Object.assign(normalizedExtracted, expandVariableAssignment(name, value))
+    })
+
     // Update variables state and return merged result
-    const extractedEntries = Object.entries(extracted)
-    const hasUpdates = extractedEntries.some(([name, value]) => (variables[name] ?? '') !== value)
-    const nextVariables = hasUpdates ? { ...variables, ...extracted } : { ...variables }
+    const nextVariables = applyAssignments(variables, normalizedExtracted)
+    const hasUpdates = nextVariables !== variables
 
     if (hasUpdates) {
       console.log('🔄 Variables updated successfully, returning:', nextVariables)
@@ -2182,27 +2308,7 @@ function App() {
   // Load a selected template
   useEffect(() => {
     if (selectedTemplate) {
-      // Initialize variables with example/default or generated sample values
-      const sampleFor = (name, info) => {
-        if (info?.example) return info.example
-        const n = name.toLowerCase()
-        const fmt = info?.format || (
-          /date|jour|day/i.test(n) ? 'date' :
-          /heure|time/i.test(n) ? 'time' :
-          /montant|total|nombre|count|amount|num|quant/i.test(n) ? 'number' : 'text'
-        )
-        switch (fmt) {
-          case 'date': return new Date().toISOString().slice(0,10)
-          case 'time': return '09:00'
-          case 'number': return '0'
-          default: return '…'
-        }
-      }
-      const initialVars = {}
-      selectedTemplate.variables.forEach(varName => {
-        const varInfo = templatesData?.variables?.[varName]
-        if (varInfo) initialVars[varName] = sampleFor(varName, varInfo) || '…'
-      })
+      const initialVars = buildInitialVariables(selectedTemplate, templatesData)
 
       console.log('🔄 Template loaded, initializing variables (with samples if empty):', initialVars)
 
@@ -2221,7 +2327,8 @@ function App() {
       setFinalBody('')
       manualEditRef.current = { subject: false, body: false }
     }
-  }, [selectedTemplate, templateLanguage, interfaceLanguage])
+  }, [selectedTemplate, templateLanguage, interfaceLanguage, templatesData])
+
 
   // When the user manually edits the subject/body, automatically try to reverse sync the values back into variables
   useEffect(() => {
@@ -2835,11 +2942,7 @@ ${cleanBodyHtml}
       return
     }
 
-    const initialVars = {}
-    selectedTemplate.variables.forEach(varName => {
-      const varInfo = templatesData.variables?.[varName]
-      initialVars[varName] = varInfo?.example || ''
-    })
+    const initialVars = buildInitialVariables(selectedTemplate, templatesData)
 
     variablesRef.current = initialVars
     setVariables(initialVars)
@@ -3879,13 +3982,9 @@ ${cleanBodyHtml}
                   </Button>
                   <Button
                     onClick={() => {
-                      if (!selectedTemplate || !templatesData || !templatesData.variables) return
-                      const initialVars = {}
-                      selectedTemplate.variables.forEach(varName => {
-                        const varInfo = templatesData?.variables?.[varName]
-                        if (varInfo) initialVars[varName] = varInfo.example || ''
-                      })
-                      setVariables(prev => ({ ...prev, ...initialVars }))
+                      if (!selectedTemplate || !templatesData) return
+                      const initialVars = buildInitialVariables(selectedTemplate, templatesData)
+                      setVariables(prev => applyAssignments(prev, initialVars))
                     }}
                     variant="outline"
                     size="sm"
@@ -3900,8 +3999,10 @@ ${cleanBodyHtml}
                     onClick={() => {
                       if (!selectedTemplate) return
                       const cleared = {}
-                      selectedTemplate.variables.forEach(vn => { cleared[vn] = '' })
-                      setVariables(prev => ({ ...prev, ...cleared }))
+                      selectedTemplate.variables.forEach(vn => {
+                        Object.assign(cleared, expandVariableAssignment(vn, ''))
+                      })
+                      setVariables(prev => applyAssignments(prev, cleared))
                     }}
                     variant="outline"
                     size="sm"
@@ -3965,7 +4066,14 @@ ${cleanBodyHtml}
                   const varInfo = templatesData?.variables?.[varName]
                   if (!varInfo) return null
                   
-                  const currentValue = variables[varName] || ''
+                  const getVarValue = (name) => (
+                    variables?.[name] ??
+                    variables?.[`${name}_EN`] ??
+                    variables?.[`${name}_FR`] ??
+                    ''
+                  )
+
+                  const currentValue = getVarValue(varName)
                   const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
                   
                   return (
@@ -3989,12 +4097,19 @@ ${cleanBodyHtml}
                             <button
                               className="text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#aca868] hover:bg-[#f0fbfb]"
                               title={interfaceLanguage==='fr'?'Remettre l’exemple':'Reset to example'}
-                              onClick={() => setVariables(prev => ({ ...prev, [varName]: (varInfo?.example || '') }))}
+                              onClick={() => {
+                                const exampleValue = guessSampleValue(templatesData, varName)
+                                const assignments = expandVariableAssignment(varName, exampleValue)
+                                setVariables(prev => applyAssignments(prev, assignments))
+                              }}
                             >Ex.</button>
                             <button
                               className="text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#7f1d1d] hover:bg-[#fee2e2]"
                               title={interfaceLanguage==='fr'?'Effacer ce champ':'Clear this field'}
-                              onClick={() => setVariables(prev => ({ ...prev, [varName]: '' }))}
+                              onClick={() => {
+                                const assignments = expandVariableAssignment(varName, '')
+                                setVariables(prev => applyAssignments(prev, assignments))
+                              }}
                             >X</button>
                           </div>
                         </div>
@@ -4007,10 +4122,8 @@ ${cleanBodyHtml}
                             const newValue = e.target.value
                             // Only update if value actually changed
                             if (newValue !== currentValue) {
-                              setVariables(prev => ({
-                                ...prev,
-                                [varName]: newValue
-                              }))
+                              const assignments = expandVariableAssignment(varName, newValue)
+                              setVariables(prev => applyAssignments(prev, assignments))
                             }
                             // Auto-resize (max 2 lines)
                             const lines = (newValue.match(/\n/g) || []).length + 1
@@ -4032,7 +4145,7 @@ ${cleanBodyHtml}
                                 nextIdx = (currentIdx - 1 + list.length) % list.length
                               } else {
                                 // Tab or Enter = next empty field, or next field if none empty
-                                const emptyFields = list.filter(vn => !((variables[vn] || '').trim()))
+                                const emptyFields = list.filter(vn => !(getVarValue(vn).trim()))
                                 if (emptyFields.length > 0) {
                                   const currentEmptyIdx = emptyFields.findIndex(vn => 
                                     list.indexOf(vn) > currentIdx

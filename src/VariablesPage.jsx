@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import VariablesPopout from './VariablesPopout'
 
 /**
@@ -9,72 +9,154 @@ import VariablesPopout from './VariablesPopout'
  * main window via BroadcastChannel.
  */
 export default function VariablesPage() {
+  const paramsRef = useRef(null)
+  if (!paramsRef.current) {
+    paramsRef.current = new URLSearchParams(window.location.search)
+  }
+  const initialTemplateId = paramsRef.current.get('id')
+  const initialLang = paramsRef.current.get('lang') || 'fr'
+
   const [templatesData, setTemplatesData] = useState(null)
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [variables, setVariables] = useState({})
-  const [interfaceLanguage, setInterfaceLanguage] = useState('fr')
+  const [interfaceLanguage, setInterfaceLanguage] = useState(initialLang)
+  const [pendingTemplateId, setPendingTemplateId] = useState(initialTemplateId || null)
+  const [pendingTemplateLanguage, setPendingTemplateLanguage] = useState(initialLang)
   const [loading, setLoading] = useState(true)
+  const hydratedTemplateIdRef = useRef(null)
+  const debugLog = (...args) => { try { console.log('[Popout]', ...args) } catch {} }
 
-  useEffect(() => {
-    // Parse URL parameters
-    const params = new URLSearchParams(window.location.search)
-    const templateId = params.get('id')
-    const lang = params.get('lang') || 'fr'
-    
-    setInterfaceLanguage(lang)
+  const normalizeTemplateId = useCallback((id) => {
+    try {
+      const raw = String(id || '').trim().toLowerCase()
+      // strip trailing copy/dup markers and numeric suffixes like _1, -copy, -copy2
+      const noCopy = raw.replace(/[-_ ](?:copy|dup|duplicate)\d*$/i, '')
+      return noCopy.replace(/_(\d+)$/i, '')
+    } catch { return String(id || '').trim().toLowerCase() }
+  }, [])
 
-    // Load templates data
-    const loadData = async () => {
-      try {
-        const response = await fetch('./complete_email_templates.json')
-        const data = await response.json()
-        setTemplatesData(data)
+  const inferTemplateFromVariables = useCallback((data, varsObj) => {
+    try {
+      if (!data?.templates?.length || !varsObj) return null
+      const varKeys = new Set(Object.keys(varsObj).map(k => String(k).replace(/_(FR|EN)$/i,'')))
+      let bestId = null
+      let bestScore = 0
+      for (const t of data.templates) {
+        const list = Array.isArray(t.variables) ? t.variables : []
+        const score = list.reduce((acc, v) => acc + (varKeys.has(v) ? 1 : 0), 0)
+        if (score > bestScore) { bestScore = score; bestId = t.id }
+      }
+      return bestScore > 0 ? bestId : null
+    } catch (e) {
+      debugLog('inferTemplateFromVariables error', e)
+      return null
+    }
+  }, [])
 
-        // Find the selected template
-        if (templateId && data.templates) {
-          const template = data.templates.find(t => t.id === templateId)
-          if (template) {
-            setSelectedTemplate(template)
-            
-            // Initialize variables with examples as fallback, sync will override with current values
-            const initialVars = {}
-            if (template.variables && data.variables) {
-              template.variables.forEach(varName => {
-                const varInfo = data.variables[varName]
-                // Use example as fallback, but sync will update with actual current values
-                initialVars[varName] = varInfo?.example || ''
-              })
-            }
-            let hydratedVars = { ...initialVars }
-            try {
-              const stored = localStorage.getItem('ea_pending_popout_snapshot')
-              if (stored) {
-                const parsed = JSON.parse(stored)
-                if (parsed && (!parsed.templateId || parsed.templateId === templateId) && (!parsed.templateLanguage || parsed.templateLanguage === lang)) {
-                  hydratedVars = { ...initialVars, ...(parsed.variables || {}) }
-                  console.log('📋 Hydrated popout variables from pending snapshot:', hydratedVars)
-                }
-              }
-            } catch (hydrateError) {
-              console.warn('📋 Unable to hydrate pending popout snapshot:', hydrateError)
-            }
+  const applyTemplateSelection = useCallback((data, templateId, options = {}) => {
+    if (!data?.templates || !templateId) return false
+    const want = normalizeTemplateId(templateId)
+    // Build normalized lookup
+    let template = null
+    for (const t of data.templates) {
+      const nid = normalizeTemplateId(t.id)
+      if (nid === want) { template = t; break }
+    }
+    if (!template) return false
 
-            setVariables(hydratedVars)
-            console.log('📋 Variables page initialized with fallback values:', hydratedVars)
-            try {
-              localStorage.removeItem('ea_pending_popout_snapshot')
-            } catch (cleanupError) {
-              console.warn('📋 Unable to clear pending popout snapshot:', cleanupError)
-            }
-          }
+    debugLog('applyTemplateSelection', { templateId, resolvedId: template.id })
+    setSelectedTemplate(template)
+
+    if (options.preferLanguage) {
+      setInterfaceLanguage(options.preferLanguage)
+    }
+
+    if (options.hydrateVariables) {
+      const shouldHydrate = options.forceHydration || hydratedTemplateIdRef.current !== templateId
+      if (shouldHydrate) {
+        const fallback = {}
+        const allowedKeys = new Set()
+        const catalog = data.variables || {}
+        const suffixes = ['FR', 'EN']
+        if (Array.isArray(template.variables)) {
+          template.variables.forEach((varName) => {
+            const info = catalog[varName]
+            const example = info?.example || ''
+            fallback[varName] = example
+            allowedKeys.add(varName)
+            suffixes.forEach((suffix) => {
+              const composite = `${varName}_${suffix}`
+              fallback[composite] = example
+              allowedKeys.add(composite)
+            })
+          })
         }
-      } catch (error) {
-        console.error('Failed to load templates:', error)
-      } finally {
-        setLoading(false)
+
+  hydratedTemplateIdRef.current = templateId
+        setVariables((prevVars) => {
+          const prev = prevVars || {}
+          if (options.mergeWithExisting === false) {
+            return fallback
+          }
+          const merged = { ...fallback }
+          Object.keys(prev).forEach((key) => {
+            if (allowedKeys.has(key)) {
+              merged[key] = prev[key]
+            }
+          })
+          return merged
+        })
       }
     }
 
+    return true
+  }, [setInterfaceLanguage, setVariables])
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadSnapshot = () => {
+      try {
+        const stored = localStorage.getItem('ea_pending_popout_snapshot')
+        if (!stored) return
+        const parsed = JSON.parse(stored)
+        const matchesTemplate = !parsed?.templateId || parsed.templateId === (pendingTemplateId || null)
+        const matchesLanguage = !parsed?.templateLanguage || parsed.templateLanguage === (pendingTemplateLanguage || null)
+        if (matchesTemplate && matchesLanguage) {
+          if (parsed?.variables && typeof parsed.variables === 'object') {
+            setVariables({ ...parsed.variables })
+          }
+        }
+        // If snapshot carries template context but URL was empty, adopt it
+        if (!pendingTemplateId && parsed?.templateId) {
+          setPendingTemplateId(parsed.templateId)
+        }
+        if (parsed?.templateLanguage) {
+          setPendingTemplateLanguage(parsed.templateLanguage)
+          setInterfaceLanguage(parsed.templateLanguage)
+        }
+      } catch (hydrateError) {
+        console.warn('📋 Unable to hydrate pending popout snapshot:', hydrateError)
+      } finally {
+        try { localStorage.removeItem('ea_pending_popout_snapshot') } catch {}
+      }
+    }
+
+    const loadData = async () => {
+      try {
+        const response = await fetch('/complete_email_templates.json')
+        const data = await response.json()
+        if (cancelled) return
+        setTemplatesData(data)
+        debugLog('loaded templates', { count: Array.isArray(data?.templates) ? data.templates.length : 0 })
+      } catch (error) {
+        if (!cancelled) console.error('Failed to load templates:', error)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    loadSnapshot()
     loadData()
 
     // Setup BroadcastChannel with small delay to ensure proper initialization
@@ -82,18 +164,41 @@ export default function VariablesPage() {
     const setupChannel = () => {
       try {
         channel = new BroadcastChannel('email-assistant-sync')
-        console.log('📋 Variables page BroadcastChannel connected')
+        debugLog('BroadcastChannel connected')
         
         channel.onmessage = (event) => {
-          const data = event.data
+          const data = event.data || {}
           if (data.type === 'variablesUpdated') {
-            console.log('📋 Variables page received variablesUpdated:', data.variables)
-            setVariables(data.variables)
+            debugLog('received variablesUpdated', { templateId: data.templateId, templateLanguage: data.templateLanguage, vars: Object.keys(data.variables||{}).length })
+            if (data.templateId) {
+              setPendingTemplateId(data.templateId)
+            }
+            if (data.templateLanguage) {
+              setPendingTemplateLanguage(data.templateLanguage)
+              setInterfaceLanguage(data.templateLanguage)
+            }
+            if (data.variables && typeof data.variables === 'object') {
+              setVariables({ ...data.variables })
+            } else if (!data.templateId && templatesData) {
+              // Try to infer the template from variables if possible
+              const guessed = inferTemplateFromVariables(templatesData, data.variables || {})
+              if (guessed) setPendingTemplateId(guessed)
+            }
+            return
           }
           // Also handle sync completion in case popout and page are both open
           if (data.type === 'syncComplete' && data.success) {
-            console.log('📋 Variables page received syncComplete:', data.variables)
-            setVariables(data.variables)
+            debugLog('received syncComplete', { vars: Object.keys(data.variables||{}).length })
+            if (data.variables && typeof data.variables === 'object') {
+              setVariables({ ...data.variables })
+            }
+            if (data.templateId) {
+              setPendingTemplateId(data.templateId)
+            }
+            if (data.templateLanguage) {
+              setPendingTemplateLanguage(data.templateLanguage)
+              setInterfaceLanguage(data.templateLanguage)
+            }
           }
         }
         
@@ -102,7 +207,7 @@ export default function VariablesPage() {
           if (channel) {
             try {
               channel.postMessage({ type: 'popoutReady', timestamp: Date.now() })
-              console.log('📋 Sent popout ready signal to main window')
+              debugLog('sent popoutReady')
             } catch (e) {
               console.error('Failed to send ready signal:', e)
             }
@@ -121,12 +226,50 @@ export default function VariablesPage() {
     }
     
     // Setup channel with delay
-    setTimeout(setupChannel, 100)
+    const channelTimer = setTimeout(setupChannel, 100)
 
     return () => {
+      cancelled = true
+      clearTimeout(channelTimer)
       if (channel) channel.close()
     }
   }, [])
+
+  useEffect(() => {
+    if (!templatesData || !pendingTemplateId) return
+    const resolved = applyTemplateSelection(templatesData, pendingTemplateId, {
+      preferLanguage: pendingTemplateLanguage,
+      hydrateVariables: true
+    })
+    if (!resolved) {
+      console.warn('📋 Unable to locate template for popout:', pendingTemplateId, 'available:', (templatesData?.templates||[]).map(t=>t.id).slice(0,10))
+      // Try normalized base id
+      const baseId = normalizeTemplateId(pendingTemplateId)
+      const found = (templatesData?.templates||[]).find(t => normalizeTemplateId(t.id) === baseId)
+      if (found) {
+        debugLog('retrying with normalized id', { baseId, resolved: found.id })
+        setPendingTemplateId(found.id)
+      } else {
+        hydratedTemplateIdRef.current = null
+        setSelectedTemplate(null)
+        // Drop the bad id to allow first-template fallback timer to run
+        setPendingTemplateId(null)
+      }
+    }
+  }, [templatesData, pendingTemplateId, pendingTemplateLanguage, applyTemplateSelection])
+
+  // Last-resort fallback: if data loaded but no template picked after a short grace period, pick first
+  useEffect(() => {
+    if (!templatesData || selectedTemplate || loading) return
+    const timer = setTimeout(() => {
+      if (!selectedTemplate && !pendingTemplateId && Array.isArray(templatesData?.templates) && templatesData.templates.length) {
+        const fallbackId = templatesData.templates[0].id
+        debugLog('fallback selecting first template', fallbackId)
+        setPendingTemplateId(fallbackId)
+      }
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [templatesData, selectedTemplate, pendingTemplateId, loading])
 
   if (loading) {
     return (
@@ -142,14 +285,14 @@ export default function VariablesPage() {
   }
 
   if (!selectedTemplate || !templatesData) {
+    const waitingForTemplate = !!pendingTemplateId && !!templatesData && !selectedTemplate
+    const message = waitingForTemplate
+      ? (interfaceLanguage === 'fr' ? 'Chargement du modèle...' : 'Loading template...')
+      : (interfaceLanguage === 'fr' ? 'Modèle non trouvé' : 'Template not found')
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <p className="text-gray-600 text-lg">
-            {interfaceLanguage === 'fr' 
-              ? 'Modèle non trouvé' 
-              : 'Template not found'}
-          </p>
+          <p className="text-gray-600 text-lg">{message}</p>
         </div>
       </div>
     )

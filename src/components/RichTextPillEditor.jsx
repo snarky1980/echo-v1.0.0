@@ -154,7 +154,7 @@ const RichTextPillEditor = React.forwardRef(({
 
   // Render content with pills - IDENTICAL to SimplePillEditor
   const renderContent = (text) => {
-  if (!text) return '';
+    if (!text) return '';
     
     const regex = /<<([^>]+)>>/g;
     const parts = [];
@@ -338,7 +338,6 @@ const RichTextPillEditor = React.forwardRef(({
         if ((variables?.[varName] || '') !== newValue) {
           hasChanges = true;
         }
-
         updates[varName] = newValue;
         storePillTemplate(pill);
       });
