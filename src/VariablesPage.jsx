@@ -159,6 +159,21 @@ export default function VariablesPage() {
     loadSnapshot()
     loadData()
 
+    // If no template id provided yet, use last used template from localStorage
+    try {
+      if (!pendingTemplateId) {
+        const lastId = localStorage.getItem('ea_last_template_id')
+        const lastLang = localStorage.getItem('ea_last_template_lang')
+        if (lastId) {
+          setPendingTemplateId(lastId)
+          if (lastLang) {
+            setPendingTemplateLanguage(lastLang)
+            setInterfaceLanguage(lastLang)
+          }
+        }
+      }
+    } catch {}
+
     // Setup BroadcastChannel with small delay to ensure proper initialization
     let channel
     const setupChannel = () => {

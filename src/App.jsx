@@ -889,6 +889,9 @@ function App() {
     }
   }, [])
 
+  // Keep highlight visible briefly after blur for better visual continuity
+  const focusClearTimerRef = useRef(null)
+
   const flagSkipPopoutBroadcast = () => {
     skipPopoutBroadcastRef.current = {
       pending: true,
@@ -896,9 +899,15 @@ function App() {
       templateLanguage: templateLanguageRef.current || null
     }
   }
-  // Focus → outline matching marks/pills; blur removes highlights
+  // Focus → outline matching marks/pills; blur clears after a short delay
   useEffect(() => {
-    updateFocusHighlight(focusedVar)
+    if (focusClearTimerRef.current) { clearTimeout(focusClearTimerRef.current); focusClearTimerRef.current = null }
+    if (focusedVar) {
+      updateFocusHighlight(focusedVar)
+    } else {
+      focusClearTimerRef.current = setTimeout(() => updateFocusHighlight(null), 300)
+    }
+    return () => { if (focusClearTimerRef.current) { clearTimeout(focusClearTimerRef.current); focusClearTimerRef.current = null } }
   }, [focusedVar, updateFocusHighlight])
 
   // Listen for pill focus events dispatched from PillComponent
@@ -926,6 +935,11 @@ function App() {
     if (!focusedVar) return
     requestAnimationFrame(() => updateFocusHighlight(focusedVar))
   }, [variables, showHighlights, focusedVar, updateFocusHighlight])
+
+  // Clear any lingering highlight when switching template or language
+  useEffect(() => {
+    updateFocusHighlight(null)
+  }, [selectedTemplateId, templateLanguage, updateFocusHighlight])
   // Export menu state (replaces <details> for reliability)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const exportMenuRef = useRef(null)
@@ -1032,6 +1046,14 @@ function App() {
   useEffect(() => {
     try { localStorage.setItem('ea_prefer_popout', String(preferPopout)) } catch {}
   }, [preferPopout])
+
+  // Persist last used template and language for robust popout fallback
+  useEffect(() => {
+    try {
+      if (selectedTemplateId) localStorage.setItem('ea_last_template_id', selectedTemplateId)
+      if (templateLanguage) localStorage.setItem('ea_last_template_lang', templateLanguage)
+    } catch {}
+  }, [selectedTemplateId, templateLanguage])
 
   // Smart function to open variables (popup or popout based on preference)
   const openVariables = useCallback(() => {
