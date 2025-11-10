@@ -18,7 +18,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "serve:static": "npx http-server -p 5173 .",
-  "predeploy": "node scripts/sync-json-from-gh-pages.mjs",
+  "predeploy": "node scripts/sync-templates.mjs",
   "deploy": "npm run build && npx --yes gh-pages -d dist",
     "templates:replace": "node scripts/replace-templates.mjs",
     "convert:docx": "node scripts/docx-to-templates.mjs",

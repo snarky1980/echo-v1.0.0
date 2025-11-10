@@ -53,7 +53,7 @@
   </head>
   <body>
     <div class="topbar">
-      <div class="brand">Admin (simple)</div>
+      <div class="brand">Admin (simple) <span id="updated-badge" style="display:none;margin-left:6px;padding:4px 8px;font-size:11px;font-weight:700;border:1px solid #bae6fd;background:#ecfeff;color:#0e7490;border-radius:8px" title="Dernière mise à jour distante du JSON">–</span></div>
       <div class="spacer"></div>
       <button class="btn" id="btn-import">Importer JSON</button>
       <input id="file" type="file" class="hidden" accept=".json,application/json" style="position:absolute;left:-9999px" />
@@ -136,5 +136,24 @@
     </div>
 
     <script src="./assets/admin-simple.js"></script>
+    <script>
+      // Lightweight badge population: fetch raw main JSON headers quickly
+      (async function(){
+        try {
+          const repo = document.querySelector('meta[name="gh-repo"]')?.content || 'snarky1980/echo-v1.0.0';
+          const url = `https://raw.githubusercontent.com/${repo}/main/complete_email_templates.json`;
+          const resp = await fetch(url, { cache:'no-store' });
+          if(!resp.ok) return;
+          const text = await resp.text();
+          const json = JSON.parse(text);
+          const ts = json?.metadata?.updatedAt || json?.metadata?.generatedAt || null;
+          if(ts){
+            const badge = document.getElementById('updated-badge');
+            badge.textContent = new Date(ts).toLocaleString('fr-FR',{ hour12:false });
+            badge.style.display = 'inline-block';
+          }
+        } catch(e){ /* silent */ }
+      })();
+    </script>
   </body>
   </html>
