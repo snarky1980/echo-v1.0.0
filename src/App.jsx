@@ -2872,6 +2872,13 @@ ${cleanBodyHtml}
   // Open default mail client (Outlook if default) with subject/body prefilled.
   // Prefer an in-place compose (mailto / Outlook web deeplink) and fall back to .eml download
   // when rich HTML would be lost or URL length limits are exceeded.
+  // Outlook launch mode: 'full' (multi-protocol attempts + delayed web fallback) or 'minimal'
+  const [outlookMode, setOutlookMode] = useState(() => {
+    const saved = localStorage.getItem('ea_outlook_mode');
+    return saved === 'minimal' ? 'minimal' : 'full';
+  });
+  useEffect(() => { try { localStorage.setItem('ea_outlook_mode', outlookMode); } catch {} }, [outlookMode]);
+
   const openInOutlook = () => {
     if (debug) console.log('Opening email client with subject:', finalSubject)
 
@@ -2906,20 +2913,18 @@ ${cleanBodyHtml}
       setTimeout(() => { if (btn.textContent === (templateLanguage === 'fr' ? textFr : textEn)) btn.textContent = swapBackLabel || original }, 2500)
     }
 
-    // Try multiple protocol variants that are known to be handled by Outlook (Classic) on Windows
-    // and older Outlook on macOS. Exact support varies by tenant/policy; we try several safely.
-    const desktopSchemes = [
-      // Legacy ms-outlook compose (classic Outlook often registers this)
+    // Desktop protocol attempts (reduced when in minimal mode)
+    const desktopSchemesFull = [
       `ms-outlook:compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
-      // Unified ms-outlook scheme (handled by classic and new Outlook builds)
       `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
-      // Prefer classic Outlook handler (Windows classic)
       `outlook://compose?subject=${encodedSubject}&body=${encodedBody}`,
-      // Single-slash variant seen in some environments
       `outlook:/compose?subject=${encodedSubject}&body=${encodedBody}`,
-      // Older/legacy compose verb (very old builds)
       `outlook:compose?subject=${encodedSubject}&body=${encodedBody}`
-    ]
+    ];
+    const desktopSchemesMinimal = [
+      `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`
+    ];
+    const desktopSchemes = outlookMode === 'minimal' ? desktopSchemesMinimal : desktopSchemesFull;
 
     let launched = false
     const onBlur = () => { launched = true; window.removeEventListener('blur', onBlur) }
@@ -2938,37 +2943,45 @@ ${cleanBodyHtml}
       }
     }
 
-    const tryProtocolsSequentially = (index = 0) => {
-      if (!canTryDesktop || index >= desktopSchemes.length) return
-      launchViaAnchorClick(desktopSchemes[index])
-      // If launch not detected after short delay, attempt next protocol.
-      setTimeout(() => { if (!launched) tryProtocolsSequentially(index + 1) }, 550)
-    }
-
     if (canTryDesktop) {
       giveFeedback('Ouverture Outlook…', 'Opening Outlook…')
-      tryProtocolsSequentially()
-      setTimeout(() => {
-        if (templateLanguage === 'fr') {
-          toast.info('📬 Tentative d\'ouverture d\'Outlook classique…', 5000)
-        } else {
-          toast.info('📬 Attempting Outlook Classic launch…', 5000)
+      // Minimal mode: single attempt, shorter fallback delay
+      const attemptDelay = outlookMode === 'minimal' ? 0 : 0;
+      const seqDelay = outlookMode === 'minimal' ? 0 : 550;
+      const fallbackDelay = outlookMode === 'minimal' ? 800 : 1800;
+      let idx = 0;
+      const attempt = () => {
+        if (!canTryDesktop || idx >= desktopSchemes.length) return;
+        launchViaAnchorClick(desktopSchemes[idx]);
+        idx++;
+        if (outlookMode === 'full' && !launched && idx < desktopSchemes.length) {
+          setTimeout(() => { if (!launched) attempt(); }, seqDelay);
         }
-      }, 200)
-    }
-
-    // After waiting to see if desktop Outlook took focus, auto-switch to Outlook Web if not launched
-    setTimeout(() => {
-      if (launched) return // Desktop succeeded
-      // Auto-switch to Outlook Web compose when desktop doesn't launch.
-      if (templateLanguage === 'fr') {
-        toast.info('🌐 Bascule vers Outlook Web…', 5000)
-      } else {
-        toast.info('🌐 Switching to Outlook Web…', 5000)
+      };
+      setTimeout(attempt, attemptDelay);
+      if (outlookMode === 'full') {
+        setTimeout(() => {
+          if (templateLanguage === 'fr') {
+            toast.info('📬 Tentative d\'ouverture d\'Outlook classique…', 5000)
+          } else {
+            toast.info('📬 Attempting Outlook Classic launch…', 5000)
+          }
+        }, 200);
       }
-      try { openInOutlookWeb() } catch {}
-      // Nothing else to do after switching; remaining fallbacks removed for simplicity
-  }, canTryDesktop ? 1800 : 75) // Wait a bit longer for desktop handlers
+      // Fallback to Web compose sooner if minimal
+      setTimeout(() => {
+        if (launched) return;
+        if (templateLanguage === 'fr') {
+          toast.info(outlookMode === 'minimal' ? '🌐 Ouverture Outlook Web…' : '🌐 Bascule vers Outlook Web…', 5000)
+        } else {
+          toast.info(outlookMode === 'minimal' ? '🌐 Opening Outlook Web…' : '🌐 Switching to Outlook Web…', 5000)
+        }
+        try { openInOutlookWeb(); } catch {}
+      }, fallbackDelay);
+    } else {
+      // Non-desktop environments: go straight to web
+      openInOutlookWeb();
+    }
   }
 
   // Force Outlook Web compose (no desktop protocol). Falls back to mailto or .eml if URL too long.
@@ -3866,7 +3879,7 @@ ${cleanBodyHtml}
                       {copySuccess === 'all' ? t.copied : (t.copyAll || 'All')}
                     </Button>
 
-                    {/* Classic Outlook Button + Strict toggle */}
+                    {/* Classic Outlook Button + Launch mode toggle */}
                     <div className="flex items-center gap-2">
                       <Button 
                         onClick={openInOutlook}
@@ -3879,30 +3892,25 @@ ${cleanBodyHtml}
                         <Send className="h-5 w-5 mr-2" />
                         {t.openInOutlookClassic || 'Open in Outlook Classic'}
                       </Button>
-                      <label className="flex items-center text-xs font-medium text-[#2c3d50] select-none cursor-pointer" title={interfaceLanguage === 'fr' ? 'Limiter aux protocoles outlook:// pour éviter le nouvel Outlook / Web' : 'Limit to outlook:// protocols to avoid New/Web Outlook'}>
-                        <input
-                          type="checkbox"
-                          checked={strictClassic}
-                          onChange={(e) => {
-                            setStrictClassic(e.target.checked)
-                            if (e.target.checked) {
-                              if (interfaceLanguage === 'fr') {
-                                toast.success('Mode Classique strict activé', 3500)
-                              } else {
-                                toast.success('Strict Classic mode enabled', 3500)
-                              }
-                            } else {
-                              if (interfaceLanguage === 'fr') {
-                                toast.info('Mode Classique strict désactivé', 3500)
-                              } else {
-                                toast.info('Strict Classic mode disabled', 3500)
-                              }
-                            }
-                          }}
-                          className="mr-1 accent-[#2c3d50]" style={{ width: 14, height: 14 }}
-                        />
-                        {interfaceLanguage === 'fr' ? 'Classique strict' : 'Strict Classic'}
-                      </label>
+                      <div className="flex items-center gap-1 text-xs text-[#2c3d50]">
+                        <span className="hidden sm:inline">{interfaceLanguage === 'fr' ? 'Lancement' : 'Launch'}:</span>
+                        <div className="seg" style={{ display:'inline-flex', gap:2, background:'#eef2f7', borderRadius:8, padding:2 }}>
+                          <button
+                            onClick={() => setOutlookMode('full')}
+                            aria-pressed={outlookMode==='full'}
+                            className="px-2 py-1 rounded"
+                            style={outlookMode==='full' ? { background:'#ffffff', color:'#2c3d50', fontWeight:700 } : { color:'#475569' }}
+                            title={interfaceLanguage==='fr' ? 'Plus compatible (plusieurs essais)' : 'More compatible (multiple attempts)'}
+                          >Full</button>
+                          <button
+                            onClick={() => setOutlookMode('minimal')}
+                            aria-pressed={outlookMode==='minimal'}
+                            className="px-2 py-1 rounded"
+                            style={outlookMode==='minimal' ? { background:'#ffffff', color:'#2c3d50', fontWeight:700 } : { color:'#475569' }}
+                            title={interfaceLanguage==='fr' ? 'Un seul essai puis Web (réduit les popups d\'extension)' : 'Single attempt then Web (reduces extension popups)'}
+                          >Minimal</button>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Outlook Web Button */}
