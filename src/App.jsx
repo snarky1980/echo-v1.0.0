@@ -708,7 +708,7 @@ function App() {
   // Preference: Strict Classic Outlook (avoid ms-outlook/mailto to reduce New Outlook/Web)
   const [strictClassic, setStrictClassic] = useState(() => {
     if (typeof savedState.strictClassic !== 'undefined') return !!savedState.strictClassic
-    try { return localStorage.getItem('ea_strict_classic') === '1' } catch { return false }
+    try { return localStorage.getItem('ea_strict_classic') === '1' } catch (e) { return false }
   })
 
   const variablesRef = useRef(variables)
@@ -726,7 +726,7 @@ function App() {
 
   // Persist Strict Classic preference
   useEffect(() => {
-    try { localStorage.setItem('ea_strict_classic', strictClassic ? '1' : '0') } catch {}
+    try { localStorage.setItem('ea_strict_classic', strictClassic ? '1' : '0') } catch (e) {}
   }, [strictClassic])
   useEffect(() => { selectedTemplateRef.current = selectedTemplate }, [selectedTemplate])
   useEffect(() => { templateLanguageRef.current = templateLanguage }, [templateLanguage])
@@ -914,8 +914,7 @@ function App() {
         selectedCategory,
         variables,
         favorites,
-        favoritesOnly,
-        strictClassic
+        favoritesOnly
       })
     }, 300) // 300ms debounce
     
