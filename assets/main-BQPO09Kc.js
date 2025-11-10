@@ -18793,6 +18793,7 @@ function App() {
       console.warn("Failed to update focus highlight", err);
     }
   }, []);
+  const focusClearTimerRef = reactExports.useRef(null);
   const flagSkipPopoutBroadcast = () => {
     var _a2;
     skipPopoutBroadcastRef.current = {
@@ -18802,7 +18803,21 @@ function App() {
     };
   };
   reactExports.useEffect(() => {
-    updateFocusHighlight(focusedVar);
+    if (focusClearTimerRef.current) {
+      clearTimeout(focusClearTimerRef.current);
+      focusClearTimerRef.current = null;
+    }
+    if (focusedVar) {
+      updateFocusHighlight(focusedVar);
+    } else {
+      focusClearTimerRef.current = setTimeout(() => updateFocusHighlight(null), 300);
+    }
+    return () => {
+      if (focusClearTimerRef.current) {
+        clearTimeout(focusClearTimerRef.current);
+        focusClearTimerRef.current = null;
+      }
+    };
   }, [focusedVar, updateFocusHighlight]);
   reactExports.useEffect(() => {
     const handler = (e) => {
@@ -18825,6 +18840,9 @@ function App() {
     if (!focusedVar) return;
     requestAnimationFrame(() => updateFocusHighlight(focusedVar));
   }, [variables, showHighlights, focusedVar, updateFocusHighlight]);
+  reactExports.useEffect(() => {
+    updateFocusHighlight(null);
+  }, [selectedTemplateId, templateLanguage, updateFocusHighlight]);
   const [showExportMenu, setShowExportMenu] = reactExports.useState(false);
   const exportMenuRef = reactExports.useRef(null);
   const searchRef = reactExports.useRef(null);
@@ -18918,6 +18936,13 @@ function App() {
     } catch {
     }
   }, [preferPopout]);
+  reactExports.useEffect(() => {
+    try {
+      if (selectedTemplateId) localStorage.setItem("ea_last_template_id", selectedTemplateId);
+      if (templateLanguage) localStorage.setItem("ea_last_template_lang", templateLanguage);
+    } catch {
+    }
+  }, [selectedTemplateId, templateLanguage]);
   reactExports.useCallback(() => {
     var _a2, _b, _c, _d, _e, _f;
     if (preferPopout && ((_a2 = selectedTemplate == null ? void 0 : selectedTemplate.variables) == null ? void 0 : _a2.length) > 0) {
@@ -22514,6 +22539,20 @@ function VariablesPage() {
     };
     loadSnapshot();
     loadData();
+    try {
+      if (!pendingTemplateId) {
+        const lastId = localStorage.getItem("ea_last_template_id");
+        const lastLang = localStorage.getItem("ea_last_template_lang");
+        if (lastId) {
+          setPendingTemplateId(lastId);
+          if (lastLang) {
+            setPendingTemplateLanguage(lastLang);
+            setInterfaceLanguage(lastLang);
+          }
+        }
+      }
+    } catch {
+    }
     let channel;
     const setupChannel = () => {
       try {
@@ -22687,4 +22726,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-tXa2iSs5.js.map
+//# sourceMappingURL=main-BQPO09Kc.js.map
