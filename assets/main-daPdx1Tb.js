@@ -20485,6 +20485,16 @@ ${cleanBodyHtml}
     setFocusedVar(null);
     setShowResetWarning(false);
   };
+  const [outlookMode, setOutlookMode] = reactExports.useState(() => {
+    const saved = localStorage.getItem("ea_outlook_mode");
+    return saved === "minimal" ? "minimal" : "full";
+  });
+  reactExports.useEffect(() => {
+    try {
+      localStorage.setItem("ea_outlook_mode", outlookMode);
+    } catch {
+    }
+  }, [outlookMode]);
   const openInOutlook = () => {
     var _a2, _b, _c;
     if (debug) console.log("Opening email client with subject:", finalSubject);
@@ -20518,18 +20528,17 @@ ${cleanBodyHtml}
         if (btn.textContent === (templateLanguage === "fr" ? textFr : textEn)) btn.textContent = original;
       }, 2500);
     };
-    const desktopSchemes = [
-      // Legacy ms-outlook compose (classic Outlook often registers this)
+    const desktopSchemesFull = [
       `ms-outlook:compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
-      // Unified ms-outlook scheme (handled by classic and new Outlook builds)
       `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`,
-      // Prefer classic Outlook handler (Windows classic)
       `outlook://compose?subject=${encodedSubject}&body=${encodedBody}`,
-      // Single-slash variant seen in some environments
       `outlook:/compose?subject=${encodedSubject}&body=${encodedBody}`,
-      // Older/legacy compose verb (very old builds)
       `outlook:compose?subject=${encodedSubject}&body=${encodedBody}`
     ];
+    const desktopSchemesMinimal = [
+      `ms-outlook://compose?to=&subject=${encodedSubject}&body=${encodedBody}`
+    ];
+    const desktopSchemes = outlookMode === "minimal" ? desktopSchemesMinimal : desktopSchemesFull;
     let launched = false;
     const onBlur = () => {
       launched = true;
@@ -20551,36 +20560,47 @@ ${cleanBodyHtml}
         }
       }
     };
-    const tryProtocolsSequentially = (index2 = 0) => {
-      if (!canTryDesktop || index2 >= desktopSchemes.length) return;
-      launchViaAnchorClick(desktopSchemes[index2]);
-      setTimeout(() => {
-        if (!launched) tryProtocolsSequentially(index2 + 1);
-      }, 550);
-    };
     if (canTryDesktop) {
       giveFeedback("Ouverture Outlook…", "Opening Outlook…");
-      tryProtocolsSequentially();
-      setTimeout(() => {
-        if (templateLanguage === "fr") {
-          toast.info("📬 Tentative d'ouverture d'Outlook classique…", 5e3);
-        } else {
-          toast.info("📬 Attempting Outlook Classic launch…", 5e3);
+      const attemptDelay = outlookMode === "minimal" ? 0 : 0;
+      const seqDelay = outlookMode === "minimal" ? 0 : 550;
+      const fallbackDelay = outlookMode === "minimal" ? 800 : 1800;
+      let idx = 0;
+      const attempt = () => {
+        if (!canTryDesktop || idx >= desktopSchemes.length) return;
+        launchViaAnchorClick(desktopSchemes[idx]);
+        idx++;
+        if (outlookMode === "full" && !launched && idx < desktopSchemes.length) {
+          setTimeout(() => {
+            if (!launched) attempt();
+          }, seqDelay);
         }
-      }, 200);
+      };
+      setTimeout(attempt, attemptDelay);
+      if (outlookMode === "full") {
+        setTimeout(() => {
+          if (templateLanguage === "fr") {
+            toast.info("📬 Tentative d'ouverture d'Outlook classique…", 5e3);
+          } else {
+            toast.info("📬 Attempting Outlook Classic launch…", 5e3);
+          }
+        }, 200);
+      }
+      setTimeout(() => {
+        if (launched) return;
+        if (templateLanguage === "fr") {
+          toast.info(outlookMode === "minimal" ? "🌐 Ouverture Outlook Web…" : "🌐 Bascule vers Outlook Web…", 5e3);
+        } else {
+          toast.info(outlookMode === "minimal" ? "🌐 Opening Outlook Web…" : "🌐 Switching to Outlook Web…", 5e3);
+        }
+        try {
+          openInOutlookWeb();
+        } catch {
+        }
+      }, fallbackDelay);
+    } else {
+      openInOutlookWeb();
     }
-    setTimeout(() => {
-      if (launched) return;
-      if (templateLanguage === "fr") {
-        toast.info("🌐 Bascule vers Outlook Web…", 5e3);
-      } else {
-        toast.info("🌐 Switching to Outlook Web…", 5e3);
-      }
-      try {
-        openInOutlookWeb();
-      } catch {
-      }
-    }, canTryDesktop ? 1800 : 75);
   };
   const openInOutlookWeb = () => {
     var _a2, _b, _c;
@@ -21491,33 +21511,35 @@ Open this file to launch Outlook with formatting preserved.`, 6e3);
                         ]
                       }
                     ),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-center text-xs font-medium text-[#2c3d50] select-none cursor-pointer", title: interfaceLanguage === "fr" ? "Limiter aux protocoles outlook:// pour éviter le nouvel Outlook / Web" : "Limit to outlook:// protocols to avoid New/Web Outlook", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(
-                        "input",
-                        {
-                          type: "checkbox",
-                          checked: strictClassic,
-                          onChange: (e) => {
-                            setStrictClassic(e.target.checked);
-                            if (e.target.checked) {
-                              if (interfaceLanguage === "fr") {
-                                toast.success("Mode Classique strict activé", 3500);
-                              } else {
-                                toast.success("Strict Classic mode enabled", 3500);
-                              }
-                            } else {
-                              if (interfaceLanguage === "fr") {
-                                toast.info("Mode Classique strict désactivé", 3500);
-                              } else {
-                                toast.info("Strict Classic mode disabled", 3500);
-                              }
-                            }
-                          },
-                          className: "mr-1 accent-[#2c3d50]",
-                          style: { width: 14, height: 14 }
-                        }
-                      ),
-                      interfaceLanguage === "fr" ? "Classique strict" : "Strict Classic"
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 text-xs text-[#2c3d50]", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "hidden sm:inline", children: [
+                        interfaceLanguage === "fr" ? "Lancement" : "Launch",
+                        ":"
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "seg", style: { display: "inline-flex", gap: 2, background: "#eef2f7", borderRadius: 8, padding: 2 }, children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "button",
+                          {
+                            onClick: () => setOutlookMode("full"),
+                            "aria-pressed": outlookMode === "full",
+                            className: "px-2 py-1 rounded",
+                            style: outlookMode === "full" ? { background: "#ffffff", color: "#2c3d50", fontWeight: 700 } : { color: "#475569" },
+                            title: interfaceLanguage === "fr" ? "Plus compatible (plusieurs essais)" : "More compatible (multiple attempts)",
+                            children: "Full"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "button",
+                          {
+                            onClick: () => setOutlookMode("minimal"),
+                            "aria-pressed": outlookMode === "minimal",
+                            className: "px-2 py-1 rounded",
+                            style: outlookMode === "minimal" ? { background: "#ffffff", color: "#2c3d50", fontWeight: 700 } : { color: "#475569" },
+                            title: interfaceLanguage === "fr" ? "Un seul essai puis Web (réduit les popups d'extension)" : "Single attempt then Web (reduces extension popups)",
+                            children: "Minimal"
+                          }
+                        )
+                      ] })
                     ] })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -22612,4 +22634,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-bJCZdhUQ.js.map
+//# sourceMappingURL=main-daPdx1Tb.js.map
