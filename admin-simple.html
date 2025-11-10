@@ -107,8 +107,15 @@
           </div>
           <div class="field">
             <label style="display:flex;align-items:center;gap:8px">Variables du modèle – Descriptions FR / EN</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+              <input id="vars-search" placeholder="Filtrer variables…" style="flex:1;min-width:220px;border:1px solid var(--border);padding:6px 10px;border-radius:10px" />
+              <button class="btn" id="btn-copy-vars-fr" title="Copier lignes FR">Copier FR</button>
+              <button class="btn" id="btn-copy-vars-en" title="Copier lignes EN">Copier EN</button>
+              <button class="btn" id="btn-validate-vars" title="Valider variables (manquants)">Validation</button>
+            </div>
             <div id="vars" class="chips"></div>
             <div id="vars-editor" class="vars-editor"></div>
+            <div id="vars-validation" style="margin-top:10px;font-size:12px;color:var(--muted);display:none"></div>
           </div>
         </div>
       </main>
