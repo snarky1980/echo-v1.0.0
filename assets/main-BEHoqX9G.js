@@ -18606,7 +18606,7 @@ function App() {
     if (typeof savedState.strictClassic !== "undefined") return !!savedState.strictClassic;
     try {
       return localStorage.getItem("ea_strict_classic") === "1";
-    } catch {
+    } catch (e) {
       return false;
     }
   });
@@ -18630,7 +18630,7 @@ function App() {
   reactExports.useEffect(() => {
     try {
       localStorage.setItem("ea_strict_classic", strictClassic ? "1" : "0");
-    } catch {
+    } catch (e) {
     }
   }, [strictClassic]);
   reactExports.useEffect(() => {
@@ -18816,8 +18816,7 @@ function App() {
         selectedCategory,
         variables,
         favorites,
-        favoritesOnly,
-        strictClassic
+        favoritesOnly
       });
     }, 300);
     return () => clearTimeout(timeoutId);
@@ -22354,4 +22353,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-RZ9NmUyp.js.map
+//# sourceMappingURL=main-BEHoqX9G.js.map
