@@ -19378,8 +19378,10 @@ function App() {
     loadTemplatesData();
   }, []);
   reactExports.useEffect(() => {
-    if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates)) {
-      if (debug) console.log("[EA][Debug] Templates loaded; no auto-selection");
+    if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates) && templatesData.templates.length > 0) {
+      const first = templatesData.templates[0];
+      setSelectedTemplate(first);
+      if (debug) console.log("[EA][Debug] Auto-selected first template:", first.id);
     }
   }, [loading, templatesData, selectedTemplate, debug]);
   reactExports.useEffect(() => {
@@ -19898,14 +19900,28 @@ function App() {
   }, [syncFromText]);
   reactExports.useEffect(() => {
     if (selectedTemplate) {
+      const sampleFor = (name, info) => {
+        if (info == null ? void 0 : info.example) return info.example;
+        const n = name.toLowerCase();
+        const fmt = (info == null ? void 0 : info.format) || (/date|jour|day/i.test(n) ? "date" : /heure|time/i.test(n) ? "time" : /montant|total|nombre|count|amount|num|quant/i.test(n) ? "number" : "text");
+        switch (fmt) {
+          case "date":
+            return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+          case "time":
+            return "09:00";
+          case "number":
+            return "0";
+          default:
+            return "…";
+        }
+      };
       const initialVars = {};
       selectedTemplate.variables.forEach((varName) => {
-        const varInfo = templatesData.variables[varName];
-        if (varInfo) {
-          initialVars[varName] = varInfo.example || "";
-        }
+        var _a2;
+        const varInfo = (_a2 = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a2[varName];
+        if (varInfo) initialVars[varName] = sampleFor(varName, varInfo) || "…";
       });
-      console.log("🔄 Template loaded, initializing variables:", initialVars);
+      console.log("🔄 Template loaded, initializing variables (with samples if empty):", initialVars);
       const subjectTemplate = selectedTemplate.subject[templateLanguage] || "";
       const bodyTemplate = selectedTemplate.body[templateLanguage] || "";
       variablesRef.current = initialVars;
@@ -19913,7 +19929,7 @@ function App() {
       setFinalSubject(subjectTemplate);
       setFinalBody(bodyTemplate);
       manualEditRef.current = { subject: false, body: false };
-      console.log("🔄 Variables state and ref updated with initial values");
+      console.log("🔄 Variables state and ref updated with initial/sample values");
     } else {
       setVariables({});
       setFinalSubject("");
@@ -22353,4 +22369,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DIkAdh6Y.js.map
+//# sourceMappingURL=main-D1rmWo1N.js.map
