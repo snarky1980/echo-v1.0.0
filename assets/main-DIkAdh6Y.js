@@ -19343,14 +19343,14 @@ function App() {
     const loadTemplatesData = async () => {
       var _a2;
       try {
-        if (debug) console.log("[EA][Debug] Fetching templates (with prod raw GitHub fallback)...");
-        const REPO_RAW_URL = "https://raw.githubusercontent.com/snarky1980/email-assistant-v8-fixed/main/complete_email_templates.json";
+        if (debug) console.log("[EA][Debug] Fetching templates (prefer raw main data)...");
+        const REPO_RAW_URL = (__vite_import_meta_env__ == null ? void 0 : __vite_import_meta_env__.VITE_TEMPLATES_URL) || "https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json";
         const LOCAL_URL = "./complete_email_templates.json";
         const BASE_URL = typeof import.meta !== "undefined" && __vite_import_meta_env__ && "/echo-v1.0.0/" ? "/echo-v1.0.0/" : "/";
         const ABSOLUTE_URL = (BASE_URL.endsWith("/") ? BASE_URL : BASE_URL + "/") + "complete_email_templates.json";
         const ts = Date.now();
         const withBust = (u) => u + (u.includes("?") ? "&" : "?") + "cb=" + ts;
-        const candidates = [withBust(LOCAL_URL), withBust(ABSOLUTE_URL), withBust(REPO_RAW_URL)];
+        const candidates = [withBust(REPO_RAW_URL), withBust(ABSOLUTE_URL), withBust(LOCAL_URL)];
         let loaded = null;
         let lastErr = null;
         for (const url of candidates) {
@@ -22353,4 +22353,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-BEHoqX9G.js.map
+//# sourceMappingURL=main-DIkAdh6Y.js.map
