@@ -1545,10 +1545,12 @@ function App() {
     loadTemplatesData()
   }, [])
 
-  // Do NOT auto-select a template once data is available; wait for user selection
+  // Auto-select first template after load to avoid "no template" UX if user hasn't picked one
   useEffect(() => {
-    if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates)) {
-      if (debug) console.log('[EA][Debug] Templates loaded; no auto-selection')
+    if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates) && templatesData.templates.length > 0) {
+      const first = templatesData.templates[0]
+      setSelectedTemplate(first)
+      if (debug) console.log('[EA][Debug] Auto-selected first template:', first.id)
     }
   }, [loading, templatesData, selectedTemplate, debug])
 
@@ -2180,31 +2182,40 @@ function App() {
   // Load a selected template
   useEffect(() => {
     if (selectedTemplate) {
-      // Initialize variables with example/default values
+      // Initialize variables with example/default or generated sample values
+      const sampleFor = (name, info) => {
+        if (info?.example) return info.example
+        const n = name.toLowerCase()
+        const fmt = info?.format || (
+          /date|jour|day/i.test(n) ? 'date' :
+          /heure|time/i.test(n) ? 'time' :
+          /montant|total|nombre|count|amount|num|quant/i.test(n) ? 'number' : 'text'
+        )
+        switch (fmt) {
+          case 'date': return new Date().toISOString().slice(0,10)
+          case 'time': return '09:00'
+          case 'number': return '0'
+          default: return '…'
+        }
+      }
       const initialVars = {}
       selectedTemplate.variables.forEach(varName => {
-        const varInfo = templatesData.variables[varName]
-        if (varInfo) {
-          initialVars[varName] = varInfo.example || ''
-        }
+        const varInfo = templatesData?.variables?.[varName]
+        if (varInfo) initialVars[varName] = sampleFor(varName, varInfo) || '…'
       })
 
-      console.log('🔄 Template loaded, initializing variables:', initialVars)
+      console.log('🔄 Template loaded, initializing variables (with samples if empty):', initialVars)
 
-      // Compute templates for current language
       const subjectTemplate = selectedTemplate.subject[templateLanguage] || ''
       const bodyTemplate = selectedTemplate.body[templateLanguage] || ''
 
-      // A2: Auto-fill with default/example values immediately (displayed inside pills)
       variablesRef.current = initialVars
       setVariables(initialVars)
       setFinalSubject(subjectTemplate)
       setFinalBody(bodyTemplate)
       manualEditRef.current = { subject: false, body: false }
-      
-      console.log('🔄 Variables state and ref updated with initial values')
+      console.log('🔄 Variables state and ref updated with initial/sample values')
     } else {
-      // No template selected - clear editors
       setVariables({})
       setFinalSubject('')
       setFinalBody('')
