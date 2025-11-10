@@ -1601,33 +1601,12 @@ function App() {
           copyToClipboard('subject')
         }
       }
-    // Inform user about strict mode effect
-    if (strictClassic) {
-      setTimeout(() => {
-        if (templateLanguage === 'fr') {
-          toast.info('Mode "Classique strict" actif : ms-outlook et mailto ignorés pour éviter Outlook Web/Nouveau.', 6000)
-        } else {
-          toast.info('"Strict Classic" mode active: skipping ms-outlook & mailto to avoid New/Web Outlook.', 6000)
-        }
-      }, 400)
-    } else {
-      // Warn when we are about to try ms-outlook variants (which may trigger New Outlook)
-      setTimeout(() => {
-        if (!strictClassic) {
-          if (templateLanguage === 'fr') {
-            toast.info('Essai des protocoles ms-outlook (peut ouvrir le nouvel Outlook ou Web). Activez "Classique strict" pour limiter.', 6000)
-          } else {
-            toast.info('Trying ms-outlook protocols (may open New/Web Outlook). Enable "Strict Classic" to limit.', 6000)
-          }
-        }
-      }, 900)
-    }
       
-      // Ctrl/Cmd + Shift + Enter: Open Outlook (classic pref then web auto-fallback)
+      // Ctrl/Cmd + Shift + Enter: Open email compose (mailto)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Enter') {
         e.preventDefault()
         if (selectedTemplate) {
-          openInOutlook()
+          openEmail()
         }
       }
   // (Removed stray conditional referencing undefined variables from earlier experimental code)
