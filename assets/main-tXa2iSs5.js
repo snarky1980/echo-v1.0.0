@@ -18396,6 +18396,70 @@ const extractVariablesFromTemplate = (text = "", templateText = "", variableName
   });
   return result;
 };
+const LANGUAGE_SUFFIXES$1 = ["FR", "EN"];
+const resolveVariableInfo$1 = (templatesData, name = "") => {
+  if (!(templatesData == null ? void 0 : templatesData.variables) || !name) return null;
+  if (templatesData.variables[name]) return templatesData.variables[name];
+  const base = name.replace(/_(FR|EN)$/i, "");
+  return templatesData.variables[base] || null;
+};
+const guessSampleValue$1 = (templatesData, name = "") => {
+  const info = resolveVariableInfo$1(templatesData, name);
+  if (info == null ? void 0 : info.example) return info.example;
+  const normalized = (name || "").toLowerCase();
+  const format2 = (info == null ? void 0 : info.format) || (/date|jour|day/.test(normalized) ? "date" : /heure|time/.test(normalized) ? "time" : /montant|total|nombre|count|amount|num|quant/.test(normalized) ? "number" : "text");
+  switch (format2) {
+    case "date":
+      return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+    case "time":
+      return "09:00";
+    case "number":
+      return "0";
+    default:
+      return "…";
+  }
+};
+const buildInitialVariables = (template, templatesData) => {
+  const seed = {};
+  if (!(template == null ? void 0 : template.variables) || !Array.isArray(template.variables)) return seed;
+  template.variables.forEach((baseName) => {
+    const variants = /* @__PURE__ */ new Set([baseName]);
+    LANGUAGE_SUFFIXES$1.forEach((suffix) => variants.add(`${baseName}_${suffix}`));
+    variants.forEach((key) => {
+      seed[key] = guessSampleValue$1(templatesData, key);
+    });
+  });
+  return seed;
+};
+const expandVariableAssignment$1 = (varName, value) => {
+  const assignments = {};
+  if (!varName) return assignments;
+  assignments[varName] = value;
+  const match = varName.match(/^(.*)_(FR|EN)$/i);
+  if (match) {
+    const base = match[1];
+    assignments[base] = value;
+  } else {
+    LANGUAGE_SUFFIXES$1.forEach((suffix) => {
+      assignments[`${varName}_${suffix}`] = value;
+    });
+  }
+  return assignments;
+};
+const applyAssignments$1 = (prev = {}, assignments = {}) => {
+  const keys = Object.keys(assignments || {});
+  if (!keys.length) return prev;
+  let hasDiff = false;
+  const next = { ...prev };
+  keys.forEach((key) => {
+    const normalized = (assignments[key] ?? "").toString();
+    if ((next[key] ?? "") !== normalized) {
+      next[key] = normalized;
+      hasDiff = true;
+    }
+  });
+  return hasDiff ? next : prev;
+};
 const escapeRegExp = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const cleanupWhitespace = (text = "") => text.replace(/[ \t]{2,}/g, " ").replace(/\s+([,.;:!?])/g, "$1").replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n").replace(/\n{3,}/g, "\n\n");
 const removeVariablePlaceholderFromText = (text = "", varName = "") => {
@@ -18711,47 +18775,56 @@ function App() {
   const popoutSenderIdRef = reactExports.useRef(Math.random().toString(36).slice(2));
   const pendingPopoutSnapshotRef = reactExports.useRef(null);
   const varsRemoteUpdateRef = reactExports.useRef(false);
+  const skipPopoutBroadcastRef = reactExports.useRef({ pending: false, templateId: null, templateLanguage: null });
   const manualEditRef = reactExports.useRef({ subject: false, body: false });
   const pendingTemplateIdRef = reactExports.useRef(null);
   const canUseBC = typeof window !== "undefined" && "BroadcastChannel" in window;
-  reactExports.useEffect(() => {
-    if (!focusedVar) return;
+  const updateFocusHighlight = reactExports.useCallback((varName) => {
     try {
-      const selector = `mark.var-highlight[data-var="${CSS.escape(focusedVar)}"]`;
-      const nodes = document.querySelectorAll(selector);
-      nodes.forEach((n) => n.classList.add("focused"));
-      return () => {
-        nodes.forEach((n) => n.classList.remove("focused"));
-      };
-    } catch {
+      const marks = document.querySelectorAll("mark.var-highlight.focused");
+      const pills = document.querySelectorAll(".var-pill.focused");
+      marks.forEach((n) => n.classList.remove("focused"));
+      pills.forEach((n) => n.classList.remove("focused"));
+      if (!varName) return;
+      const safe = typeof CSS !== "undefined" && (CSS == null ? void 0 : CSS.escape) ? CSS.escape(varName) : varName;
+      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add("focused"));
+      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add("focused"));
+    } catch (err) {
+      console.warn("Failed to update focus highlight", err);
     }
-  }, [focusedVar]);
+  }, []);
+  const flagSkipPopoutBroadcast = () => {
+    var _a2;
+    skipPopoutBroadcastRef.current = {
+      pending: true,
+      templateId: ((_a2 = selectedTemplateRef.current) == null ? void 0 : _a2.id) || null,
+      templateLanguage: templateLanguageRef.current || null
+    };
+  };
+  reactExports.useEffect(() => {
+    updateFocusHighlight(focusedVar);
+  }, [focusedVar, updateFocusHighlight]);
+  reactExports.useEffect(() => {
+    const handler = (e) => {
+      const { key } = e.detail || {};
+      setFocusedVar(key || null);
+    };
+    window.addEventListener("ea-focus-variable", handler);
+    return () => window.removeEventListener("ea-focus-variable", handler);
+  }, []);
   const handleInlineVariableChange = reactExports.useCallback((updates) => {
     if (!updates) return;
-    setVariables((prev) => {
-      let hasDiff = false;
-      const next = { ...prev };
-      Object.entries(updates).forEach(([key, rawValue]) => {
-        const normalized = (rawValue ?? "").toString();
-        if ((next[key] ?? "") !== normalized) {
-          next[key] = normalized;
-          hasDiff = true;
-        }
-      });
-      return hasDiff ? next : prev;
+    const assignments = {};
+    Object.entries(updates).forEach(([key, rawValue]) => {
+      const normalized = (rawValue ?? "").toString();
+      Object.assign(assignments, expandVariableAssignment$1(key, normalized));
     });
-  }, [setVariables]);
+    setVariables((prev) => applyAssignments$1(prev, assignments));
+  }, []);
   reactExports.useEffect(() => {
     if (!focusedVar) return;
-    try {
-      requestAnimationFrame(() => {
-        const selector = `mark.var-highlight[data-var="${CSS.escape(focusedVar)}"]`;
-        document.querySelectorAll("mark.var-highlight.focused").forEach((n) => n.classList.remove("focused"));
-        document.querySelectorAll(selector).forEach((n) => n.classList.add("focused"));
-      });
-    } catch {
-    }
-  }, [variables, showHighlights, focusedVar]);
+    requestAnimationFrame(() => updateFocusHighlight(focusedVar));
+  }, [variables, showHighlights, focusedVar, updateFocusHighlight]);
   const [showExportMenu, setShowExportMenu] = reactExports.useState(false);
   const exportMenuRef = reactExports.useRef(null);
   const searchRef = reactExports.useRef(null);
@@ -18980,6 +19053,7 @@ function App() {
         if (!msg || msg.sender === popoutSenderIdRef.current) return;
         if (msg.type === "variableChanged" && msg.allVariables) {
           varsRemoteUpdateRef.current = true;
+          flagSkipPopoutBroadcast();
           const next = { ...msg.allVariables };
           variablesRef.current = next;
           setVariables(next);
@@ -18988,6 +19062,7 @@ function App() {
         if (msg.type === "variableRemoved" && msg.varName) {
           const { varName } = msg;
           varsRemoteUpdateRef.current = true;
+          flagSkipPopoutBroadcast();
           const next = msg.allVariables ? { ...msg.allVariables } : { ...variablesRef.current, [varName]: "" };
           variablesRef.current = next;
           setVariables(next);
@@ -19010,9 +19085,10 @@ function App() {
         if (msg.type === "variableReinitialized" && msg.varName) {
           const { varName, value = "" } = msg;
           varsRemoteUpdateRef.current = true;
+          flagSkipPopoutBroadcast();
           setVariables((prev) => {
-            const base = prev || {};
-            const next = { ...base, [varName]: value };
+            const assignments = expandVariableAssignment$1(varName, value);
+            const next = applyAssignments$1(prev, assignments);
             variablesRef.current = next;
             return next;
           });
@@ -19123,14 +19199,15 @@ function App() {
       varsRemoteUpdateRef.current = false;
       return;
     }
+    const snapshot = { ...variables };
     const timeoutId = setTimeout(() => {
       const ch = varsChannelRef.current;
       if (!ch) return;
       try {
-        ch.postMessage({ type: "update", variables, sender: varsSenderIdRef.current });
+        ch.postMessage({ type: "update", variables: snapshot, sender: varsSenderIdRef.current });
       } catch {
       }
-    }, 150);
+    }, 90);
     return () => clearTimeout(timeoutId);
   }, [variables]);
   const selectedTemplateId = selectedTemplate == null ? void 0 : selectedTemplate.id;
@@ -19138,19 +19215,34 @@ function App() {
     if (!canUseBC) return;
     const ch = varsChannelRef.current;
     if (!ch) return;
+    const payload = { type: "update", templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current };
     try {
-      ch.postMessage({ type: "update", templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current });
+      ch.postMessage(payload);
     } catch {
+    }
+    const popCh = popoutChannelRef.current;
+    if (popCh) {
+      try {
+        popCh.postMessage({ type: "variablesUpdated", variables: { ...variablesRef.current }, templateId: selectedTemplateId || null, templateLanguage, sender: popoutSenderIdRef.current });
+      } catch {
+      }
     }
   }, [selectedTemplateId, templateLanguage]);
   reactExports.useEffect(() => {
     if (!canUseBC) return;
     const channel = popoutChannelRef.current;
     if (!channel) return;
+    const skipMeta = skipPopoutBroadcastRef.current;
+    if ((skipMeta == null ? void 0 : skipMeta.pending) && skipMeta.templateId === (selectedTemplateId || null) && skipMeta.templateLanguage === (templateLanguage || null)) {
+      skipPopoutBroadcastRef.current = { pending: false, templateId: null, templateLanguage: null };
+      return;
+    }
+    skipPopoutBroadcastRef.current = { pending: false, templateId: null, templateLanguage: null };
     try {
       channel.postMessage({
         type: "variablesUpdated",
-        variables,
+        variables: { ...variables },
+        // send fresh shallow copy to avoid mutation references
         templateId: selectedTemplateId || null,
         templateLanguage,
         sender: popoutSenderIdRef.current
@@ -19306,7 +19398,11 @@ function App() {
       if (target) map[target] = val;
     }
     if (Object.keys(map).length) {
-      setVariables((prev) => ({ ...prev, ...map }));
+      const assignments = {};
+      Object.entries(map).forEach(([varName, value]) => {
+        Object.assign(assignments, expandVariableAssignment$1(varName, value));
+      });
+      setVariables((prev) => applyAssignments$1(prev, assignments));
       const first = Object.keys(map)[0];
       const el = varInputRefs.current[first];
       if (el) el.focus();
@@ -19438,13 +19534,9 @@ function App() {
         }
         if ((e.ctrlKey || e.metaKey) && e.key === "r") {
           e.preventDefault();
-          if (templatesData == null ? void 0 : templatesData.variables) {
-            const initialVars = {};
-            selectedTemplate.variables.forEach((varName) => {
-              const varInfo = templatesData.variables[varName];
-              if (varInfo) initialVars[varName] = varInfo.example || "";
-            });
-            setVariables((prev) => ({ ...prev, ...initialVars }));
+          if (templatesData) {
+            const initialVars = buildInitialVariables(selectedTemplate, templatesData);
+            setVariables((prev) => applyAssignments$1(prev, initialVars));
           }
         }
         if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "v") {
@@ -19872,19 +19964,35 @@ function App() {
       subjectTemplate: (subjectTemplate == null ? void 0 : subjectTemplate.substring(0, 100)) + "...",
       bodyTemplate: (bodyTemplate == null ? void 0 : bodyTemplate.substring(0, 100)) + "..."
     });
-    const missingVars = selectedTemplate.variables.filter((v) => !extracted.hasOwnProperty(v));
-    if (missingVars.length > 0 && (subjectTemplate && finalSubject)) {
-      const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, missingVars);
-      Object.assign(extracted, subjectValues);
-    }
-    if (missingVars.length > 0 && (bodyTemplate && finalBody)) {
-      const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, missingVars.filter((v) => !extracted.hasOwnProperty(v)));
-      Object.assign(extracted, bodyValues);
+    const collectPlaceholders = (tpl = "") => {
+      if (!tpl) return [];
+      return Array.from(tpl.matchAll(/<<([^>]+)>>/g), (match) => match[1]);
+    };
+    const templatePlaceholders = /* @__PURE__ */ new Set([
+      ...collectPlaceholders(subjectTemplate),
+      ...collectPlaceholders(bodyTemplate)
+    ]);
+    if (templatePlaceholders.size > 0) {
+      const missingPlaceholders = Array.from(templatePlaceholders).filter((name) => !extracted.hasOwnProperty(name));
+      if (missingPlaceholders.length > 0 && subjectTemplate && finalSubject) {
+        const subjectValues = extractVariablesFromTemplate(finalSubject, subjectTemplate, missingPlaceholders);
+        Object.assign(extracted, subjectValues);
+      }
+      if (missingPlaceholders.length > 0 && bodyTemplate && finalBody) {
+        const bodyTargets = missingPlaceholders.filter((name) => !extracted.hasOwnProperty(name));
+        if (bodyTargets.length) {
+          const bodyValues = extractVariablesFromTemplate(finalBody, bodyTemplate, bodyTargets);
+          Object.assign(extracted, bodyValues);
+        }
+      }
     }
     console.log("🔄 Final extracted values:", extracted);
-    const extractedEntries = Object.entries(extracted);
-    const hasUpdates = extractedEntries.some(([name, value]) => (variables[name] ?? "") !== value);
-    const nextVariables = hasUpdates ? { ...variables, ...extracted } : { ...variables };
+    const normalizedExtracted = {};
+    Object.entries(extracted).forEach(([name, value]) => {
+      Object.assign(normalizedExtracted, expandVariableAssignment$1(name, value));
+    });
+    const nextVariables = applyAssignments$1(variables, normalizedExtracted);
+    const hasUpdates = nextVariables !== variables;
     if (hasUpdates) {
       console.log("🔄 Variables updated successfully, returning:", nextVariables);
       variablesRef.current = nextVariables;
@@ -19900,27 +20008,7 @@ function App() {
   }, [syncFromText]);
   reactExports.useEffect(() => {
     if (selectedTemplate) {
-      const sampleFor = (name, info) => {
-        if (info == null ? void 0 : info.example) return info.example;
-        const n = name.toLowerCase();
-        const fmt = (info == null ? void 0 : info.format) || (/date|jour|day/i.test(n) ? "date" : /heure|time/i.test(n) ? "time" : /montant|total|nombre|count|amount|num|quant/i.test(n) ? "number" : "text");
-        switch (fmt) {
-          case "date":
-            return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
-          case "time":
-            return "09:00";
-          case "number":
-            return "0";
-          default:
-            return "…";
-        }
-      };
-      const initialVars = {};
-      selectedTemplate.variables.forEach((varName) => {
-        var _a2;
-        const varInfo = (_a2 = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a2[varName];
-        if (varInfo) initialVars[varName] = sampleFor(varName, varInfo) || "…";
-      });
+      const initialVars = buildInitialVariables(selectedTemplate, templatesData);
       console.log("🔄 Template loaded, initializing variables (with samples if empty):", initialVars);
       const subjectTemplate = selectedTemplate.subject[templateLanguage] || "";
       const bodyTemplate = selectedTemplate.body[templateLanguage] || "";
@@ -19936,7 +20024,7 @@ function App() {
       setFinalBody("");
       manualEditRef.current = { subject: false, body: false };
     }
-  }, [selectedTemplate, templateLanguage, interfaceLanguage]);
+  }, [selectedTemplate, templateLanguage, interfaceLanguage, templatesData]);
   reactExports.useEffect(() => {
     if (!selectedTemplate) return;
     if (!manualEditRef.current.subject && !manualEditRef.current.body) return;
@@ -20463,12 +20551,7 @@ ${cleanBodyHtml}
       setShowResetWarning(false);
       return;
     }
-    const initialVars = {};
-    selectedTemplate.variables.forEach((varName) => {
-      var _a3;
-      const varInfo = (_a3 = templatesData.variables) == null ? void 0 : _a3[varName];
-      initialVars[varName] = (varInfo == null ? void 0 : varInfo.example) || "";
-    });
+    const initialVars = buildInitialVariables(selectedTemplate, templatesData);
     variablesRef.current = initialVars;
     setVariables(initialVars);
     const subjectTemplate = ((_a2 = selectedTemplate.subject) == null ? void 0 : _a2[templateLanguage]) || "";
@@ -21511,14 +21594,9 @@ Shift+click to toggle preference`,
                       Button,
                       {
                         onClick: () => {
-                          if (!selectedTemplate || !templatesData || !templatesData.variables) return;
-                          const initialVars = {};
-                          selectedTemplate.variables.forEach((varName) => {
-                            var _a2;
-                            const varInfo = (_a2 = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a2[varName];
-                            if (varInfo) initialVars[varName] = varInfo.example || "";
-                          });
-                          setVariables((prev) => ({ ...prev, ...initialVars }));
+                          if (!selectedTemplate || !templatesData) return;
+                          const initialVars = buildInitialVariables(selectedTemplate, templatesData);
+                          setVariables((prev) => applyAssignments$1(prev, initialVars));
                         },
                         variant: "outline",
                         size: "sm",
@@ -21540,9 +21618,9 @@ Shift+click to toggle preference`,
                           if (!selectedTemplate) return;
                           const cleared = {};
                           selectedTemplate.variables.forEach((vn) => {
-                            cleared[vn] = "";
+                            Object.assign(cleared, expandVariableAssignment$1(vn, ""));
                           });
-                          setVariables((prev) => ({ ...prev, ...cleared }));
+                          setVariables((prev) => applyAssignments$1(prev, cleared));
                         },
                         variant: "outline",
                         size: "sm",
@@ -21605,7 +21683,8 @@ Shift+click to toggle preference`,
                 var _a2, _b;
                 const varInfo = (_a2 = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a2[varName];
                 if (!varInfo) return null;
-                const currentValue = variables[varName] || "";
+                const getVarValue = (name) => (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
+                const currentValue = getVarValue(varName);
                 const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
                 return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-[10px] p-3 transition-all duration-200", style: {
                   background: focusedVar === varName ? "rgba(59, 130, 246, 0.15)" : "rgba(200, 215, 150, 0.4)",
@@ -21620,7 +21699,11 @@ Shift+click to toggle preference`,
                         {
                           className: "text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#aca868] hover:bg-[#f0fbfb]",
                           title: interfaceLanguage === "fr" ? "Remettre l’exemple" : "Reset to example",
-                          onClick: () => setVariables((prev) => ({ ...prev, [varName]: (varInfo == null ? void 0 : varInfo.example) || "" })),
+                          onClick: () => {
+                            const exampleValue = guessSampleValue$1(templatesData, varName);
+                            const assignments = expandVariableAssignment$1(varName, exampleValue);
+                            setVariables((prev) => applyAssignments$1(prev, assignments));
+                          },
                           children: "Ex."
                         }
                       ),
@@ -21629,7 +21712,10 @@ Shift+click to toggle preference`,
                         {
                           className: "text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#7f1d1d] hover:bg-[#fee2e2]",
                           title: interfaceLanguage === "fr" ? "Effacer ce champ" : "Clear this field",
-                          onClick: () => setVariables((prev) => ({ ...prev, [varName]: "" })),
+                          onClick: () => {
+                            const assignments = expandVariableAssignment$1(varName, "");
+                            setVariables((prev) => applyAssignments$1(prev, assignments));
+                          },
                           children: "X"
                         }
                       )
@@ -21647,10 +21733,8 @@ Shift+click to toggle preference`,
                       onChange: (e) => {
                         const newValue = e.target.value;
                         if (newValue !== currentValue) {
-                          setVariables((prev) => ({
-                            ...prev,
-                            [varName]: newValue
-                          }));
+                          const assignments = expandVariableAssignment$1(varName, newValue);
+                          setVariables((prev) => applyAssignments$1(prev, assignments));
                         }
                         const lines = (newValue.match(/\n/g) || []).length + 1;
                         e.target.style.height = lines <= 2 ? lines === 1 ? "32px" : "52px" : "52px";
@@ -21667,7 +21751,7 @@ Shift+click to toggle preference`,
                           if (e.shiftKey && e.key === "Tab") {
                             nextIdx = (currentIdx - 1 + list.length) % list.length;
                           } else {
-                            const emptyFields = list.filter((vn) => !(variables[vn] || "").trim());
+                            const emptyFields = list.filter((vn) => !getVarValue(vn).trim());
                             if (emptyFields.length > 0) {
                               const currentEmptyIdx = emptyFields.findIndex(
                                 (vn) => list.indexOf(vn) > currentIdx
@@ -21805,6 +21889,58 @@ Shift+click to toggle preference`,
     ] })
   ] });
 }
+const LANGUAGE_SUFFIXES = ["FR", "EN"];
+const expandVariableAssignment = (varName, value) => {
+  const assignments = {};
+  if (!varName) return assignments;
+  assignments[varName] = value;
+  const match = varName.match(/^(.*)_(FR|EN)$/i);
+  if (match) {
+    const base = match[1];
+    assignments[base] = value;
+  } else {
+    LANGUAGE_SUFFIXES.forEach((suffix) => {
+      assignments[`${varName}_${suffix}`] = value;
+    });
+  }
+  return assignments;
+};
+const applyAssignments = (prev = {}, assignments = {}) => {
+  const keys = Object.keys(assignments || {});
+  if (!keys.length) return prev;
+  let hasDiff = false;
+  const next = { ...prev };
+  keys.forEach((key) => {
+    const normalized = (assignments[key] ?? "").toString();
+    if ((next[key] ?? "") !== normalized) {
+      next[key] = normalized;
+      hasDiff = true;
+    }
+  });
+  return hasDiff ? next : prev;
+};
+const resolveVariableInfo = (templatesData, name = "") => {
+  if (!(templatesData == null ? void 0 : templatesData.variables) || !name) return null;
+  if (templatesData.variables[name]) return templatesData.variables[name];
+  const baseName = name.replace(/_(FR|EN)$/i, "");
+  return templatesData.variables[baseName] || null;
+};
+const guessSampleValue = (templatesData, name = "") => {
+  const info = resolveVariableInfo(templatesData, name);
+  if (info == null ? void 0 : info.example) return info.example;
+  const normalized = (name || "").toLowerCase();
+  const format2 = (info == null ? void 0 : info.format) || (/date|jour|day/.test(normalized) ? "date" : /heure|time/.test(normalized) ? "time" : /montant|total|nombre|count|amount|num|quant/.test(normalized) ? "number" : "text");
+  switch (format2) {
+    case "date":
+      return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+    case "time":
+      return "09:00";
+    case "number":
+      return "0";
+    default:
+      return "…";
+  }
+};
 function VariablesPopout({
   selectedTemplate,
   templatesData,
@@ -21818,6 +21954,7 @@ function VariablesPopout({
     interfaceLanguage
   });
   const [variables, setVariables] = reactExports.useState(initialVariables || {});
+  const getVarValue = reactExports.useCallback((name) => (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "", [variables]);
   const [isPinned, setIsPinned] = reactExports.useState(() => {
     try {
       return localStorage.getItem("ea_popout_pinned") === "true";
@@ -21832,6 +21969,8 @@ function VariablesPopout({
   const retryIntervalRef = reactExports.useRef(null);
   const varInputRefs = reactExports.useRef({});
   const focusedVarRef = reactExports.useRef(focusedVar);
+  const sendTimerRef = reactExports.useRef(null);
+  const lastSentAtRef = reactExports.useRef(0);
   reactExports.useEffect(() => {
     focusedVarRef.current = focusedVar;
   }, [focusedVar]);
@@ -21954,39 +22093,62 @@ function VariablesPopout({
       }
     };
   }, []);
-  const updateVariable = (varName, value) => {
-    const newVariables = { ...variables, [varName]: value };
-    setVariables(newVariables);
-    if (channelRef.current) {
+  const enqueueVariableUpdate = (varName, value, allVariables) => {
+    if (!channelRef.current) return;
+    const sendNow = () => {
+      if (!channelRef.current) return;
       try {
         channelRef.current.postMessage({
           type: "variableChanged",
           varName,
           value,
-          allVariables: newVariables,
+          allVariables,
           sender: senderIdRef.current
         });
+        lastSentAtRef.current = Date.now();
       } catch (e) {
         console.error("Failed to send variable update:", e);
       }
+    };
+    const since = Date.now() - lastSentAtRef.current;
+    if (since > 60) {
+      sendNow();
+    } else {
+      clearTimeout(sendTimerRef.current);
+      sendTimerRef.current = setTimeout(sendNow, Math.max(0, 60 - since));
     }
   };
+  const updateVariable = (varName, value) => {
+    let pending = null;
+    const assignments = expandVariableAssignment(varName, value);
+    setVariables((prev) => {
+      const next = applyAssignments(prev, assignments);
+      if (next !== prev) {
+        pending = next;
+      }
+      return next;
+    });
+    const snapshot = pending || variables;
+    enqueueVariableUpdate(varName, value, snapshot);
+  };
   const removeVariable = (varName) => {
-    const newVariables = { ...variables, [varName]: "" };
-    setVariables(newVariables);
+    let pending = null;
+    const assignments = expandVariableAssignment(varName, "");
+    setVariables((prev) => {
+      const next = applyAssignments(prev, assignments);
+      if (next !== prev) {
+        pending = next;
+      }
+      return next;
+    });
+    const snapshot = pending || variables;
+    enqueueVariableUpdate(varName, "", snapshot);
     if (!channelRef.current) return;
     try {
       channelRef.current.postMessage({
-        type: "variableChanged",
-        varName,
-        value: "",
-        allVariables: newVariables,
-        sender: senderIdRef.current
-      });
-      channelRef.current.postMessage({
         type: "variableRemoved",
         varName,
-        allVariables: newVariables,
+        allVariables: snapshot,
         sender: senderIdRef.current
       });
     } catch (e) {
@@ -21994,19 +22156,20 @@ function VariablesPopout({
     }
   };
   const reinitializeVariable = (varName) => {
-    var _a, _b;
-    const exampleValue = ((_b = (_a = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a[varName]) == null ? void 0 : _b.example) || "";
-    const newVariables = { ...variables, [varName]: exampleValue };
-    setVariables(newVariables);
+    const exampleValue = guessSampleValue(templatesData, varName);
+    let pending = null;
+    const assignments = expandVariableAssignment(varName, exampleValue);
+    setVariables((prev) => {
+      const next = applyAssignments(prev, assignments);
+      if (next !== prev) {
+        pending = next;
+      }
+      return next;
+    });
+    const snapshot = pending || variables;
+    enqueueVariableUpdate(varName, exampleValue, snapshot);
     if (!channelRef.current) return;
     try {
-      channelRef.current.postMessage({
-        type: "variableChanged",
-        varName,
-        value: exampleValue,
-        allVariables: newVariables,
-        sender: senderIdRef.current
-      });
       channelRef.current.postMessage({
         type: "variableReinitialized",
         varName,
@@ -22017,12 +22180,15 @@ function VariablesPopout({
       console.error("Failed to send variable reinitialization:", e);
     }
   };
+  reactExports.useEffect(() => () => {
+    clearTimeout(sendTimerRef.current);
+  }, []);
   reactExports.useEffect(() => {
     var _a;
     if (!(selectedTemplate == null ? void 0 : selectedTemplate.variables) || selectedTemplate.variables.length === 0) return;
     try {
       const firstEmpty = selectedTemplate.variables.find(
-        (vn) => !(variables[vn] || "").trim()
+        (vn) => !getVarValue(vn).trim()
       ) || selectedTemplate.variables[0];
       const el = (_a = varInputRefs.current) == null ? void 0 : _a[firstEmpty];
       if (el && typeof el.focus === "function") {
@@ -22101,7 +22267,7 @@ function VariablesPopout({
         console.warn("🔍 Variable info not found for:", varName);
         return null;
       }
-      const currentValue = variables[varName] || "";
+      const currentValue = getVarValue(varName);
       const isFocused = focusedVar === varName;
       const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -22198,82 +22364,199 @@ function VariablesPopout({
   ] });
 }
 function VariablesPage() {
+  const paramsRef = reactExports.useRef(null);
+  if (!paramsRef.current) {
+    paramsRef.current = new URLSearchParams(window.location.search);
+  }
+  const initialTemplateId = paramsRef.current.get("id");
+  const initialLang = paramsRef.current.get("lang") || "fr";
   const [templatesData, setTemplatesData] = reactExports.useState(null);
   const [selectedTemplate, setSelectedTemplate] = reactExports.useState(null);
   const [variables, setVariables] = reactExports.useState({});
-  const [interfaceLanguage, setInterfaceLanguage] = reactExports.useState("fr");
+  const [interfaceLanguage, setInterfaceLanguage] = reactExports.useState(initialLang);
+  const [pendingTemplateId, setPendingTemplateId] = reactExports.useState(initialTemplateId || null);
+  const [pendingTemplateLanguage, setPendingTemplateLanguage] = reactExports.useState(initialLang);
   const [loading, setLoading] = reactExports.useState(true);
+  const hydratedTemplateIdRef = reactExports.useRef(null);
+  const debugLog = (...args) => {
+    try {
+      console.log("[Popout]", ...args);
+    } catch {
+    }
+  };
+  const normalizeTemplateId = reactExports.useCallback((id) => {
+    try {
+      const raw = String(id || "").trim().toLowerCase();
+      const noCopy = raw.replace(/[-_ ](?:copy|dup|duplicate)\d*$/i, "");
+      return noCopy.replace(/_(\d+)$/i, "");
+    } catch {
+      return String(id || "").trim().toLowerCase();
+    }
+  }, []);
+  const inferTemplateFromVariables = reactExports.useCallback((data, varsObj) => {
+    var _a;
+    try {
+      if (!((_a = data == null ? void 0 : data.templates) == null ? void 0 : _a.length) || !varsObj) return null;
+      const varKeys = new Set(Object.keys(varsObj).map((k) => String(k).replace(/_(FR|EN)$/i, "")));
+      let bestId = null;
+      let bestScore = 0;
+      for (const t of data.templates) {
+        const list = Array.isArray(t.variables) ? t.variables : [];
+        const score = list.reduce((acc, v) => acc + (varKeys.has(v) ? 1 : 0), 0);
+        if (score > bestScore) {
+          bestScore = score;
+          bestId = t.id;
+        }
+      }
+      return bestScore > 0 ? bestId : null;
+    } catch (e) {
+      debugLog("inferTemplateFromVariables error", e);
+      return null;
+    }
+  }, []);
+  const applyTemplateSelection = reactExports.useCallback((data, templateId, options = {}) => {
+    if (!(data == null ? void 0 : data.templates) || !templateId) return false;
+    const want = normalizeTemplateId(templateId);
+    let template = null;
+    for (const t of data.templates) {
+      const nid = normalizeTemplateId(t.id);
+      if (nid === want) {
+        template = t;
+        break;
+      }
+    }
+    if (!template) return false;
+    debugLog("applyTemplateSelection", { templateId, resolvedId: template.id });
+    setSelectedTemplate(template);
+    if (options.preferLanguage) {
+      setInterfaceLanguage(options.preferLanguage);
+    }
+    if (options.hydrateVariables) {
+      const shouldHydrate = options.forceHydration || hydratedTemplateIdRef.current !== templateId;
+      if (shouldHydrate) {
+        const fallback = {};
+        const allowedKeys = /* @__PURE__ */ new Set();
+        const catalog = data.variables || {};
+        const suffixes = ["FR", "EN"];
+        if (Array.isArray(template.variables)) {
+          template.variables.forEach((varName) => {
+            const info = catalog[varName];
+            const example = (info == null ? void 0 : info.example) || "";
+            fallback[varName] = example;
+            allowedKeys.add(varName);
+            suffixes.forEach((suffix) => {
+              const composite = `${varName}_${suffix}`;
+              fallback[composite] = example;
+              allowedKeys.add(composite);
+            });
+          });
+        }
+        hydratedTemplateIdRef.current = templateId;
+        setVariables((prevVars) => {
+          const prev = prevVars || {};
+          if (options.mergeWithExisting === false) {
+            return fallback;
+          }
+          const merged = { ...fallback };
+          Object.keys(prev).forEach((key) => {
+            if (allowedKeys.has(key)) {
+              merged[key] = prev[key];
+            }
+          });
+          return merged;
+        });
+      }
+    }
+    return true;
+  }, [setInterfaceLanguage, setVariables]);
   reactExports.useEffect(() => {
-    const params2 = new URLSearchParams(window.location.search);
-    const templateId = params2.get("id");
-    const lang = params2.get("lang") || "fr";
-    setInterfaceLanguage(lang);
-    const loadData = async () => {
+    let cancelled = false;
+    const loadSnapshot = () => {
       try {
-        const response = await fetch("./complete_email_templates.json");
-        const data = await response.json();
-        setTemplatesData(data);
-        if (templateId && data.templates) {
-          const template = data.templates.find((t) => t.id === templateId);
-          if (template) {
-            setSelectedTemplate(template);
-            const initialVars = {};
-            if (template.variables && data.variables) {
-              template.variables.forEach((varName) => {
-                const varInfo = data.variables[varName];
-                initialVars[varName] = (varInfo == null ? void 0 : varInfo.example) || "";
-              });
-            }
-            let hydratedVars = { ...initialVars };
-            try {
-              const stored = localStorage.getItem("ea_pending_popout_snapshot");
-              if (stored) {
-                const parsed = JSON.parse(stored);
-                if (parsed && (!parsed.templateId || parsed.templateId === templateId) && (!parsed.templateLanguage || parsed.templateLanguage === lang)) {
-                  hydratedVars = { ...initialVars, ...parsed.variables || {} };
-                  console.log("📋 Hydrated popout variables from pending snapshot:", hydratedVars);
-                }
-              }
-            } catch (hydrateError) {
-              console.warn("📋 Unable to hydrate pending popout snapshot:", hydrateError);
-            }
-            setVariables(hydratedVars);
-            console.log("📋 Variables page initialized with fallback values:", hydratedVars);
-            try {
-              localStorage.removeItem("ea_pending_popout_snapshot");
-            } catch (cleanupError) {
-              console.warn("📋 Unable to clear pending popout snapshot:", cleanupError);
-            }
+        const stored = localStorage.getItem("ea_pending_popout_snapshot");
+        if (!stored) return;
+        const parsed = JSON.parse(stored);
+        const matchesTemplate = !(parsed == null ? void 0 : parsed.templateId) || parsed.templateId === (pendingTemplateId || null);
+        const matchesLanguage = !(parsed == null ? void 0 : parsed.templateLanguage) || parsed.templateLanguage === (pendingTemplateLanguage || null);
+        if (matchesTemplate && matchesLanguage) {
+          if ((parsed == null ? void 0 : parsed.variables) && typeof parsed.variables === "object") {
+            setVariables({ ...parsed.variables });
           }
         }
-      } catch (error) {
-        console.error("Failed to load templates:", error);
+        if (!pendingTemplateId && (parsed == null ? void 0 : parsed.templateId)) {
+          setPendingTemplateId(parsed.templateId);
+        }
+        if (parsed == null ? void 0 : parsed.templateLanguage) {
+          setPendingTemplateLanguage(parsed.templateLanguage);
+          setInterfaceLanguage(parsed.templateLanguage);
+        }
+      } catch (hydrateError) {
+        console.warn("📋 Unable to hydrate pending popout snapshot:", hydrateError);
       } finally {
-        setLoading(false);
+        try {
+          localStorage.removeItem("ea_pending_popout_snapshot");
+        } catch {
+        }
       }
     };
+    const loadData = async () => {
+      try {
+        const response = await fetch("/complete_email_templates.json");
+        const data = await response.json();
+        if (cancelled) return;
+        setTemplatesData(data);
+        debugLog("loaded templates", { count: Array.isArray(data == null ? void 0 : data.templates) ? data.templates.length : 0 });
+      } catch (error) {
+        if (!cancelled) console.error("Failed to load templates:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    loadSnapshot();
     loadData();
     let channel;
     const setupChannel = () => {
       try {
         channel = new BroadcastChannel("email-assistant-sync");
-        console.log("📋 Variables page BroadcastChannel connected");
+        debugLog("BroadcastChannel connected");
         channel.onmessage = (event) => {
-          const data = event.data;
+          const data = event.data || {};
           if (data.type === "variablesUpdated") {
-            console.log("📋 Variables page received variablesUpdated:", data.variables);
-            setVariables(data.variables);
+            debugLog("received variablesUpdated", { templateId: data.templateId, templateLanguage: data.templateLanguage, vars: Object.keys(data.variables || {}).length });
+            if (data.templateId) {
+              setPendingTemplateId(data.templateId);
+            }
+            if (data.templateLanguage) {
+              setPendingTemplateLanguage(data.templateLanguage);
+              setInterfaceLanguage(data.templateLanguage);
+            }
+            if (data.variables && typeof data.variables === "object") {
+              setVariables({ ...data.variables });
+            } else if (!data.templateId && templatesData) {
+              const guessed = inferTemplateFromVariables(templatesData, data.variables || {});
+              if (guessed) setPendingTemplateId(guessed);
+            }
+            return;
           }
           if (data.type === "syncComplete" && data.success) {
-            console.log("📋 Variables page received syncComplete:", data.variables);
-            setVariables(data.variables);
+            debugLog("received syncComplete", { vars: Object.keys(data.variables || {}).length });
+            if (data.variables && typeof data.variables === "object") {
+              setVariables({ ...data.variables });
+            }
+            if (data.templateId) {
+              setPendingTemplateId(data.templateId);
+            }
+            if (data.templateLanguage) {
+              setPendingTemplateLanguage(data.templateLanguage);
+              setInterfaceLanguage(data.templateLanguage);
+            }
           }
         };
         const sendReady = () => {
           if (channel) {
             try {
               channel.postMessage({ type: "popoutReady", timestamp: Date.now() });
-              console.log("📋 Sent popout ready signal to main window");
+              debugLog("sent popoutReady");
             } catch (e) {
               console.error("Failed to send ready signal:", e);
             }
@@ -22286,11 +22569,44 @@ function VariablesPage() {
         console.error("BroadcastChannel not available:", e);
       }
     };
-    setTimeout(setupChannel, 100);
+    const channelTimer = setTimeout(setupChannel, 100);
     return () => {
+      cancelled = true;
+      clearTimeout(channelTimer);
       if (channel) channel.close();
     };
   }, []);
+  reactExports.useEffect(() => {
+    if (!templatesData || !pendingTemplateId) return;
+    const resolved = applyTemplateSelection(templatesData, pendingTemplateId, {
+      preferLanguage: pendingTemplateLanguage,
+      hydrateVariables: true
+    });
+    if (!resolved) {
+      console.warn("📋 Unable to locate template for popout:", pendingTemplateId, "available:", ((templatesData == null ? void 0 : templatesData.templates) || []).map((t) => t.id).slice(0, 10));
+      const baseId = normalizeTemplateId(pendingTemplateId);
+      const found = ((templatesData == null ? void 0 : templatesData.templates) || []).find((t) => normalizeTemplateId(t.id) === baseId);
+      if (found) {
+        debugLog("retrying with normalized id", { baseId, resolved: found.id });
+        setPendingTemplateId(found.id);
+      } else {
+        hydratedTemplateIdRef.current = null;
+        setSelectedTemplate(null);
+        setPendingTemplateId(null);
+      }
+    }
+  }, [templatesData, pendingTemplateId, pendingTemplateLanguage, applyTemplateSelection]);
+  reactExports.useEffect(() => {
+    if (!templatesData || selectedTemplate || loading) return;
+    const timer = setTimeout(() => {
+      if (!selectedTemplate && !pendingTemplateId && Array.isArray(templatesData == null ? void 0 : templatesData.templates) && templatesData.templates.length) {
+        const fallbackId = templatesData.templates[0].id;
+        debugLog("fallback selecting first template", fallbackId);
+        setPendingTemplateId(fallbackId);
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [templatesData, selectedTemplate, pendingTemplateId, loading]);
   if (loading) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-gray-50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4" }),
@@ -22298,7 +22614,9 @@ function VariablesPage() {
     ] }) });
   }
   if (!selectedTemplate || !templatesData) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-gray-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-gray-600 text-lg", children: interfaceLanguage === "fr" ? "Modèle non trouvé" : "Template not found" }) }) });
+    const waitingForTemplate = !!pendingTemplateId && !!templatesData && !selectedTemplate;
+    const message = waitingForTemplate ? interfaceLanguage === "fr" ? "Chargement du modèle..." : "Loading template..." : interfaceLanguage === "fr" ? "Modèle non trouvé" : "Template not found";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-gray-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-gray-600 text-lg", children: message }) }) });
   }
   console.log("🔍 VariablesPage rendering with:", {
     selectedTemplate: selectedTemplate == null ? void 0 : selectedTemplate.id,
@@ -22369,4 +22687,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-D1rmWo1N.js.map
+//# sourceMappingURL=main-tXa2iSs5.js.map
