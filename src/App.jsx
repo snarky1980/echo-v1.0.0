@@ -1506,17 +1506,16 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
-    if (debug) console.log('[EA][Debug] Fetching templates (with prod raw GitHub fallback)...')
-  const REPO_RAW_URL = 'https://raw.githubusercontent.com/snarky1980/email-assistant-v8-fixed/main/complete_email_templates.json'
+    if (debug) console.log('[EA][Debug] Fetching templates (prefer raw main data)...')
+  const REPO_RAW_URL = (import.meta?.env?.VITE_TEMPLATES_URL) || 'https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json'
         const LOCAL_URL = './complete_email_templates.json'
         // Absolute path based on Vite base for GitHub Pages (e.g., /email-assistant-v8-fixed/)
         const BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/'
         const ABSOLUTE_URL = (BASE_URL.endsWith('/') ? BASE_URL : BASE_URL + '/') + 'complete_email_templates.json'
         const ts = Date.now()
         const withBust = (u) => u + (u.includes('?') ? '&' : '?') + 'cb=' + ts
-        // Prefer local JSON first in all environments; fall back to raw repo
-        // This avoids transient network/CORS issues on GitHub Pages
-        const candidates = [withBust(LOCAL_URL), withBust(ABSOLUTE_URL), withBust(REPO_RAW_URL)]
+  // Prefer raw data stored on main branch so deployments don't overwrite edits
+  const candidates = [withBust(REPO_RAW_URL), withBust(ABSOLUTE_URL), withBust(LOCAL_URL)]
 
         let loaded = null
         let lastErr = null
