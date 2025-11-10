@@ -19414,29 +19414,10 @@ function App() {
           copyToClipboard("subject");
         }
       }
-      if (strictClassic) {
-        setTimeout(() => {
-          if (templateLanguage === "fr") {
-            toast.info('Mode "Classique strict" actif : ms-outlook et mailto ignorés pour éviter Outlook Web/Nouveau.', 6e3);
-          } else {
-            toast.info('"Strict Classic" mode active: skipping ms-outlook & mailto to avoid New/Web Outlook.', 6e3);
-          }
-        }, 400);
-      } else {
-        setTimeout(() => {
-          if (!strictClassic) {
-            if (templateLanguage === "fr") {
-              toast.info('Essai des protocoles ms-outlook (peut ouvrir le nouvel Outlook ou Web). Activez "Classique strict" pour limiter.', 6e3);
-            } else {
-              toast.info('Trying ms-outlook protocols (may open New/Web Outlook). Enable "Strict Classic" to limit.', 6e3);
-            }
-          }
-        }, 900);
-      }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "Enter") {
         e.preventDefault();
         if (selectedTemplate) {
-          openInOutlook();
+          openEmail();
         }
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "/") {
@@ -22373,4 +22354,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-CCLr4Mzi.js.map
+//# sourceMappingURL=main-RZ9NmUyp.js.map
