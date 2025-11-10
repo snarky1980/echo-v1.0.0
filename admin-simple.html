@@ -15,6 +15,7 @@
       .topbar .spacer{flex:1}
       .btn{border:1px solid var(--border);background:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
       .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+  .btn.danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}
       .seg{display:inline-flex;gap:4px;border:1px solid var(--border);border-radius:10px;padding:4px;background:#f1f5f9}
       .seg button{border:0;background:transparent;padding:6px 10px;border-radius:8px;font-weight:800;color:var(--muted);cursor:pointer}
       .seg button[aria-pressed="true"]{background:#fff;color:var(--ink)}
@@ -55,11 +56,18 @@
       <button class="btn" id="btn-import">Importer JSON</button>
       <input id="file" type="file" class="hidden" accept=".json,application/json" style="position:absolute;left:-9999px" />
       <button class="btn" id="btn-import-xlsx">Importer Excel</button>
+      <select id="import-mode" title="Mode d'import" style="border:1px solid var(--border);background:#fff;padding:6px 8px;border-radius:10px">
+        <option value="merge">Fusionner</option>
+        <option value="replace">Remplacer</option>
+      </select>
+      <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><input id="import-auto-export" type="checkbox" /> Auto-export JSON</label>
       <input id="file-xlsx" type="file" class="hidden" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="position:absolute;left:-9999px" />
       <button class="btn" id="btn-dl-template-csv" title="Télécharger un modèle CSV avec les colonnes requises">Modèle CSV</button>
       <button class="btn" id="btn-dl-template-xlsx" title="Télécharger un modèle Excel (.xlsx) avec les colonnes requises">Modèle XLSX</button>
       <button class="btn" id="btn-export-xlsx" title="Exporter toutes les données courantes en Excel (.xlsx)">Exporter Excel</button>
       <button class="btn primary" id="btn-export">Exporter JSON</button>
+      <button class="btn danger" id="btn-update-json" title="Remplacer entièrement les données depuis un collage / fichier JSON">Mettre à jour JSON</button>
+      <button class="btn" id="btn-github" title="Configurer publication GitHub">GitHub</button>
       <button class="btn" id="btn-reset">Réinitialiser</button>
       <button class="btn" id="btn-help">Aide</button>
     </div>
@@ -82,12 +90,16 @@
             <button class="btn" id="btn-delete">Supprimer</button>
             <button class="btn" id="btn-sync-vars">Sync variables</button>
             <button class="btn" id="btn-add-missing">Ajouter variables manquantes</button>
+            <button class="btn" id="btn-preview">Aperçu</button>
           </div>
         </div>
         <div class="body" id="editor">
           <div class="row">
-            <div class="field"><label>ID</label><input id="tpl-id" /></div>
-            <div class="field"><label>Catégorie</label><input id="tpl-cat" /></div>
+            <div class="field" style="grid-column:1 / span 2"><label>ID</label><input id="tpl-id" /></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Catégorie (FR)</label><input id="tpl-cat-fr" /></div>
+            <div class="field"><label>Category (EN)</label><input id="tpl-cat-en" /></div>
           </div>
           <div class="row">
             <div class="field"><label>Titre (FR)</label><input id="tpl-title-fr" /></div>
@@ -107,8 +119,15 @@
           </div>
           <div class="field">
             <label style="display:flex;align-items:center;gap:8px">Variables du modèle – Descriptions FR / EN</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+              <input id="vars-search" placeholder="Filtrer variables…" style="flex:1;min-width:220px;border:1px solid var(--border);padding:6px 10px;border-radius:10px" />
+              <button class="btn" id="btn-copy-vars-fr" title="Copier lignes FR">Copier FR</button>
+              <button class="btn" id="btn-copy-vars-en" title="Copier lignes EN">Copier EN</button>
+              <button class="btn" id="btn-validate-vars" title="Valider variables (manquants)">Validation</button>
+            </div>
             <div id="vars" class="chips"></div>
             <div id="vars-editor" class="vars-editor"></div>
+            <div id="vars-validation" style="margin-top:10px;font-size:12px;color:var(--muted);display:none"></div>
           </div>
         </div>
       </main>
