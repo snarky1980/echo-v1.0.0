@@ -146,14 +146,17 @@ export default function VariablesPage() {
       try {
         const base = (import.meta?.env?.BASE_URL) || '/'
         const normalizedBase = base.endsWith('/') ? base : `${base}/`
+        const primaryBase = new URL(normalizedBase, window.location.origin)
         const candidates = [
-          `${normalizedBase}complete_email_templates.json`,
-          './complete_email_templates.json',
-          '/complete_email_templates.json'
+          new URL('complete_email_templates.json', primaryBase).href,
+          new URL('complete_email_templates.json', window.location.href).href,
+          new URL('complete_email_templates.json', window.location.origin).href
         ]
 
         let data = null
         let lastError = null
+
+        debugLog('attempting template fetch', { base, candidates })
 
         for (const url of candidates) {
           try {
