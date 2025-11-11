@@ -144,11 +144,38 @@ export default function VariablesPage() {
 
     const loadData = async () => {
       try {
-        const response = await fetch('/complete_email_templates.json')
-        const data = await response.json()
+        const base = (import.meta?.env?.BASE_URL) || '/'
+        const normalizedBase = base.endsWith('/') ? base : `${base}/`
+        const candidates = [
+          `${normalizedBase}complete_email_templates.json`,
+          './complete_email_templates.json',
+          '/complete_email_templates.json'
+        ]
+
+        let data = null
+        let lastError = null
+
+        for (const url of candidates) {
+          try {
+            const response = await fetch(url)
+            if (!response.ok) {
+              lastError = new Error(`HTTP ${response.status} for ${url}`)
+              continue
+            }
+            data = await response.json()
+            debugLog('loaded templates', { count: Array.isArray(data?.templates) ? data.templates.length : 0, source: url })
+            break
+          } catch (attemptError) {
+            lastError = attemptError
+          }
+        }
+
+        if (!data) {
+          throw lastError || new Error('Template catalog fetch failed')
+        }
+
         if (cancelled) return
         setTemplatesData(data)
-        debugLog('loaded templates', { count: Array.isArray(data?.templates) ? data.templates.length : 0 })
       } catch (error) {
         if (!cancelled) console.error('Failed to load templates:', error)
       } finally {
