@@ -22714,13 +22714,15 @@ function VariablesPage() {
       try {
         const base = ((_b = (_a = import.meta) == null ? void 0 : _a.env) == null ? void 0 : _b.BASE_URL) || "/";
         const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+        const primaryBase = new URL(normalizedBase, window.location.origin);
         const candidates = [
-          `${normalizedBase}complete_email_templates.json`,
-          "./complete_email_templates.json",
-          "/complete_email_templates.json"
+          new URL("complete_email_templates.json", primaryBase).href,
+          new URL("complete_email_templates.json", window.location.href).href,
+          new URL("complete_email_templates.json", window.location.origin).href
         ];
         let data = null;
         let lastError = null;
+        debugLog("attempting template fetch", { base, candidates });
         for (const url of candidates) {
           try {
             const response = await fetch(url);
@@ -22935,4 +22937,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-BcjNLfzu.js.map
+//# sourceMappingURL=main-DCetpRfc.js.map
