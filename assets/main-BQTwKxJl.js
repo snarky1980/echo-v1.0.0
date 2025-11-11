@@ -9668,10 +9668,13 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     });
   };
   const handleBlur = () => {
+    var _a;
     setIsFocused(false);
     handleInput();
-    emitFocusedVarChange(null);
-    applyFocusedPill(null);
+    if (typeof document !== "undefined" ? ((_a = document.hasFocus) == null ? void 0 : _a.call(document)) !== false : true) {
+      emitFocusedVarChange(null);
+      applyFocusedPill(null);
+    }
     autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
   };
   const handleMouseDown = (event) => {
@@ -9717,6 +9720,10 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       var _a, _b, _c, _d;
       const editor = editorRef.current;
       if (!editor) return;
+      const docHasFocus = typeof document === "undefined" || !document.hasFocus || document.hasFocus();
+      if (!docHasFocus) {
+        return;
+      }
       const selection = (_a = document.getSelection) == null ? void 0 : _a.call(document);
       if (!selection) {
         emitFocusedVarChange(null);
@@ -10745,10 +10752,13 @@ const RichTextPillEditor = React.forwardRef(({
     onFocus == null ? void 0 : onFocus(e);
   };
   const handleBlur = (e) => {
+    var _a;
     setIsFocused(false);
     handleInput();
-    emitFocusedVarChange(null);
-    applyFocusedPill(null);
+    if (typeof document !== "undefined" ? ((_a = document.hasFocus) == null ? void 0 : _a.call(document)) !== false : true) {
+      emitFocusedVarChange(null);
+      applyFocusedPill(null);
+    }
     autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
     onBlur == null ? void 0 : onBlur(e);
   };
@@ -10890,6 +10900,10 @@ const RichTextPillEditor = React.forwardRef(({
       var _a, _b, _c, _d;
       const editor = editorRef.current;
       if (!editor) return;
+      const docHasFocus = typeof document === "undefined" || !document.hasFocus || document.hasFocus();
+      if (!docHasFocus) {
+        return;
+      }
       const selection = (_a = document.getSelection) == null ? void 0 : _a.call(document);
       if (!selection) {
         emitFocusedVarChange(null);
@@ -18232,10 +18246,31 @@ const customEditorStyles = `
   }
   /* Focus assist: when a variable input is focused, outline matching marks */
   mark.var-highlight.focused {
-    outline: 3px solid rgba(20, 90, 100, 0.95);
-    border: 1px solid rgba(10, 40, 60, 0.7);
-    box-shadow: 0 0 0 4px rgba(20, 90, 100, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    outline: 3px solid rgba(29, 78, 216, 0.9);
+    border: 1px solid rgba(29, 78, 216, 0.8);
+    box-shadow: 0 0 0 5px rgba(29, 78, 216, 0.25), 0 0 16px rgba(29, 78, 216, 0.35), inset 0 0 0 1px rgba(219, 234, 254, 0.8);
+    background: rgba(219, 234, 254, 0.95);
+    color: #1e3a8a;
+    font-weight: 600;
     transition: outline-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
+    animation: pulse-focus 1.5s ease-in-out infinite;
+  }
+  mark.var-highlight.hovered {
+    outline: 2px solid rgba(96, 165, 250, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(191, 219, 254, 0.4);
+    background: rgba(219, 234, 254, 0.5);
+    color: #1e40af;
+    transition: outline-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  }
+
+  @keyframes pulse-focus {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.92;
+    }
   }
   
   .editor-textarea {
@@ -18779,6 +18814,7 @@ function App() {
   const manualEditRef = reactExports.useRef({ subject: false, body: false });
   const pendingTemplateIdRef = reactExports.useRef(null);
   const canUseBC = typeof window !== "undefined" && "BroadcastChannel" in window;
+  const selectedTemplateId = selectedTemplate == null ? void 0 : selectedTemplate.id;
   const updateFocusHighlight = reactExports.useCallback((varName) => {
     try {
       const marks = document.querySelectorAll("mark.var-highlight.focused");
@@ -18791,6 +18827,20 @@ function App() {
       document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add("focused"));
     } catch (err) {
       console.warn("Failed to update focus highlight", err);
+    }
+  }, []);
+  const updateHoverHighlight = reactExports.useCallback((varName) => {
+    try {
+      const marks = document.querySelectorAll("mark.var-highlight.hovered");
+      const pills = document.querySelectorAll(".var-pill.hovered");
+      marks.forEach((n) => n.classList.remove("hovered"));
+      pills.forEach((n) => n.classList.remove("hovered"));
+      if (!varName) return;
+      const safe = typeof CSS !== "undefined" && (CSS == null ? void 0 : CSS.escape) ? CSS.escape(varName) : varName;
+      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add("hovered"));
+      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add("hovered"));
+    } catch (err) {
+      console.warn("Failed to update hover highlight", err);
     }
   }, []);
   const focusClearTimerRef = reactExports.useRef(null);
@@ -18827,6 +18877,55 @@ function App() {
     window.addEventListener("ea-focus-variable", handler);
     return () => window.removeEventListener("ea-focus-variable", handler);
   }, []);
+  reactExports.useEffect(() => {
+    let currentHoveredVar = null;
+    const handleMouseOver = (e) => {
+      const target = e.target;
+      if (!target) return;
+      const pill = target.closest(".var-pill");
+      const mark = target.closest("mark.var-highlight");
+      const element = pill || mark;
+      if (element) {
+        const varName = element.getAttribute("data-var");
+        if (varName && varName !== currentHoveredVar) {
+          currentHoveredVar = varName;
+          updateHoverHighlight(varName);
+          if (popoutChannelRef.current) {
+            try {
+              popoutChannelRef.current.postMessage({
+                type: "variableHovered",
+                varName,
+                sender: popoutSenderIdRef.current
+              });
+            } catch (e2) {
+              console.error("Failed to send hover update:", e2);
+            }
+          }
+        }
+      } else if (currentHoveredVar) {
+        currentHoveredVar = null;
+        updateHoverHighlight(null);
+        if (popoutChannelRef.current) {
+          try {
+            popoutChannelRef.current.postMessage({
+              type: "variableHovered",
+              varName: null,
+              sender: popoutSenderIdRef.current
+            });
+          } catch (e2) {
+            console.error("Failed to send hover clear:", e2);
+          }
+        }
+      }
+    };
+    document.addEventListener("mouseover", handleMouseOver, true);
+    return () => {
+      document.removeEventListener("mouseover", handleMouseOver, true);
+      if (currentHoveredVar) {
+        updateHoverHighlight(null);
+      }
+    };
+  }, [updateHoverHighlight]);
   const handleInlineVariableChange = reactExports.useCallback((updates) => {
     if (!updates) return;
     const assignments = {};
@@ -19076,6 +19175,10 @@ function App() {
         var _a2, _b;
         const msg = event.data;
         if (!msg || msg.sender === popoutSenderIdRef.current) return;
+        if (msg.type === "variableHovered") {
+          updateHoverHighlight(msg.varName || null);
+          return;
+        }
         if (msg.type === "variableChanged" && msg.allVariables) {
           varsRemoteUpdateRef.current = true;
           flagSkipPopoutBroadcast();
@@ -19141,7 +19244,9 @@ function App() {
         }
         if (msg.type === "focusedVar") {
           focusFromPopoutRef.current = true;
-          setFocusedVar(msg.varName ?? null);
+          const next = msg.varName ?? null;
+          setFocusedVar(next);
+          updateFocusHighlight(next);
           return;
         }
         if (msg.type === "popoutOpened" || msg.type === "popoutReady") {
@@ -19235,7 +19340,6 @@ function App() {
     }, 90);
     return () => clearTimeout(timeoutId);
   }, [variables]);
-  const selectedTemplateId = selectedTemplate == null ? void 0 : selectedTemplate.id;
   reactExports.useEffect(() => {
     if (!canUseBC) return;
     const ch = varsChannelRef.current;
@@ -21216,6 +21320,18 @@ ${cleanBodyHtml}
                       focusedVarName: focusedVar,
                       onFocusedVarChange: (varName) => {
                         setFocusedVar(varName || null);
+                        updateFocusHighlight(varName || null);
+                        if (popoutChannelRef.current) {
+                          try {
+                            popoutChannelRef.current.postMessage({
+                              type: "focusedVar",
+                              varName: varName || null,
+                              sender: popoutSenderIdRef.current
+                            });
+                          } catch (e) {
+                            console.warn("Focus broadcast failed:", e);
+                          }
+                        }
                       },
                       variant: "compact"
                     },
@@ -21242,6 +21358,18 @@ ${cleanBodyHtml}
                       focusedVarName: focusedVar,
                       onFocusedVarChange: (varName) => {
                         setFocusedVar(varName || null);
+                        updateFocusHighlight(varName || null);
+                        if (popoutChannelRef.current) {
+                          try {
+                            popoutChannelRef.current.postMessage({
+                              type: "focusedVar",
+                              varName: varName || null,
+                              sender: popoutSenderIdRef.current
+                            });
+                          } catch (e) {
+                            console.warn("Focus broadcast failed:", e);
+                          }
+                        }
                       },
                       minHeight: "150px",
                       showRichTextToolbar: true
@@ -21996,6 +22124,7 @@ function VariablesPopout({
   const focusedVarRef = reactExports.useRef(focusedVar);
   const sendTimerRef = reactExports.useRef(null);
   const lastSentAtRef = reactExports.useRef(0);
+  const lastScrollFocusRef = reactExports.useRef(null);
   reactExports.useEffect(() => {
     focusedVarRef.current = focusedVar;
   }, [focusedVar]);
@@ -22055,6 +22184,7 @@ function VariablesPopout({
     } else {
       focusedVarRef.current = next;
       setFocusedVar(next);
+      lastScrollFocusRef.current = next;
     }
     if (!broadcast || !channelRef.current) return;
     try {
@@ -22065,6 +22195,18 @@ function VariablesPopout({
       });
     } catch (e) {
       console.error("Failed to send focus update:", e);
+    }
+  };
+  const notifyHoverChange = (varName) => {
+    if (!channelRef.current) return;
+    try {
+      channelRef.current.postMessage({
+        type: "variableHovered",
+        varName: varName ?? null,
+        sender: senderIdRef.current
+      });
+    } catch (e) {
+      console.error("Failed to send hover update:", e);
     }
   };
   reactExports.useEffect(() => {
@@ -22078,7 +22220,46 @@ function VariablesPopout({
           if (!message || message.sender === senderIdRef.current) return;
           console.log("🔍 Received message:", message.type, message);
           if (message.type === "focusedVar") {
-            notifyFocusChange(message.varName ?? null, false);
+            const next = message.varName ?? null;
+            notifyFocusChange(next, false);
+            document.querySelectorAll(".ea-popout-card").forEach((card) => {
+              const cardVar = card.getAttribute("data-var");
+              if (cardVar === next) {
+                card.classList.add("ea-popout-focused");
+                if (lastScrollFocusRef.current !== next) {
+                  try {
+                    card.scrollIntoView({ block: "center", behavior: "smooth" });
+                    lastScrollFocusRef.current = next;
+                  } catch {
+                  }
+                }
+              } else {
+                card.classList.remove("ea-popout-focused");
+              }
+              const textarea = card.querySelector("textarea");
+              if (textarea) {
+                if (cardVar === next) {
+                  textarea.classList.add("ea-popout-input-focused");
+                } else {
+                  textarea.classList.remove("ea-popout-input-focused");
+                }
+              }
+            });
+            if (!next) {
+              lastScrollFocusRef.current = null;
+            }
+            return;
+          }
+          if (message.type === "variableHovered") {
+            const hoveredVar = message.varName ?? null;
+            document.querySelectorAll(".ea-popout-card").forEach((card) => {
+              const cardVarName = card.getAttribute("data-var");
+              if (cardVarName === hoveredVar) {
+                card.classList.add("ea-popout-hovered");
+              } else {
+                card.classList.remove("ea-popout-hovered");
+              }
+            });
             return;
           }
           if (message.type === "variablesUpdated") {
@@ -22298,13 +22479,17 @@ function VariablesPopout({
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: "rounded-lg p-3 transition-all duration-200",
-          style: {
-            background: isFocused ? "rgba(59, 130, 246, 0.15)" : "rgba(181, 175, 112, 0.4)",
-            border: isFocused ? "2px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(181, 175, 112, 0.6)",
-            boxShadow: isFocused ? "0 0 0 3px rgba(59, 130, 246, 0.1)" : "none"
-          },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-lg p-4 border border-gray-200", children: [
+          "data-var": varName,
+          className: `ea-popout-card rounded-lg p-3 transition-all duration-200 ${isFocused ? "ea-popout-focused" : ""}`,
+          style: isFocused ? {
+            background: "rgba(219, 234, 254, 0.35)",
+            border: "2px solid rgba(29, 78, 216, 0.6)",
+            boxShadow: "0 0 0 3px rgba(29, 78, 216, 0.25), 0 8px 24px rgba(30, 64, 175, 0.25)",
+            transform: "scale(1.02)"
+          } : void 0,
+          onMouseEnter: () => notifyHoverChange(varName),
+          onMouseLeave: () => notifyHoverChange(null),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "ea-popout-card-inner rounded-lg p-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2 flex items-start justify-between gap-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: sanitizedVarId, className: "text-sm font-semibold text-gray-900 flex-1 leading-tight", children: ((_b = varInfo.description) == null ? void 0 : _b[interfaceLanguage]) || varName }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity", children: [
@@ -22372,7 +22557,7 @@ function VariablesPopout({
                   }
                 },
                 placeholder: varInfo.example || "",
-                className: "w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-400 focus:ring-2 focus:ring-blue-100",
+                className: `w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? "ea-popout-input-focused" : ""}`,
                 style: {
                   height: (() => {
                     const lines = (currentValue.match(/\n/g) || []).length + 1;
@@ -22726,4 +22911,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-BQPO09Kc.js.map
+//# sourceMappingURL=main-BQTwKxJl.js.map
