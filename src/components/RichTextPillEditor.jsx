@@ -386,8 +386,12 @@ const RichTextPillEditor = React.forwardRef(({
   const handleBlur = (e) => {
     setIsFocused(false);
     handleInput(); // Ensure final value is captured
-    emitFocusedVarChange(null);
-    applyFocusedPill(null);
+
+    if (typeof document !== 'undefined' ? document.hasFocus?.() !== false : true) {
+      emitFocusedVarChange(null);
+      applyFocusedPill(null);
+    }
+
     autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
     onBlur?.(e);
   };
@@ -569,6 +573,10 @@ const RichTextPillEditor = React.forwardRef(({
     const handleSelectionChange = () => {
       const editor = editorRef.current;
       if (!editor) return;
+      const docHasFocus = typeof document === 'undefined' || !document.hasFocus || document.hasFocus();
+      if (!docHasFocus) {
+        return;
+      }
       const selection = document.getSelection?.();
       if (!selection) {
         emitFocusedVarChange(null);

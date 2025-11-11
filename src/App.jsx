@@ -170,10 +170,31 @@ const customEditorStyles = `
   }
   /* Focus assist: when a variable input is focused, outline matching marks */
   mark.var-highlight.focused {
-    outline: 3px solid rgba(20, 90, 100, 0.95);
-    border: 1px solid rgba(10, 40, 60, 0.7);
-    box-shadow: 0 0 0 4px rgba(20, 90, 100, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    outline: 3px solid rgba(29, 78, 216, 0.9);
+    border: 1px solid rgba(29, 78, 216, 0.8);
+    box-shadow: 0 0 0 5px rgba(29, 78, 216, 0.25), 0 0 16px rgba(29, 78, 216, 0.35), inset 0 0 0 1px rgba(219, 234, 254, 0.8);
+    background: rgba(219, 234, 254, 0.95);
+    color: #1e3a8a;
+    font-weight: 600;
     transition: outline-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
+    animation: pulse-focus 1.5s ease-in-out infinite;
+  }
+  mark.var-highlight.hovered {
+    outline: 2px solid rgba(96, 165, 250, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(191, 219, 254, 0.4);
+    background: rgba(219, 234, 254, 0.5);
+    color: #1e40af;
+    transition: outline-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  }
+
+  @keyframes pulse-focus {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.92;
+    }
   }
   
   .editor-textarea {
@@ -873,6 +894,7 @@ function App() {
   const manualEditRef = useRef({ subject: false, body: false })
   const pendingTemplateIdRef = useRef(null)
   const canUseBC = typeof window !== 'undefined' && 'BroadcastChannel' in window
+  const selectedTemplateId = selectedTemplate?.id
 
   const updateFocusHighlight = useCallback((varName) => {
     try {
@@ -886,6 +908,21 @@ function App() {
       document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add('focused'))
     } catch (err) {
       console.warn('Failed to update focus highlight', err)
+    }
+  }, [])
+
+  const updateHoverHighlight = useCallback((varName) => {
+    try {
+      const marks = document.querySelectorAll('mark.var-highlight.hovered')
+      const pills = document.querySelectorAll('.var-pill.hovered')
+      marks.forEach((n) => n.classList.remove('hovered'))
+      pills.forEach((n) => n.classList.remove('hovered'))
+      if (!varName) return
+      const safe = typeof CSS !== 'undefined' && CSS?.escape ? CSS.escape(varName) : varName
+      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add('hovered'))
+      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add('hovered'))
+    } catch (err) {
+      console.warn('Failed to update hover highlight', err)
     }
   }, [])
 
@@ -919,6 +956,66 @@ function App() {
     window.addEventListener('ea-focus-variable', handler)
     return () => window.removeEventListener('ea-focus-variable', handler)
   }, [])
+
+  // Track hover over pills and marks to sync with popout
+  useEffect(() => {
+    let currentHoveredVar = null
+
+    const handleMouseOver = (e) => {
+      const target = e.target
+      if (!target) return
+
+      // Check if hovering over a pill or mark
+      const pill = target.closest('.var-pill')
+      const mark = target.closest('mark.var-highlight')
+      const element = pill || mark
+
+      if (element) {
+        const varName = element.getAttribute('data-var')
+        if (varName && varName !== currentHoveredVar) {
+          currentHoveredVar = varName
+          updateHoverHighlight(varName)
+          
+          // Broadcast to popout
+          if (popoutChannelRef.current) {
+            try {
+              popoutChannelRef.current.postMessage({
+                type: 'variableHovered',
+                varName,
+                sender: popoutSenderIdRef.current
+              })
+            } catch (e) {
+              console.error('Failed to send hover update:', e)
+            }
+          }
+        }
+      } else if (currentHoveredVar) {
+        currentHoveredVar = null
+        updateHoverHighlight(null)
+        
+        // Broadcast clear to popout
+        if (popoutChannelRef.current) {
+          try {
+            popoutChannelRef.current.postMessage({
+              type: 'variableHovered',
+              varName: null,
+              sender: popoutSenderIdRef.current
+            })
+          } catch (e) {
+            console.error('Failed to send hover clear:', e)
+          }
+        }
+      }
+    }
+
+    document.addEventListener('mouseover', handleMouseOver, true)
+    return () => {
+      document.removeEventListener('mouseover', handleMouseOver, true)
+      if (currentHoveredVar) {
+        updateHoverHighlight(null)
+      }
+    }
+  }, [updateHoverHighlight])
 
   const handleInlineVariableChange = useCallback((updates) => {
     if (!updates) return
@@ -1201,6 +1298,12 @@ function App() {
         const msg = event.data
         if (!msg || msg.sender === popoutSenderIdRef.current) return
         
+        // Handle hover synchronization from popout
+        if (msg.type === 'variableHovered') {
+          updateHoverHighlight(msg.varName || null)
+          return
+        }
+        
         // Handle variable changes from popout
         if (msg.type === 'variableChanged' && msg.allVariables) {
           varsRemoteUpdateRef.current = true
@@ -1277,7 +1380,9 @@ function App() {
 
         if (msg.type === 'focusedVar') {
           focusFromPopoutRef.current = true
-          setFocusedVar(msg.varName ?? null)
+          const next = msg.varName ?? null
+          setFocusedVar(next)
+          updateFocusHighlight(next)
           return
         }
 
@@ -1389,7 +1494,6 @@ function App() {
   }, [variables])
 
   // Emit selected template and language so pop-out stays in sync
-  const selectedTemplateId = selectedTemplate?.id
   useEffect(() => {
     if (!canUseBC) return
     const ch = varsChannelRef.current
@@ -3630,7 +3734,21 @@ ${cleanBodyHtml}
                         onVariablesChange={handleInlineVariableChange}
                         focusedVarName={focusedVar}
                         onFocusedVarChange={(varName) => {
+                          // Local pill focus change
                           setFocusedVar(varName || null)
+                          updateFocusHighlight(varName || null)
+                          // Broadcast to popout so corresponding card highlights
+                          if (popoutChannelRef.current) {
+                            try {
+                              popoutChannelRef.current.postMessage({
+                                type: 'focusedVar',
+                                varName: varName || null,
+                                sender: popoutSenderIdRef.current
+                              })
+                            } catch (e) {
+                              console.warn('Focus broadcast failed:', e)
+                            }
+                          }
                         }}
                         variant="compact"
                       />
@@ -3654,6 +3772,18 @@ ${cleanBodyHtml}
                         focusedVarName={focusedVar}
                         onFocusedVarChange={(varName) => {
                           setFocusedVar(varName || null)
+                          updateFocusHighlight(varName || null)
+                          if (popoutChannelRef.current) {
+                            try {
+                              popoutChannelRef.current.postMessage({
+                                type: 'focusedVar',
+                                varName: varName || null,
+                                sender: popoutSenderIdRef.current
+                              })
+                            } catch (e) {
+                              console.warn('Focus broadcast failed:', e)
+                            }
+                          }
                         }}
                         minHeight="150px"
                         showRichTextToolbar={true}

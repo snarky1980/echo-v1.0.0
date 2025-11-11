@@ -299,8 +299,13 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const handleBlur = () => {
     setIsFocused(false);
     handleInput(); // Ensure final value is captured
-    emitFocusedVarChange(null);
-    applyFocusedPill(null);
+
+    // Only clear focus if this window still has focus; otherwise keep remote highlight active
+    if (typeof document !== 'undefined' ? document.hasFocus?.() !== false : true) {
+      emitFocusedVarChange(null);
+      applyFocusedPill(null);
+    }
+
     autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
   };
 
@@ -356,6 +361,10 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     const handleSelectionChange = () => {
       const editor = editorRef.current;
       if (!editor) return;
+      const docHasFocus = typeof document === 'undefined' || !document.hasFocus || document.hasFocus();
+      if (!docHasFocus) {
+        return;
+      }
       const selection = document.getSelection?.();
       if (!selection) {
         emitFocusedVarChange(null);

@@ -107,6 +107,7 @@ export default function VariablesPopout({
   const focusedVarRef = useRef(focusedVar)
   const sendTimerRef = useRef(null)
   const lastSentAtRef = useRef(0)
+  const lastScrollFocusRef = useRef(null)
 
   useEffect(() => {
     focusedVarRef.current = focusedVar
@@ -172,6 +173,7 @@ export default function VariablesPopout({
     } else {
       focusedVarRef.current = next
       setFocusedVar(next)
+      lastScrollFocusRef.current = next
     }
 
     if (!broadcast || !channelRef.current) return
@@ -184,6 +186,19 @@ export default function VariablesPopout({
       })
     } catch (e) {
       console.error('Failed to send focus update:', e)
+    }
+  }
+
+  const notifyHoverChange = (varName) => {
+    if (!channelRef.current) return
+    try {
+      channelRef.current.postMessage({
+        type: 'variableHovered',
+        varName: varName ?? null,
+        sender: senderIdRef.current
+      })
+    } catch (e) {
+      console.error('Failed to send hover update:', e)
     }
   }
 
@@ -203,7 +218,51 @@ export default function VariablesPopout({
           console.log('🔍 Received message:', message.type, message)
 
           if (message.type === 'focusedVar') {
-            notifyFocusChange(message.varName ?? null, false)
+            const next = message.varName ?? null
+            notifyFocusChange(next, false)
+
+            // Reflect focus visually on cards immediately
+            document.querySelectorAll('.ea-popout-card').forEach((card) => {
+              const cardVar = card.getAttribute('data-var')
+              if (cardVar === next) {
+                card.classList.add('ea-popout-focused')
+                if (lastScrollFocusRef.current !== next) {
+                  try {
+                    card.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                    lastScrollFocusRef.current = next
+                  } catch {}
+                }
+              } else {
+                card.classList.remove('ea-popout-focused')
+              }
+
+              const textarea = card.querySelector('textarea')
+              if (textarea) {
+                if (cardVar === next) {
+                  textarea.classList.add('ea-popout-input-focused')
+                } else {
+                  textarea.classList.remove('ea-popout-input-focused')
+                }
+              }
+            })
+
+            if (!next) {
+              lastScrollFocusRef.current = null
+            }
+            return
+          }
+
+          if (message.type === 'variableHovered') {
+            // Update hover styling on cards when main window hovers over pills
+            const hoveredVar = message.varName ?? null
+            document.querySelectorAll('.ea-popout-card').forEach((card) => {
+              const cardVarName = card.getAttribute('data-var')
+              if (cardVarName === hoveredVar) {
+                card.classList.add('ea-popout-hovered')
+              } else {
+                card.classList.remove('ea-popout-hovered')
+              }
+            })
             return
           }
 
@@ -454,26 +513,24 @@ export default function VariablesPopout({
             }
 
             const currentValue = getVarValue(varName)
-            const isFocused = focusedVar === varName
+            const isFocused = (focusedVar === varName)
             const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
 
             return (
               <div
                 key={varName}
-                className="rounded-lg p-3 transition-all duration-200"
-                style={{
-                  background: isFocused
-                    ? 'rgba(59, 130, 246, 0.15)'
-                    : 'rgba(181, 175, 112, 0.4)',
-                  border: isFocused
-                    ? '2px solid rgba(59, 130, 246, 0.4)'
-                    : '1px solid rgba(181, 175, 112, 0.6)',
-                  boxShadow: isFocused
-                    ? '0 0 0 3px rgba(59, 130, 246, 0.1)'
-                    : 'none'
-                }}
+                data-var={varName}
+                className={`ea-popout-card rounded-lg p-3 transition-all duration-200 ${isFocused ? 'ea-popout-focused' : ''}`}
+                style={isFocused ? {
+                  background: 'rgba(219, 234, 254, 0.35)',
+                  border: '2px solid rgba(29, 78, 216, 0.6)',
+                  boxShadow: '0 0 0 3px rgba(29, 78, 216, 0.25), 0 8px 24px rgba(30, 64, 175, 0.25)',
+                  transform: 'scale(1.02)'
+                } : undefined}
+                onMouseEnter={() => notifyHoverChange(varName)}
+                onMouseLeave={() => notifyHoverChange(null)}
               >
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="ea-popout-card-inner rounded-lg p-4">
                   {/* Label and buttons */}
                   <div className="mb-2 flex items-start justify-between gap-3">
                     <label htmlFor={sanitizedVarId} className="text-sm font-semibold text-gray-900 flex-1 leading-tight">
@@ -539,7 +596,7 @@ export default function VariablesPopout({
                       }
                     }}
                     placeholder={varInfo.example || ''}
-                    className="w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                    className={`w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? 'ea-popout-input-focused' : ''}`}
                     style={{
                       height: (() => {
                         const lines = (currentValue.match(/\n/g) || []).length + 1
