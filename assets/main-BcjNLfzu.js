@@ -22710,12 +22710,36 @@ function VariablesPage() {
       }
     };
     const loadData = async () => {
+      var _a, _b;
       try {
-        const response = await fetch("/complete_email_templates.json");
-        const data = await response.json();
+        const base = ((_b = (_a = import.meta) == null ? void 0 : _a.env) == null ? void 0 : _b.BASE_URL) || "/";
+        const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+        const candidates = [
+          `${normalizedBase}complete_email_templates.json`,
+          "./complete_email_templates.json",
+          "/complete_email_templates.json"
+        ];
+        let data = null;
+        let lastError = null;
+        for (const url of candidates) {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) {
+              lastError = new Error(`HTTP ${response.status} for ${url}`);
+              continue;
+            }
+            data = await response.json();
+            debugLog("loaded templates", { count: Array.isArray(data == null ? void 0 : data.templates) ? data.templates.length : 0, source: url });
+            break;
+          } catch (attemptError) {
+            lastError = attemptError;
+          }
+        }
+        if (!data) {
+          throw lastError || new Error("Template catalog fetch failed");
+        }
         if (cancelled) return;
         setTemplatesData(data);
-        debugLog("loaded templates", { count: Array.isArray(data == null ? void 0 : data.templates) ? data.templates.length : 0 });
       } catch (error) {
         if (!cancelled) console.error("Failed to load templates:", error);
       } finally {
@@ -22911,4 +22935,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-BQTwKxJl.js.map
+//# sourceMappingURL=main-BcjNLfzu.js.map
