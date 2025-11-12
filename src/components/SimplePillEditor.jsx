@@ -343,6 +343,47 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     }
   };
 
+  const handleDoubleClick = (event) => {
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const pillElement = target.closest?.('.var-pill');
+    if (!pillElement || !editorRef.current.contains(pillElement)) return;
+
+    // Prevent native word selection on double-click; place caret at click point
+    event.preventDefault();
+
+    try {
+      const selection = document.getSelection?.();
+      if (!selection) return;
+
+      let range = null;
+      if (document.caretRangeFromPoint) {
+        range = document.caretRangeFromPoint(event.clientX, event.clientY);
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+        if (pos) {
+          range = document.createRange();
+          range.setStart(pos.offsetNode, pos.offset);
+          range.collapse(true);
+        }
+      }
+
+      if (!range || !pillElement.contains(range.startContainer)) {
+        // Fallback: place caret at end of the pill
+        range = document.createRange();
+        range.selectNodeContents(pillElement);
+        range.collapse(false);
+      }
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+      // Keep auto-select suppressed briefly so selectionchange won't reselect
+      autoSelectSuppressedUntilRef.current = Date.now() + 600;
+    } catch {}
+  };
+
   const handlePaste = (event) => {
     if (!editorRef.current) return;
 
@@ -453,6 +494,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       onFocus={handleFocus}
       onBlur={handleBlur}
       onMouseDown={handleMouseDown}
+      onDoubleClick={handleDoubleClick}
       onPaste={handlePaste}
       onKeyDown={handleKeyDown}
       suppressContentEditableWarning

@@ -483,6 +483,44 @@ const RichTextPillEditor = React.forwardRef(({
     }
   };
 
+  const handleDoubleClick = (event) => {
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const pillElement = target.closest?.('.var-pill');
+    if (!pillElement || !editorRef.current.contains(pillElement)) return;
+
+    // Prevent native word selection and place a collapsed caret where clicked
+    event.preventDefault();
+    try {
+      const selection = document.getSelection?.();
+      if (!selection) return;
+
+      let range = null;
+      if (document.caretRangeFromPoint) {
+        range = document.caretRangeFromPoint(event.clientX, event.clientY);
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+        if (pos) {
+          range = document.createRange();
+          range.setStart(pos.offsetNode, pos.offset);
+          range.collapse(true);
+        }
+      }
+
+      if (!range || !pillElement.contains(range.startContainer)) {
+        range = document.createRange();
+        range.selectNodeContents(pillElement);
+        range.collapse(false);
+      }
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+      autoSelectSuppressedUntilRef.current = Date.now() + 600;
+    } catch {}
+  };
+
   // Handle rich text commands
   const handleRichTextCommand = useCallback((command, value) => {
     const editor = editorRef.current;
@@ -650,6 +688,7 @@ const RichTextPillEditor = React.forwardRef(({
         onFocus={handleFocus}
         onBlur={handleBlur}
         onMouseDown={handleMouseDown}
+        onDoubleClick={handleDoubleClick}
         onPaste={handlePaste}
         onKeyDown={handleKeyDown}
         suppressContentEditableWarning
