@@ -9489,6 +9489,8 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const [isFocused, setIsFocused] = reactExports.useState(false);
   const lastSelectionVarRef = reactExports.useRef(null);
   const autoSelectTrackerRef = reactExports.useRef({ varName: null, timestamp: 0 });
+  const autoSelectSuppressedUntilRef = reactExports.useRef(0);
+  const clickSelectTimerRef = reactExports.useRef(null);
   const renderContent = (text) => {
     if (!text) return "";
     const regex = /<<([^>]+)>>/g;
@@ -9529,6 +9531,10 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     var _a;
     if (!pill || !varName) return;
     if (!pill.classList.contains("empty")) return;
+    const nowTs = Date.now();
+    if (nowTs < (autoSelectSuppressedUntilRef.current || 0)) {
+      return;
+    }
     const selection = (_a = document.getSelection) == null ? void 0 : _a.call(document);
     if (!selection) return;
     if (!selection.isCollapsed && selection.toString()) return;
@@ -9661,7 +9667,9 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       if (varName) {
         applyFocusedPill(varName);
         emitFocusedVarChange(varName);
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
     });
   };
@@ -9682,11 +9690,58 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     if (!(target instanceof Element)) return;
     const pillElement = (_a = target.closest) == null ? void 0 : _a.call(target, ".var-pill");
     if (pillElement && editorRef.current.contains(pillElement)) {
-      event.preventDefault();
-      selectEntirePill$1(pillElement);
+      const clickCount = event.detail;
       const varName = pillElement.getAttribute("data-var") || null;
+      if (clickCount === 1) {
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+        }
+        clickSelectTimerRef.current = setTimeout(() => {
+          selectEntirePill$1(pillElement);
+          clickSelectTimerRef.current = null;
+        }, 220);
+      } else if (clickCount >= 2) {
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+          clickSelectTimerRef.current = null;
+        }
+        autoSelectSuppressedUntilRef.current = Date.now() + 600;
+      }
       emitFocusedVarChange(varName);
       applyFocusedPill(varName);
+    }
+  };
+  const handleDoubleClick = (event) => {
+    var _a, _b;
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const pillElement = (_a = target.closest) == null ? void 0 : _a.call(target, ".var-pill");
+    if (!pillElement || !editorRef.current.contains(pillElement)) return;
+    event.preventDefault();
+    try {
+      const selection = (_b = document.getSelection) == null ? void 0 : _b.call(document);
+      if (!selection) return;
+      let range = null;
+      if (document.caretRangeFromPoint) {
+        range = document.caretRangeFromPoint(event.clientX, event.clientY);
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+        if (pos) {
+          range = document.createRange();
+          range.setStart(pos.offsetNode, pos.offset);
+          range.collapse(true);
+        }
+      }
+      if (!range || !pillElement.contains(range.startContainer)) {
+        range = document.createRange();
+        range.selectNodeContents(pillElement);
+        range.collapse(false);
+      }
+      selection.removeAllRanges();
+      selection.addRange(range);
+      autoSelectSuppressedUntilRef.current = Date.now() + 600;
+    } catch {
     }
   };
   const handlePaste = (event) => {
@@ -9741,7 +9796,9 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       emitFocusedVarChange(varName);
       applyFocusedPill(varName);
       if (varName && selection.isCollapsed) {
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
       if (!varName) {
         autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
@@ -9778,6 +9835,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       onFocus: handleFocus,
       onBlur: handleBlur,
       onMouseDown: handleMouseDown,
+      onDoubleClick: handleDoubleClick,
       onPaste: handlePaste,
       onKeyDown: handleKeyDown,
       suppressContentEditableWarning: true,
@@ -10555,6 +10613,8 @@ const RichTextPillEditor = React.forwardRef(({
   const prevVariablesRef = reactExports.useRef(variables);
   const hasMountedRef = reactExports.useRef(false);
   const autoSelectTrackerRef = reactExports.useRef({ varName: null, timestamp: 0 });
+  const autoSelectSuppressedUntilRef = reactExports.useRef(0);
+  const clickSelectTimerRef = reactExports.useRef(null);
   const renderContent = (text) => {
     if (!text) return "";
     const regex = /<<([^>]+)>>/g;
@@ -10595,6 +10655,10 @@ const RichTextPillEditor = React.forwardRef(({
     var _a;
     if (!pill || !varName) return;
     if (!pill.classList.contains("empty")) return;
+    const nowTs = Date.now();
+    if (nowTs < (autoSelectSuppressedUntilRef.current || 0)) {
+      return;
+    }
     const selection = (_a = document.getSelection) == null ? void 0 : _a.call(document);
     if (!selection) return;
     if (!selection.isCollapsed && selection.toString()) return;
@@ -10731,7 +10795,9 @@ const RichTextPillEditor = React.forwardRef(({
       if (varName) {
         applyFocusedPill(varName);
         emitFocusedVarChange(varName);
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
     });
     onFocus == null ? void 0 : onFocus(e);
@@ -10795,11 +10861,58 @@ const RichTextPillEditor = React.forwardRef(({
     if (!(target instanceof Element)) return;
     const pillElement = (_a = target.closest) == null ? void 0 : _a.call(target, ".var-pill");
     if (pillElement && editorRef.current.contains(pillElement)) {
-      event.preventDefault();
-      selectEntirePill(pillElement);
+      const clickCount = event.detail;
       const varName = pillElement.getAttribute("data-var") || null;
+      if (clickCount === 1) {
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+        }
+        clickSelectTimerRef.current = setTimeout(() => {
+          selectEntirePill(pillElement);
+          clickSelectTimerRef.current = null;
+        }, 220);
+      } else if (clickCount >= 2) {
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+          clickSelectTimerRef.current = null;
+        }
+        autoSelectSuppressedUntilRef.current = Date.now() + 600;
+      }
       emitFocusedVarChange(varName);
       applyFocusedPill(varName);
+    }
+  };
+  const handleDoubleClick = (event) => {
+    var _a, _b;
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const pillElement = (_a = target.closest) == null ? void 0 : _a.call(target, ".var-pill");
+    if (!pillElement || !editorRef.current.contains(pillElement)) return;
+    event.preventDefault();
+    try {
+      const selection = (_b = document.getSelection) == null ? void 0 : _b.call(document);
+      if (!selection) return;
+      let range = null;
+      if (document.caretRangeFromPoint) {
+        range = document.caretRangeFromPoint(event.clientX, event.clientY);
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(event.clientX, event.clientY);
+        if (pos) {
+          range = document.createRange();
+          range.setStart(pos.offsetNode, pos.offset);
+          range.collapse(true);
+        }
+      }
+      if (!range || !pillElement.contains(range.startContainer)) {
+        range = document.createRange();
+        range.selectNodeContents(pillElement);
+        range.collapse(false);
+      }
+      selection.removeAllRanges();
+      selection.addRange(range);
+      autoSelectSuppressedUntilRef.current = Date.now() + 600;
+    } catch {
     }
   };
   const handleRichTextCommand = reactExports.useCallback((command, value2) => {
@@ -10908,7 +11021,9 @@ const RichTextPillEditor = React.forwardRef(({
       emitFocusedVarChange(varName);
       applyFocusedPill(varName);
       if (varName && selection.isCollapsed) {
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
       if (!varName) {
         autoSelectTrackerRef.current = { varName: null, timestamp: 0 };
@@ -10936,6 +11051,7 @@ const RichTextPillEditor = React.forwardRef(({
         onFocus: handleFocus,
         onBlur: handleBlur,
         onMouseDown: handleMouseDown,
+        onDoubleClick: handleDoubleClick,
         onPaste: handlePaste,
         onKeyDown: handleKeyDown,
         suppressContentEditableWarning: true,
@@ -22967,4 +23083,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DetyROzp.js.map
+//# sourceMappingURL=main-iSjmyQnJ.js.map
