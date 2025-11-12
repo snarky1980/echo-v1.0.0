@@ -22237,6 +22237,17 @@ function VariablesPopout({
     interfaceLanguage
   });
   const [variables, setVariables] = reactExports.useState(initialVariables || {});
+  const lastInitialVarsRef = reactExports.useRef(initialVariables);
+  reactExports.useEffect(() => {
+    if (lastInitialVarsRef.current !== initialVariables) {
+      lastInitialVarsRef.current = initialVariables;
+      if (initialVariables && typeof initialVariables === "object") {
+        setVariables({ ...initialVariables });
+      } else {
+        setVariables({});
+      }
+    }
+  }, [initialVariables]);
   const getVarValue = reactExports.useCallback((name) => (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "", [variables]);
   const [isPinned, setIsPinned] = reactExports.useState(() => {
     try {
@@ -22932,6 +22943,12 @@ function VariablesPage() {
               const guessed = inferTemplateFromVariables(templatesData, data.variables || {});
               if (guessed) setPendingTemplateId(guessed);
             }
+            if (templatesData && data.templateId) {
+              applyTemplateSelection(templatesData, data.templateId, {
+                preferLanguage: data.templateLanguage,
+                hydrateVariables: true
+              });
+            }
             return;
           }
           if (data.type === "syncComplete" && data.success) {
@@ -23083,4 +23100,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-iSjmyQnJ.js.map
+//# sourceMappingURL=main-CUzPm1mm.js.map
