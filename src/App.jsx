@@ -3762,6 +3762,7 @@ ${cleanBodyHtml}
                         value={finalSubject}
                         onChange={(e) => { setFinalSubject(e.target.value); manualEditRef.current.subject = true; }}
                         variables={variables}
+                        templateLanguage={templateLanguage}
                         placeholder={getPlaceholderText()}
                         onVariablesChange={handleInlineVariableChange}
                         focusedVarName={focusedVar}
@@ -3800,6 +3801,7 @@ ${cleanBodyHtml}
                         onChange={(e) => { setFinalBody(e.target.value); manualEditRef.current.body = true; }}
                         ref={bodyEditorRef}
                         variables={variables}
+                        templateLanguage={templateLanguage}
                         placeholder={getPlaceholderText()}
                         onVariablesChange={handleInlineVariableChange}
                         focusedVarName={focusedVar}
@@ -4252,12 +4254,23 @@ ${cleanBodyHtml}
                   const varInfo = templatesData?.variables?.[varName]
                   if (!varInfo) return null
                   
-                  const getVarValue = (name) => (
-                    variables?.[name] ??
-                    variables?.[`${name}_EN`] ??
-                    variables?.[`${name}_FR`] ??
-                    ''
-                  )
+                  const getVarValue = (name) => {
+                    const lang = (templateLanguage || 'fr').toLowerCase()
+                    if (lang === 'en') {
+                      return (
+                        variables?.[`${name}_EN`] ??
+                        variables?.[name] ??
+                        variables?.[`${name}_FR`] ??
+                        ''
+                      )
+                    }
+                    return (
+                      variables?.[`${name}_FR`] ??
+                      variables?.[name] ??
+                      variables?.[`${name}_EN`] ??
+                      ''
+                    )
+                  }
 
                   const currentValue = getVarValue(varName)
                   const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`

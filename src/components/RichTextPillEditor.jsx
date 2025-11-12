@@ -143,7 +143,8 @@ const RichTextPillEditor = React.forwardRef(({
   disabled = false,
   minHeight = '120px',
   showRichTextToolbar = true,
-  onRichTextCommand
+  onRichTextCommand,
+  templateLanguage = 'fr'
 }, ref) => {
   const editorRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -154,6 +155,15 @@ const RichTextPillEditor = React.forwardRef(({
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = useRef(0);
   const clickSelectTimerRef = useRef(null);
+
+  // Resolve variable value by language preference
+  const getVarValue = useCallback((name) => {
+    const lang = (templateLanguage || 'fr').toLowerCase()
+    if (lang === 'en') {
+      return (variables?.[`${name}_EN`] ?? variables?.[name] ?? variables?.[`${name}_FR`] ?? '')
+    }
+    return (variables?.[`${name}_FR`] ?? variables?.[name] ?? variables?.[`${name}_EN`] ?? '')
+  }, [variables, templateLanguage])
 
   // Render content with pills - IDENTICAL to SimplePillEditor
   const renderContent = (text) => {
@@ -166,7 +176,7 @@ const RichTextPillEditor = React.forwardRef(({
 
     while ((match = regex.exec(text)) !== null) {
       const varName = match[1];
-      const varValue = variables?.[varName] || '';
+      const varValue = getVarValue(varName);
       const isFilled = varValue.trim().length > 0;
       const displayValue = isFilled ? varValue : `<<${varName}>>`;
       const storedValue = `<<${varName}>>`;
@@ -612,7 +622,7 @@ const RichTextPillEditor = React.forwardRef(({
     if (firstRun || textChanged) {
       refreshAllPillTemplates(editor);
     }
-  }, [value, variables, isFocused]);
+  }, [value, variables, isFocused, getVarValue, templateLanguage]);
 
   // Apply focused pill styling - IDENTICAL to SimplePillEditor
   useEffect(() => {

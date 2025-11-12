@@ -63,13 +63,23 @@ const selectEntirePill = (pill) => {
  * SimplePillEditor - A simple contentEditable editor that displays variables as styled pills
  * This is a much simpler alternative to the Lexical framework
  */
-const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = 'default' }) => {
+const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = 'default', templateLanguage = 'fr' }) => {
   const editorRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const lastSelectionVarRef = useRef(null);
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = useRef(0);
   const clickSelectTimerRef = useRef(null);
+
+  // Resolve variable value by language preference
+  const getVarValue = useCallback((name) => {
+    const lang = (templateLanguage || 'fr').toLowerCase()
+    if (lang === 'en') {
+      return (variables?.[`${name}_EN`] ?? variables?.[name] ?? variables?.[`${name}_FR`] ?? '')
+    }
+    // default fr
+    return (variables?.[`${name}_FR`] ?? variables?.[name] ?? variables?.[`${name}_EN`] ?? '')
+  }, [variables, templateLanguage])
 
   // Render the content with pills
   const renderContent = (text) => {
@@ -82,7 +92,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
 
     while ((match = regex.exec(text)) !== null) {
       const varName = match[1];
-      const varValue = variables?.[varName] || '';
+      const varValue = getVarValue(varName);
       const isFilled = varValue.trim().length > 0;
       const displayValue = isFilled ? varValue : `<<${varName}>>`;
       const storedValue = `<<${varName}>>`;
@@ -163,7 +173,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     if (editorRef.current.innerHTML !== rendered) {
       editorRef.current.innerHTML = rendered;
     }
-  }, [value, variables, isFocused]);
+  }, [value, variables, isFocused, getVarValue, templateLanguage]);
 
   useEffect(() => {
     applyFocusedPill(focusedVarName);

@@ -97,12 +97,23 @@ export default function VariablesPopout({
       }
     }
   }, [initialVariables])
-  const getVarValue = useCallback((name) => (
-    variables?.[name] ??
-    variables?.[`${name}_EN`] ??
-    variables?.[`${name}_FR`] ??
-    ''
-  ), [variables])
+    const getVarValue = useCallback((name) => {
+      const lang = (interfaceLanguage || 'fr').toLowerCase()
+      if (lang === 'en') {
+        return (
+          variables?.[`${name}_EN`] ??
+          variables?.[name] ??
+          variables?.[`${name}_FR`] ??
+          ''
+        )
+      }
+      return (
+        variables?.[`${name}_FR`] ??
+        variables?.[name] ??
+        variables?.[`${name}_EN`] ??
+        ''
+      )
+    }, [variables, interfaceLanguage])
   const [isPinned, setIsPinned] = useState(() => {
     try {
       return localStorage.getItem('ea_popout_pinned') === 'true'
