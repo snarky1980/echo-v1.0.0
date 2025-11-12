@@ -20299,6 +20299,35 @@ function App() {
   }, [selectedTemplate, templateLanguage, interfaceLanguage, templatesData]);
   reactExports.useEffect(() => {
     if (!selectedTemplate) return;
+    const list = Array.isArray(selectedTemplate.variables) ? selectedTemplate.variables : [];
+    if (!list.length) return;
+    setVariables((prev) => {
+      if (!prev) return prev;
+      let next = prev;
+      let changed = false;
+      for (const baseName of list) {
+        const baseVal = (prev[baseName] || "").trim();
+        if (!baseVal) continue;
+        const enKey = `${baseName}_EN`;
+        const frKey = `${baseName}_FR`;
+        const enVal = (prev[enKey] || "").trim();
+        const frVal = (prev[frKey] || "").trim();
+        if (!enVal) {
+          if (next === prev) next = { ...prev };
+          next[enKey] = baseVal;
+          changed = true;
+        }
+        if (!frVal) {
+          if (next === prev) next = { ...prev };
+          next[frKey] = baseVal;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [selectedTemplate, templateLanguage]);
+  reactExports.useEffect(() => {
+    if (!selectedTemplate) return;
     if (!manualEditRef.current.subject && !manualEditRef.current.body) return;
     const debounce = setTimeout(() => {
       console.log("🔄 Detected manual text edits, attempting automatic reverse sync...");
@@ -23129,4 +23158,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-CMq0Y9aK.js.map
+//# sourceMappingURL=main-DY5JnlAy.js.map
