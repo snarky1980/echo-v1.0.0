@@ -9493,10 +9493,8 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const clickSelectTimerRef = reactExports.useRef(null);
   const getVarValue = reactExports.useCallback((name) => {
     const lang = (templateLanguage || "fr").toLowerCase();
-    if (lang === "en") {
-      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
-    }
-    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+    const key = `${name}_${lang === "en" ? "EN" : "FR"}`;
+    return (variables == null ? void 0 : variables[key]) ?? "";
   }, [variables, templateLanguage]);
   const renderContent = (text) => {
     if (!text) return "";
@@ -10625,10 +10623,8 @@ const RichTextPillEditor = React.forwardRef(({
   const clickSelectTimerRef = reactExports.useRef(null);
   const getVarValue = reactExports.useCallback((name) => {
     const lang = (templateLanguage || "fr").toLowerCase();
-    if (lang === "en") {
-      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
-    }
-    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+    const key = `${name}_${lang === "en" ? "EN" : "FR"}`;
+    return (variables == null ? void 0 : variables[key]) ?? "";
   }, [variables, templateLanguage]);
   const renderContent = (text) => {
     if (!text) return "";
@@ -21985,10 +21981,8 @@ Shift+click to toggle preference`,
                 if (!varInfo) return null;
                 const getVarValue = (name) => {
                   const lang = (templateLanguage || "fr").toLowerCase();
-                  if (lang === "en") {
-                    return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
-                  }
-                  return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+                  const key = `${name}_${lang === "en" ? "EN" : "FR"}`;
+                  return (variables == null ? void 0 : variables[key]) ?? "";
                 };
                 const currentValue = getVarValue(varName);
                 const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
@@ -22273,10 +22267,8 @@ function VariablesPopout({
   }, [initialVariables]);
   const getVarValue = reactExports.useCallback((name) => {
     const lang = (interfaceLanguage || "fr").toLowerCase();
-    if (lang === "en") {
-      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
-    }
-    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+    const key = `${name}_${lang === "en" ? "EN" : "FR"}`;
+    return (variables == null ? void 0 : variables[key]) ?? "";
   }, [variables, interfaceLanguage]);
   const [isPinned, setIsPinned] = reactExports.useState(() => {
     try {
@@ -23129,4 +23121,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-Dqb0bBzC.js.map
+//# sourceMappingURL=main-Cg55FDQO.js.map
