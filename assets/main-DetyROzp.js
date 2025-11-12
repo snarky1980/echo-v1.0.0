@@ -7079,6 +7079,17 @@ function requireClient() {
   return client;
 }
 var clientExports = requireClient();
+const normalizeVarKey = (name) => {
+  if (!name) return "";
+  const trimmed = String(name ?? "").trim();
+  if (!trimmed) return "";
+  const lowered = trimmed.toLowerCase();
+  return lowered.replace(/_(fr|en)$/i, "");
+};
+const varKeysMatch = (a, b) => {
+  if (!a || !b) return false;
+  return normalizeVarKey(a) === normalizeVarKey(b);
+};
 var reactDomExports = requireReactDom();
 const ReactDOM = /* @__PURE__ */ getDefaultExportFromCjs(reactDomExports);
 function isArray(value) {
@@ -9463,13 +9474,6 @@ const BLOCK_ELEMENTS$1 = /* @__PURE__ */ new Set([
   "HR"
 ]);
 const convertPlainTextToHtml$1 = (text = "") => escapeHtml$1(text).replace(/\r\n|\r/g, "\n").replace(/\n/g, '<br data-line-break="true">');
-const escapeSelector$1 = (value = "") => {
-  var _a;
-  if (typeof window !== "undefined" && ((_a = window.CSS) == null ? void 0 : _a.escape)) {
-    return window.CSS.escape(value);
-  }
-  return String(value).replace(/[^a-zA-Z0-9_-]/g, (char) => `\\${char}`);
-};
 const selectEntirePill$1 = (pill) => {
   var _a;
   if (!pill) return;
@@ -9515,17 +9519,11 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const applyFocusedPill = reactExports.useCallback((varName) => {
     const editor = editorRef.current;
     if (!editor) return;
-    editor.querySelectorAll(".var-pill.focused").forEach((pill) => {
-      pill.classList.remove("focused");
+    editor.querySelectorAll(".var-pill").forEach((pill) => {
+      const pillVar = pill.getAttribute("data-var");
+      const isMatch = varName ? varKeysMatch(pillVar, varName) : false;
+      pill.classList.toggle("focused", !!isMatch);
     });
-    if (!varName) return;
-    try {
-      const selector = `.var-pill[data-var="${escapeSelector$1(varName)}"]`;
-      const matches = editor.querySelectorAll(selector);
-      matches.forEach((pill) => pill.classList.add("focused"));
-    } catch (err) {
-      console.warn("Unable to focus pill:", err);
-    }
   }, []);
   const queueAutoSelectForPill = reactExports.useCallback((pill, varName) => {
     var _a;
@@ -10454,13 +10452,6 @@ const BLOCK_ELEMENTS = /* @__PURE__ */ new Set([
 ]);
 const convertPlainTextToHtml = (text = "") => escapeHtml(text).replace(/\r\n|\r/g, "\n").replace(/\n/g, '<br data-line-break="true">');
 const PILL_TEMPLATE_TOKEN = "__RT_PILL_VALUE__";
-const escapeSelector = (value = "") => {
-  var _a;
-  if (typeof window !== "undefined" && ((_a = window.CSS) == null ? void 0 : _a.escape)) {
-    return window.CSS.escape(value);
-  }
-  return String(value).replace(/[^a-zA-Z0-9_-]/g, (char) => `\\${char}`);
-};
 const createFormattingTemplate = (pill) => {
   if (!pill) return null;
   const clone = pill.cloneNode(true);
@@ -10594,17 +10585,11 @@ const RichTextPillEditor = React.forwardRef(({
   const applyFocusedPill = reactExports.useCallback((varName) => {
     const editor = editorRef.current;
     if (!editor) return;
-    editor.querySelectorAll(".var-pill.focused").forEach((pill) => {
-      pill.classList.remove("focused");
+    editor.querySelectorAll(".var-pill").forEach((pill) => {
+      const pillVar = pill.getAttribute("data-var");
+      const isMatch = varName ? varKeysMatch(pillVar, varName) : false;
+      pill.classList.toggle("focused", !!isMatch);
     });
-    if (!varName) return;
-    try {
-      const selector = `.var-pill[data-var="${escapeSelector(varName)}"]`;
-      const matches = editor.querySelectorAll(selector);
-      matches.forEach((pill) => pill.classList.add("focused"));
-    } catch (err) {
-      console.warn("Unable to focus pill:", err);
-    }
   }, []);
   const queueAutoSelectForPill = reactExports.useCallback((pill, varName) => {
     var _a;
@@ -18817,28 +18802,52 @@ function App() {
   const selectedTemplateId = selectedTemplate == null ? void 0 : selectedTemplate.id;
   const updateFocusHighlight = reactExports.useCallback((varName) => {
     try {
-      const marks = document.querySelectorAll("mark.var-highlight.focused");
-      const pills = document.querySelectorAll(".var-pill.focused");
-      marks.forEach((n) => n.classList.remove("focused"));
-      pills.forEach((n) => n.classList.remove("focused"));
-      if (!varName) return;
-      const safe = typeof CSS !== "undefined" && (CSS == null ? void 0 : CSS.escape) ? CSS.escape(varName) : varName;
-      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add("focused"));
-      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add("focused"));
+      const normalized = normalizeVarKey(varName);
+      const marks = document.querySelectorAll("mark.var-highlight");
+      const pills = document.querySelectorAll(".var-pill");
+      marks.forEach((node) => {
+        const nodeKey = node.getAttribute("data-var");
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized;
+        node.classList.toggle("focused", !!isMatch);
+      });
+      pills.forEach((node) => {
+        const nodeKey = node.getAttribute("data-var");
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized;
+        node.classList.toggle("focused", !!isMatch);
+      });
     } catch (err) {
       console.warn("Failed to update focus highlight", err);
     }
   }, []);
+  const scrollFocusIntoView = reactExports.useCallback((varName) => {
+    const normalized = normalizeVarKey(varName);
+    if (!normalized) return;
+    requestAnimationFrame(() => {
+      const pill = Array.from(document.querySelectorAll(".var-pill")).find((node) => normalizeVarKey(node.getAttribute("data-var")) === normalized);
+      const mark = pill ? null : Array.from(document.querySelectorAll("mark.var-highlight")).find((node) => normalizeVarKey(node.getAttribute("data-var")) === normalized);
+      const target = pill || mark;
+      if (!target) return;
+      try {
+        target.scrollIntoView({ block: "center", behavior: "smooth" });
+      } catch {
+      }
+    });
+  }, []);
   const updateHoverHighlight = reactExports.useCallback((varName) => {
     try {
-      const marks = document.querySelectorAll("mark.var-highlight.hovered");
-      const pills = document.querySelectorAll(".var-pill.hovered");
-      marks.forEach((n) => n.classList.remove("hovered"));
-      pills.forEach((n) => n.classList.remove("hovered"));
-      if (!varName) return;
-      const safe = typeof CSS !== "undefined" && (CSS == null ? void 0 : CSS.escape) ? CSS.escape(varName) : varName;
-      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add("hovered"));
-      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add("hovered"));
+      const normalized = normalizeVarKey(varName);
+      const marks = document.querySelectorAll("mark.var-highlight");
+      const pills = document.querySelectorAll(".var-pill");
+      marks.forEach((node) => {
+        const nodeKey = node.getAttribute("data-var");
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized;
+        node.classList.toggle("hovered", !!isMatch);
+      });
+      pills.forEach((node) => {
+        const nodeKey = node.getAttribute("data-var");
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized;
+        node.classList.toggle("hovered", !!isMatch);
+      });
     } catch (err) {
       console.warn("Failed to update hover highlight", err);
     }
@@ -19247,6 +19256,7 @@ function App() {
           const next = msg.varName ?? null;
           setFocusedVar(next);
           updateFocusHighlight(next);
+          scrollFocusIntoView(next);
           return;
         }
         if (msg.type === "popoutOpened" || msg.type === "popoutReady") {
@@ -19397,6 +19407,7 @@ function App() {
           popoutChannel.postMessage({
             type: "focusedVar",
             varName: focusedVar ?? null,
+            normalizedVar: normalizeVarKey(focusedVar) || null,
             sender: popoutSenderIdRef.current
           });
         } catch {
@@ -19408,6 +19419,7 @@ function App() {
       try {
         localStorage.setItem("ea_focused_var", JSON.stringify({
           focusedVar,
+          normalizedVar: normalizeVarKey(focusedVar) || null,
           timestamp: Date.now(),
           sender: varsSenderIdRef.current
         }));
@@ -21326,6 +21338,7 @@ ${cleanBodyHtml}
                             popoutChannelRef.current.postMessage({
                               type: "focusedVar",
                               varName: varName || null,
+                              normalizedVar: normalizeVarKey(varName) || null,
                               sender: popoutSenderIdRef.current
                             });
                           } catch (e) {
@@ -21364,6 +21377,7 @@ ${cleanBodyHtml}
                             popoutChannelRef.current.postMessage({
                               type: "focusedVar",
                               varName: varName || null,
+                              normalizedVar: normalizeVarKey(varName) || null,
                               sender: popoutSenderIdRef.current
                             });
                           } catch (e) {
@@ -22177,24 +22191,40 @@ function VariablesPopout({
     };
   }, [isPinned]);
   const notifyFocusChange = (varName, broadcast = true) => {
-    const next = varName ?? null;
-    const previous = focusedVarRef.current ?? null;
-    if (previous === next) {
-      if (!broadcast) return;
-    } else {
-      focusedVarRef.current = next;
-      setFocusedVar(next);
-      lastScrollFocusRef.current = next;
+    const nextRaw = varName ?? null;
+    const prevRaw = focusedVarRef.current ?? null;
+    const nextNormalized = normalizeVarKey(nextRaw);
+    const prevNormalized = normalizeVarKey(prevRaw);
+    if (prevNormalized !== nextNormalized || prevRaw !== nextRaw) {
+      focusedVarRef.current = nextRaw;
+      setFocusedVar(nextRaw);
+      lastScrollFocusRef.current = nextNormalized;
+    } else if (!broadcast) {
+      return;
     }
-    if (!broadcast || !channelRef.current) return;
-    try {
-      channelRef.current.postMessage({
-        type: "focusedVar",
-        varName: next,
-        sender: senderIdRef.current
-      });
-    } catch (e) {
-      console.error("Failed to send focus update:", e);
+    if (broadcast) {
+      if (channelRef.current) {
+        try {
+          channelRef.current.postMessage({
+            type: "focusedVar",
+            varName: nextRaw,
+            normalizedVar: nextNormalized || null,
+            sender: senderIdRef.current
+          });
+        } catch (e) {
+          console.error("Failed to send focus update:", e);
+        }
+      }
+      try {
+        localStorage.setItem("ea_focused_var", JSON.stringify({
+          focusedVar: nextRaw,
+          normalizedVar: nextNormalized || null,
+          timestamp: Date.now(),
+          sender: senderIdRef.current
+        }));
+      } catch (storageError) {
+        console.warn("Unable to persist focus sync payload:", storageError);
+      }
     }
   };
   const notifyHoverChange = (varName) => {
@@ -22221,15 +22251,17 @@ function VariablesPopout({
           console.log("🔍 Received message:", message.type, message);
           if (message.type === "focusedVar") {
             const next = message.varName ?? null;
+            const normalized = message.normalizedVar || normalizeVarKey(next);
             notifyFocusChange(next, false);
             document.querySelectorAll(".ea-popout-card").forEach((card) => {
               const cardVar = card.getAttribute("data-var");
-              if (cardVar === next) {
+              const matches = normalized && normalizeVarKey(cardVar) === normalized;
+              if (matches) {
                 card.classList.add("ea-popout-focused");
-                if (lastScrollFocusRef.current !== next) {
+                if (lastScrollFocusRef.current !== normalized) {
                   try {
                     card.scrollIntoView({ block: "center", behavior: "smooth" });
-                    lastScrollFocusRef.current = next;
+                    lastScrollFocusRef.current = normalized;
                   } catch {
                   }
                 }
@@ -22238,27 +22270,25 @@ function VariablesPopout({
               }
               const textarea = card.querySelector("textarea");
               if (textarea) {
-                if (cardVar === next) {
+                if (matches) {
                   textarea.classList.add("ea-popout-input-focused");
                 } else {
                   textarea.classList.remove("ea-popout-input-focused");
                 }
               }
             });
-            if (!next) {
+            if (!normalized) {
               lastScrollFocusRef.current = null;
             }
             return;
           }
           if (message.type === "variableHovered") {
             const hoveredVar = message.varName ?? null;
+            const hoveredNormalized = normalizeVarKey(hoveredVar);
             document.querySelectorAll(".ea-popout-card").forEach((card) => {
               const cardVarName = card.getAttribute("data-var");
-              if (cardVarName === hoveredVar) {
-                card.classList.add("ea-popout-hovered");
-              } else {
-                card.classList.remove("ea-popout-hovered");
-              }
+              const matches = hoveredNormalized && normalizeVarKey(cardVarName) === hoveredNormalized;
+              card.classList.toggle("ea-popout-hovered", !!matches);
             });
             return;
           }
@@ -22474,7 +22504,7 @@ function VariablesPopout({
         return null;
       }
       const currentValue = getVarValue(varName);
-      const isFocused = focusedVar === varName;
+      const isFocused = varKeysMatch(focusedVar, varName);
       const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
@@ -22937,4 +22967,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DCetpRfc.js.map
+//# sourceMappingURL=main-DetyROzp.js.map
