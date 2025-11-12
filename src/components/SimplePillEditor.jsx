@@ -68,6 +68,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const [isFocused, setIsFocused] = useState(false);
   const lastSelectionVarRef = useRef(null);
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
+  const autoSelectSuppressedUntilRef = useRef(0);
 
   // Render the content with pills
   const renderContent = (text) => {
@@ -122,6 +123,10 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const queueAutoSelectForPill = useCallback((pill, varName) => {
     if (!pill || !varName) return;
     if (!pill.classList.contains('empty')) return;
+    const nowTs = Date.now();
+    if (nowTs < (autoSelectSuppressedUntilRef.current || 0)) {
+      return;
+    }
     const selection = document.getSelection?.();
     if (!selection) return;
     if (!selection.isCollapsed && selection.toString()) return;
@@ -284,7 +289,10 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       if (varName) {
         applyFocusedPill(varName);
         emitFocusedVarChange(varName);
-        queueAutoSelectForPill(pillElement, varName);
+        // Only auto-select if not recently suppressed (e.g., after double-click)
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
     });
   };
@@ -310,10 +318,16 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
 
     const pillElement = target.closest?.('.var-pill');
     if (pillElement && editorRef.current.contains(pillElement)) {
-      // Prevent the native caret placement so we can select all
-      event.preventDefault();
-      selectEntirePill(pillElement);
+      const clickCount = event.detail;
       const varName = pillElement.getAttribute('data-var') || null;
+      // Single click: select entire pill for quick replace. Double (or more) clicks: allow native caret/edit behavior.
+      if (clickCount === 1) {
+        event.preventDefault();
+        selectEntirePill(pillElement);
+      } else if (clickCount >= 2) {
+        // Suppress any auto-select behavior for a short window so caret stays inside
+        autoSelectSuppressedUntilRef.current = Date.now() + 600;
+      }
       emitFocusedVarChange(varName);
       applyFocusedPill(varName);
     }
@@ -382,7 +396,9 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
       applyFocusedPill(varName);
 
       if (varName && selection.isCollapsed) {
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
 
       if (!varName) {

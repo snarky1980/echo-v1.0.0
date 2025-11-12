@@ -152,6 +152,7 @@ const RichTextPillEditor = React.forwardRef(({
   const prevVariablesRef = useRef(variables);
   const hasMountedRef = useRef(false);
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
+  const autoSelectSuppressedUntilRef = useRef(0);
 
   // Render content with pills - IDENTICAL to SimplePillEditor
   const renderContent = (text) => {
@@ -207,6 +208,10 @@ const RichTextPillEditor = React.forwardRef(({
   const queueAutoSelectForPill = useCallback((pill, varName) => {
     if (!pill || !varName) return;
     if (!pill.classList.contains('empty')) return;
+    const nowTs = Date.now();
+    if (nowTs < (autoSelectSuppressedUntilRef.current || 0)) {
+      return;
+    }
     const selection = document.getSelection?.();
     if (!selection) return;
     if (!selection.isCollapsed && selection.toString()) return;
@@ -369,7 +374,9 @@ const RichTextPillEditor = React.forwardRef(({
       if (varName) {
         applyFocusedPill(varName);
         emitFocusedVarChange(varName);
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
     });
     onFocus?.(e);
@@ -452,10 +459,15 @@ const RichTextPillEditor = React.forwardRef(({
 
     const pillElement = target.closest?.('.var-pill');
     if (pillElement && editorRef.current.contains(pillElement)) {
-      // Prevent the native caret placement so we can select all
-      event.preventDefault();
-      selectEntirePill(pillElement);
+      const clickCount = event.detail;
       const varName = pillElement.getAttribute('data-var') || null;
+      // Single click: select entire pill for quick replace. Double+ click: allow native caret for precise editing.
+      if (clickCount === 1) {
+        event.preventDefault();
+        selectEntirePill(pillElement);
+      } else if (clickCount >= 2) {
+        autoSelectSuppressedUntilRef.current = Date.now() + 600;
+      }
       emitFocusedVarChange(varName);
       applyFocusedPill(varName);
     }
@@ -594,7 +606,9 @@ const RichTextPillEditor = React.forwardRef(({
       applyFocusedPill(varName);
 
       if (varName && selection.isCollapsed) {
-        queueAutoSelectForPill(pillElement, varName);
+        if (Date.now() >= (autoSelectSuppressedUntilRef.current || 0)) {
+          queueAutoSelectForPill(pillElement, varName);
+        }
       }
 
       if (!varName) {
