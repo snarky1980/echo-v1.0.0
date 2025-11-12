@@ -23,96 +23,96 @@
       "Voyages d'affaires",
       "Voyages de groupe"
     ],
-    "updatedAt": "2025-11-10T14:20:49.736Z"
+    "updatedAt": "2025-11-12T22:09:43.730Z"
   },
   "variables": {
     "booking_reference": {
       "description": {
-        "fr": "Numéro de dossier",
-        "en": "Booking reference"
+        "fr": "Numéro de référence de réservation",
+        "en": "Booking reference number"
       },
       "format": "text",
-      "example": "MT-67155-Hawk"
+      "example": "MT-43827-Hawk"
     },
     "client_name": {
       "description": {
-        "fr": "Nom du client",
-        "en": "Client name"
+        "fr": "Nom complet du client",
+        "en": "Client full name"
       },
       "format": "text",
-      "example": "Jason Leblanc"
+      "example": "Sophie Gendron"
     },
     "destination": {
       "description": {
-        "fr": "destination",
-        "en": "destination"
+        "fr": "Destination de voyage",
+        "en": "Travel destination"
       },
       "format": "text",
       "example": "Banff, Alberta"
     },
     "total_cost": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.forfait Lisbonne romantique)"
+        "fr": "Coût total avec devise",
+        "en": "Total cost with currency"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "3 425,50 $"
     },
     "travel_dates": {
       "description": {
-        "fr": "Date",
-        "en": "Date"
+        "fr": "Dates de voyage",
+        "en": "Travel dates"
       },
       "format": "date",
-      "example": "2025-07-15"
+      "example": "10-17 juin 2025"
     },
     "agent_name": {
       "description": {
-        "fr": "Conseiller(ère) en voyages",
-        "en": "Assigned travel consultant"
+        "fr": "Nom du conseiller en voyages",
+        "en": "Travel consultant name"
       },
       "format": "text",
-      "example": "Marc Bouchard, Club Voyages Hawkesbury"
+      "example": "Emily Roy"
     },
     "quote_reference": {
       "description": {
-        "fr": "Numéro de dossier",
-        "en": "Booking reference"
+        "fr": "Numéro de référence du devis",
+        "en": "Quote reference number"
       },
       "format": "text",
-      "example": "MT-43827-Hawk"
+      "example": "MT-92841-Hawk"
     },
     "amount_due": {
       "description": {
-        "fr": "Montant total dû",
-        "en": "Total amount due"
+        "fr": "Montant dû avec devise",
+        "en": "Amount due with currency"
       },
       "format": "text",
-      "example": "2 890,00 $"
+      "example": "1 250,00 $"
     },
     "due_date": {
       "description": {
-        "fr": "Date",
-        "en": "Date"
+        "fr": "Date d'échéance du paiement",
+        "en": "Payment due date"
       },
       "format": "date",
-      "example": "2025-07-02"
+      "example": "15 décembre 2025"
     },
     "refund_amount": {
       "description": {
-        "fr": "Montant total dû",
-        "en": "Total amount due"
+        "fr": "Montant du remboursement avec devise",
+        "en": "Refund amount with currency"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": "2 100,00 $"
     },
     "refund_timeline": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Délai de traitement du remboursement",
+        "en": "Refund processing time"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "5 à 10 jours ouvrables"
     },
     "departure_date": {
       "description": {
@@ -120,31 +120,31 @@
         "en": "Departure date"
       },
       "format": "date",
-      "example": "2025-07-02"
+      "example": "15 juillet 2025"
     },
     "itinerary_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Lien du document d'itinéraire",
+        "en": "Itinerary document link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "https://marlinhawkesbury.ca/itinerary/MT-43827"
     },
     "feedback_link": {
       "description": {
-        "fr": "Lien du sondage",
-        "en": "Feedback link"
+        "fr": "Lien du sondage de rétroaction",
+        "en": "Feedback survey link"
       },
       "format": "text",
       "example": "https://marlinhawkesbury.ca/feedback"
     },
     "advisory_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Détails de l'avis de voyage",
+        "en": "Travel advisory details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Alerte météo - Saison des ouragans"
     },
     "country_name": {
       "description": {
@@ -152,95 +152,95 @@
         "en": "Country name"
       },
       "format": "text",
-      "example": "Italy"
+      "example": "Cuba"
     },
     "group_size": {
       "description": {
-        "fr": "Taille du groupe",
-        "en": "Group size"
+        "fr": "Nombre de voyageurs",
+        "en": "Number of travelers"
       },
       "format": "text",
       "example": "12 voyageurs"
     },
     "account_manager": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Nom du gestionnaire de compte",
+        "en": "Account manager name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "André Gagnon"
     },
     "company_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Nom de l'entreprise",
+        "en": "Company name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Corporation Acme"
     },
     "contact_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Nom du contact principal",
+        "en": "Primary contact name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Jean Tremblay"
     },
     "insurance_link": {
       "description": {
-        "fr": "Numéro de police d’assurance",
-        "en": "Insurance policy number"
+        "fr": "Lien d'information sur l'assurance voyage",
+        "en": "Travel insurance information link"
       },
       "format": "text",
-      "example": "MARLIN-98274"
+      "example": "https://marlinhawkesbury.ca/insurance"
     },
     "passport_country": {
       "description": {
-        "fr": "Nom du pays",
-        "en": "Country name"
+        "fr": "Pays du passeport",
+        "en": "Passport country"
       },
       "format": "text",
-      "example": "Mexico"
+      "example": "Canada"
     },
     "visa_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Lien d'information sur les visas",
+        "en": "Visa information link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "https://voyage.gc.ca/destinations"
     },
     "case_number": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Numéro de dossier de plainte",
+        "en": "Complaint case number"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "CASE-2025-0142"
     },
     "resolution_timeline": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Délai de résolution",
+        "en": "Resolution timeframe"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "3 à 5 jours ouvrables"
     },
     "promotion_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Lien de la page des promotions",
+        "en": "Promotions page link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "https://marlinhawkesbury.ca/deals"
     },
     "unsubscribe_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Lien de désabonnement",
+        "en": "Unsubscribe link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "https://marlinhawkesbury.ca/unsubscribe"
     },
     "after_hours_email": {
       "description": {
@@ -252,35 +252,35 @@
     },
     "emergency_number": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour emergency_number",
+        "en": "Information for emergency_number"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "inquiry_topic": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour inquiry_topic",
+        "en": "Information for inquiry_topic"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "e_ticket_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour e_ticket_link",
+        "en": "Information for e_ticket_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "check_in_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour check_in_link",
+        "en": "Information for check_in_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "flight_number": {
       "description": {
@@ -300,11 +300,11 @@
     },
     "confirmation_number": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour confirmation_number",
+        "en": "Information for confirmation_number"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "hotel_name": {
       "description": {
@@ -324,19 +324,19 @@
     },
     "rental_company": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour rental_company",
+        "en": "Information for rental_company"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "reservation_number": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour reservation_number",
+        "en": "Information for reservation_number"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "activity_date": {
       "description": {
@@ -348,59 +348,59 @@
     },
     "activity_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour activity_name",
+        "en": "Information for activity_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "item_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour item_name",
+        "en": "Information for item_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "waitlist_position": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour waitlist_position",
+        "en": "Information for waitlist_position"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "seat_selection_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour seat_selection_link",
+        "en": "Information for seat_selection_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "airline_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour airline_name",
+        "en": "Information for airline_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "baggage_details_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour baggage_details_link",
+        "en": "Information for baggage_details_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "request_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour request_details",
+        "en": "Information for request_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "quote_expiry_date": {
       "description": {
@@ -412,19 +412,19 @@
     },
     "quote_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour quote_link",
+        "en": "Information for quote_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "alternative_options_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour alternative_options_link",
+        "en": "Information for alternative_options_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "new_price": {
       "description": {
@@ -444,11 +444,11 @@
     },
     "required_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour required_details",
+        "en": "Information for required_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "payment_link": {
       "description": {
@@ -460,11 +460,11 @@
     },
     "reason": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour reason",
+        "en": "Information for reason"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "final_amount": {
       "description": {
@@ -492,11 +492,11 @@
     },
     "timeline": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour timeline",
+        "en": "Information for timeline"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "monthly_amount": {
       "description": {
@@ -524,19 +524,19 @@
     },
     "invoice_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour invoice_link",
+        "en": "Information for invoice_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "invoice_number": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour invoice_number",
+        "en": "Information for invoice_number"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "deposit_amount": {
       "description": {
@@ -548,11 +548,11 @@
     },
     "dispute_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour dispute_details",
+        "en": "Information for dispute_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "policy_details": {
       "description": {
@@ -564,11 +564,11 @@
     },
     "net_refund": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour net_refund",
+        "en": "Information for net_refund"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "penalty_amount": {
       "description": {
@@ -580,11 +580,11 @@
     },
     "options": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour options",
+        "en": "Information for options"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "credit_amount": {
       "description": {
@@ -644,211 +644,211 @@
     },
     "change_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour change_details",
+        "en": "Information for change_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "new_itinerary_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour new_itinerary_link",
+        "en": "Information for new_itinerary_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "new_time": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour new_time",
+        "en": "Information for new_time"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "old_time": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour old_time",
+        "en": "Information for old_time"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "tips_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour tips_link",
+        "en": "Information for tips_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "connecting_city": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour connecting_city",
+        "en": "Information for connecting_city"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "gate_info": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour gate_info",
+        "en": "Information for gate_info"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "layover_duration": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour layover_duration",
+        "en": "Information for layover_duration"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "new_room_type": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour new_room_type",
+        "en": "Information for new_room_type"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "meeting_point": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour meeting_point",
+        "en": "Information for meeting_point"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "start_time": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour start_time",
+        "en": "Information for start_time"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "tour_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour tour_name",
+        "en": "Information for tour_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "document_type": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour document_type",
+        "en": "Information for document_type"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "boarding_pass_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour boarding_pass_link",
+        "en": "Information for boarding_pass_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "forecast_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour forecast_link",
+        "en": "Information for forecast_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "currency_guide_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour currency_guide_link",
+        "en": "Information for currency_guide_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "loyalty_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour loyalty_link",
+        "en": "Information for loyalty_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "welcome_bonus": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour welcome_bonus",
+        "en": "Information for welcome_bonus"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "review_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour review_link",
+        "en": "Information for review_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "supplier_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour supplier_name",
+        "en": "Information for supplier_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "planning_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour planning_link",
+        "en": "Information for planning_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "hashtag": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour hashtag",
+        "en": "Information for hashtag"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "photo_upload_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour photo_upload_link",
+        "en": "Information for photo_upload_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "item_description": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour item_description",
+        "en": "Information for item_description"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "status": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour status",
+        "en": "Information for status"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "referral_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour referral_link",
+        "en": "Information for referral_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "reward_amount": {
       "description": {
@@ -868,27 +868,27 @@
     },
     "issue_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour issue_details",
+        "en": "Information for issue_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "resolution_plan": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour resolution_plan",
+        "en": "Information for resolution_plan"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour link",
+        "en": "Information for link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "suggested_destination": {
       "description": {
@@ -900,107 +900,107 @@
     },
     "weather_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour weather_details",
+        "en": "Information for weather_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "alert_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour alert_details",
+        "en": "Information for alert_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "cdc_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour cdc_link",
+        "en": "Information for cdc_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "disruption_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour disruption_details",
+        "en": "Information for disruption_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "government_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour government_link",
+        "en": "Information for government_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "unrest_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour unrest_details",
+        "en": "Information for unrest_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "airport_code": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour airport_code",
+        "en": "Information for airport_code"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "delay_reason": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour delay_reason",
+        "en": "Information for delay_reason"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "disaster_type": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour disaster_type",
+        "en": "Information for disaster_type"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "safety_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour safety_link",
+        "en": "Information for safety_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "change_percentage": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour change_percentage",
+        "en": "Information for change_percentage"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "currency_code": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour currency_code",
+        "en": "Information for currency_code"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "impact_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour impact_details",
+        "en": "Information for impact_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "effective_date": {
       "description": {
@@ -1012,11 +1012,11 @@
     },
     "rule_change": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour rule_change",
+        "en": "Information for rule_change"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "new_hotel": {
       "description": {
@@ -1044,11 +1044,11 @@
     },
     "event_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour event_name",
+        "en": "Information for event_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "group_leader_name": {
       "description": {
@@ -1068,27 +1068,27 @@
     },
     "deadline": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour deadline",
+        "en": "Information for deadline"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "registration_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour registration_link",
+        "en": "Information for registration_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "traveler_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour traveler_name",
+        "en": "Information for traveler_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "policy_detail": {
       "description": {
@@ -1100,43 +1100,43 @@
     },
     "month": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour month",
+        "en": "Information for month"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "report_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour report_link",
+        "en": "Information for report_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "approver_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour approver_name",
+        "en": "Information for approver_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "cost": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour cost",
+        "en": "Information for cost"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "profile_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour profile_link",
+        "en": "Information for profile_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "end_date": {
       "description": {
@@ -1148,11 +1148,11 @@
     },
     "holiday_name": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour holiday_name",
+        "en": "Information for holiday_name"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "start_date": {
       "description": {
@@ -1164,19 +1164,19 @@
     },
     "resolution_details": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour resolution_details",
+        "en": "Information for resolution_details"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "claim_link": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour claim_link",
+        "en": "Information for claim_link"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     },
     "policy_number": {
       "description": {
@@ -1188,11 +1188,11 @@
     },
     "resolution_offer": {
       "description": {
-        "fr": "Information liée au voyage",
-        "en": "voyage personnalisé (ex.:forfait Lisbonne romantique)"
+        "fr": "Information pour resolution_offer",
+        "en": "Information for resolution_offer"
       },
       "format": "text",
-      "example": "forfait personnalisé"
+      "example": "Valeur à définir"
     }
   },
   "templates": [
@@ -1214,8 +1214,8 @@
         "en": "Booking Confirmation"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nNous sommes ravis de confirmer votre réservation avec le numéro de référence  <<booking_reference_FR>>  pour votre voyage à  <<destination_FR>>  du  <<travel_dates_FR>>. Le coût total est de  <<total_cost_FR>>.\r\n\r\nVotre itinéraire détaillé suivra sous peu. Merci d'avoir choisi Voyages Marlin Hawkesbury!",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nWe are thrilled to confirm your booking with reference number  <<booking_reference_EN>>  for your trip to  <<destination_EN>>  from  <<travel_dates_EN>>. The total cost is  <<total_cost_EN>>.\r\n\r\nYour detailed itinerary will follow shortly. Thank you for choosing Marlin Travel Hawkesbury!"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nNous sommes ravis de confirmer votre réservation avec le numéro de référence <<booking_reference_FR>> pour votre voyage à <<destination_FR>> du <<travel_dates_FR>>. Le coût total est de <<total_cost_FR>>.\r\n\r\nVotre itinéraire détaillé suivra sous peu. Merci d'avoir choisi Voyages Marlin Hawkesbury!",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nWe are thrilled to confirm your booking with reference number <<booking_reference_EN>> for your trip to <<destination_EN>> from <<travel_dates_EN>>. The total cost is <<total_cost_EN>>.\r\n\r\nYour detailed itinerary will follow shortly. Thank you for choosing Marlin Travel Hawkesbury!"
       },
       "variables": [
         "booking_reference",
@@ -1243,8 +1243,8 @@
         "en": "Quote Follow-up (72 Hours)"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nJ'espère que ce courriel vous trouve bien. Je fais suite au devis que nous vous avons envoyé pour votre voyage à  <<destination_FR>>  (Réf : <<quote_reference_FR>>).\r\n\r\nAvez-vous des questions ou souhaitez-vous procéder à la réservation ? Veuillez me répondre ou m'appeler, <<agent_name_FR>>, dès que possible",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nI hope this email finds you well. I'm following up on the quote we sent you for your trip to  <<destination_EN>>  (Ref: <<quote_reference_EN>>).\r\n\r\nDo you have any questions or would you like to proceed with the booking? Please reply or call me, <<agent_name_EN>>, at your earliest convenience"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nJ'espère que ce courriel vous trouve bien. Je fais suite au devis que nous vous avons envoyé pour votre voyage à <<destination_FR>> (Réf : <<quote_reference_FR>>).\r\n\r\nAvez-vous des questions ou souhaitez-vous procéder à la réservation ? Veuillez me répondre ou m'appeler, <<agent_name_FR>>, dès que possible",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nI hope this email finds you well. I'm following up on the quote we sent you for your trip to <<destination_EN>> (Ref: <<quote_reference_EN>>).\r\n\r\nDo you have any questions or would you like to proceed with the booking? Please reply or call me, <<agent_name_EN>>, at your earliest convenience"
       },
       "variables": [
         "agent_name",
@@ -1271,8 +1271,8 @@
         "en": "Payment Reminder (Due Soon)"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nCeci est un rappel amical qu'un paiement de  <<amount_due_FR>>  pour votre réservation <<booking_reference_FR>> est dû le  <<due_date_FR>>.\r\n\r\nVeuillez vous assurer que le paiement est effectué à temps pour éviter l'annulation. Vous pouvez payer en ligne ou en nous appelant",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nThis is a friendly reminder that a payment of  <<amount_due_EN>>  for your booking <<booking_reference_EN>> is due on  <<due_date_EN>>.\r\n\r\nPlease ensure the payment is made on time to avoid cancellation. You can pay online or by calling us"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nCeci est un rappel amical qu'un paiement de <<amount_due_FR>> pour votre réservation <<booking_reference_FR>> est dû le <<due_date_FR>>.\r\n\r\nVeuillez vous assurer que le paiement est effectué à temps pour éviter l'annulation. Vous pouvez payer en ligne ou en nous appelant",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nThis is a friendly reminder that a payment of <<amount_due_EN>> for your booking <<booking_reference_EN>> is due on <<due_date_EN>>.\r\n\r\nPlease ensure the payment is made on time to avoid cancellation. You can pay online or by calling us"
       },
       "variables": [
         "amount_due",
@@ -1299,8 +1299,8 @@
         "en": "Cancellation Confirmation"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nCeci confirme l'annulation de votre réservation <<booking_reference_FR>>. Un remboursement de  <<refund_amount_FR>>  a été traité et devrait apparaître sur votre compte dans un délai de  <<refund_timeline_FR>>.\r\n\r\nNous espérons vous aider avec vos projets de voyage à l'avenir",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nThis confirms the cancellation of your booking <<booking_reference_EN>>. A refund of  <<refund_amount_EN>>  has been processed and should reflect in your account within  <<refund_timeline_EN>>.\r\n\r\nWe hope to assist you with your travel plans in the future"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nCeci confirme l'annulation de votre réservation <<booking_reference_FR>>. Un remboursement de <<refund_amount_FR>> a été traité et devrait apparaître sur votre compte dans un délai de <<refund_timeline_FR>>.\r\n\r\nNous espérons vous aider avec vos projets de voyage à l'avenir",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nThis confirms the cancellation of your booking <<booking_reference_EN>>. A refund of <<refund_amount_EN>> has been processed and should reflect in your account within <<refund_timeline_EN>>.\r\n\r\nWe hope to assist you with your travel plans in the future"
       },
       "variables": [
         "booking_reference",
@@ -1327,8 +1327,8 @@
         "en": "Your Final Travel Itinerary"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nVotre itinéraire de voyage final pour votre voyage à  <<destination_FR>>  au départ du  <<departure_date_FR>>  est prêt ! Vous pouvez consulter et télécharger tous vos documents ici :  <<itinerary_link_FR>>.\r\n\r\nBon voyage de la part de l'équipe de Voyages Marlin Hawkesbury!",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nYour final travel itinerary for your trip to  <<destination_EN>>  departing on  <<departure_date_EN>>  is now ready! You can view and download all your documents here:  <<itinerary_link_EN>>.\r\n\r\nSafe travels from the team at Marlin Travel Hawkesbury!"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nVotre itinéraire de voyage final pour votre voyage à <<destination_FR>> au départ du <<departure_date_FR>> est prêt ! Vous pouvez consulter et télécharger tous vos documents ici : <<itinerary_link_FR>>.\r\n\r\nBon voyage de la part de l'équipe de Voyages Marlin Hawkesbury!",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nYour final travel itinerary for your trip to <<destination_EN>> departing on <<departure_date_EN>> is now ready! You can view and download all your documents here: <<itinerary_link_EN>>.\r\n\r\nSafe travels from the team at Marlin Travel Hawkesbury!"
       },
       "variables": [
         "client_name",
@@ -1355,8 +1355,8 @@
         "en": "Welcome Home & Feedback Request"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nBienvenue de retour ! Nous espérons que vous avez passé un voyage fantastique à  <<destination_FR>>. Vos commentaires nous sont précieux. Veuillez prendre un moment pour partager votre expérience ici :  <<feedback_link_FR>>.\r\n\r\nNous sommes impatients de planifier votre prochaine aventure!",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nWelcome back! We hope you had a fantastic trip to  <<destination_EN>>. Your feedback is invaluable to us. Please take a moment to share your experience here:  <<feedback_link_EN>>.\r\n\r\nWe look forward to planning your next adventure!"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nBienvenue de retour ! Nous espérons que vous avez passé un voyage fantastique à <<destination_FR>>. Vos commentaires nous sont précieux. Veuillez prendre un moment pour partager votre expérience ici : <<feedback_link_FR>>.\r\n\r\nNous sommes impatients de planifier votre prochaine aventure!",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nWelcome back! We hope you had a fantastic trip to <<destination_EN>>. Your feedback is invaluable to us. Please take a moment to share your experience here: <<feedback_link_EN>>.\r\n\r\nWe look forward to planning your next adventure!"
       },
       "variables": [
         "client_name",
@@ -1382,8 +1382,8 @@
         "en": "Important Travel Advisory: <<country_name>>"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nNous surveillons un avis de voyage important pour  <<country_name_FR>>  qui pourrait affecter votre voyage du  <<travel_dates_FR>>. Détails :  <<advisory_details_FR>>.\r\n\r\nVeuillez nous contacter immédiatement pour discuter de vos options",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nWe are monitoring an important travel advisory for  <<country_name_EN>>  that may affect your trip on  <<travel_dates_EN>>. Details:  <<advisory_details_EN>>.\r\n\r\nPlease contact us immediately to discuss your options"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nNous surveillons un avis de voyage important pour <<country_name_FR>> qui pourrait affecter votre voyage du <<travel_dates_FR>>. Détails : <<advisory_details_FR>>.\r\n\r\nVeuillez nous contacter immédiatement pour discuter de vos options",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nWe are monitoring an important travel advisory for <<country_name_EN>> that may affect your trip on <<travel_dates_EN>>. Details: <<advisory_details_EN>>.\r\n\r\nPlease contact us immediately to discuss your options"
       },
       "variables": [
         "advisory_details",
@@ -1410,8 +1410,8 @@
         "en": "Group Travel Inquiry Received"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nMerci de votre intérêt à planifier un voyage de groupe pour  <<group_size_FR>>  personnes à  <<destination_FR>>  ! Votre demande a été attribuée à  <<agent_name_FR>> , qui vous contactera dans les 24 heures pour discuter des détails",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nThank you for your interest in planning a group trip for  <<group_size_EN>>  people to  <<destination_EN>> ! Your request has been assigned to  <<agent_name_EN>> , who will contact you within 24 hours to discuss the details"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nMerci de votre intérêt à planifier un voyage de groupe pour <<group_size_FR>> personnes à <<destination_FR>> ! Votre demande a été attribuée à <<agent_name_FR>> , qui vous contactera dans les 24 heures pour discuter des détails",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nThank you for your interest in planning a group trip for <<group_size_EN>> people to <<destination_EN>> ! Your request has been assigned to <<agent_name_EN>> , who will contact you within 24 hours to discuss the details"
       },
       "variables": [
         "agent_name",
@@ -1438,8 +1438,8 @@
         "en": "Welcome to Our Corporate Travel Program"
       },
       "body": {
-        "fr": "Cher/Chère <<contact_name_FR>>,\r\n\r\nBienvenue au Programme de Voyages d'Affaires de Voyages Marlin Hawkesbury ! Nous sommes ravis de nous associer à  <<company_name_FR>>. Votre gestionnaire de compte dédié,  <<account_manager_FR>> , vous contactera sous peu pour configurer votre profil et discuter de votre politique de voyage",
-        "en": "Dear <<contact_name_EN>>,\r\n\r\nWelcome to the Marlin Travel Hawkesbury Corporate Travel Program! We are excited to partner with  <<company_name_EN>>. Your dedicated Account Manager,  <<account_manager_EN>> , will be in touch shortly to set up your profile and discuss your travel policy"
+        "fr": "Cher/Chère <<contact_name_FR>>,\r\n\r\nBienvenue au Programme de Voyages d'Affaires de Voyages Marlin Hawkesbury ! Nous sommes ravis de nous associer à <<company_name_FR>>. Votre gestionnaire de compte dédié, <<account_manager_FR>> , vous contactera sous peu pour configurer votre profil et discuter de votre politique de voyage",
+        "en": "Dear <<contact_name_EN>>,\r\n\r\nWelcome to the Marlin Travel Hawkesbury Corporate Travel Program! We are excited to partner with <<company_name_EN>>. Your dedicated Account Manager, <<account_manager_EN>> , will be in touch shortly to set up your profile and discuss your travel policy"
       },
       "variables": [
         "account_manager",
@@ -1465,8 +1465,8 @@
         "en": "Don't Forget Travel Insurance!"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nÀ l'approche de votre voyage à  <<destination_FR>>  du  <<travel_dates_FR>> , nous vous recommandons fortement de souscrire une assurance voyage. Protégez votre investissement contre les événements imprévus ! Vous pouvez consulter nos options ici :  <<insurance_link_FR>>",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nAs your trip to  <<destination_EN>>  from  <<travel_dates_EN>>  approaches, we strongly recommend securing travel insurance. Protect your investment against unforeseen events! You can review our options here:  <<insurance_link_EN>>"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nÀ l'approche de votre voyage à <<destination_FR>> du <<travel_dates_FR>> , nous vous recommandons fortement de souscrire une assurance voyage. Protégez votre investissement contre les événements imprévus ! Vous pouvez consulter nos options ici : <<insurance_link_FR>>",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nAs your trip to <<destination_EN>> from <<travel_dates_EN>> approaches, we strongly recommend securing travel insurance. Protect your investment against unforeseen events! You can review our options here: <<insurance_link_EN>>"
       },
       "variables": [
         "client_name",
@@ -1493,8 +1493,8 @@
         "en": "Action Required: Visa for <<country_name>>"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nEn tant que détenteur d'un passeport  <<passport_country_FR>> , vous devez obtenir un visa pour votre voyage à  <<country_name_FR>>. Veuillez consulter les exigences et le processus de demande ici :  <<visa_link_FR>>",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nAs a holder of a  <<passport_country_EN>>  passport, you are required to obtain a visa for your trip to  <<country_name_EN>>. Please review the requirements and application process here:  <<visa_link_EN>>"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nEn tant que détenteur d'un passeport <<passport_country_FR>> , vous devez obtenir un visa pour votre voyage à <<country_name_FR>>. Veuillez consulter les exigences et le processus de demande ici : <<visa_link_FR>>",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nAs a holder of a <<passport_country_EN>> passport, you are required to obtain a visa for your trip to <<country_name_EN>>. Please review the requirements and application process here: <<visa_link_EN>>"
       },
       "variables": [
         "client_name",
@@ -1521,8 +1521,8 @@
         "en": "Complaint Acknowledgment (Ref: <<case_number>>)"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nMerci de nous avoir fait part de vos préoccupations. Nous avons enregistré votre plainte sous le numéro de dossier  <<case_number_FR>>. Notre équipe, dirigée par  <<agent_name_FR>> , enquêtera et vous fournira une réponse complète dans un délai de  <<resolution_timeline_FR>>",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nThank you for bringing your concerns to our attention. We have logged your complaint under case number  <<case_number_EN>>. Our team, led by  <<agent_name_EN>> , will investigate and provide a full response within  <<resolution_timeline_EN>>"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nMerci de nous avoir fait part de vos préoccupations. Nous avons enregistré votre plainte sous le numéro de dossier <<case_number_FR>>. Notre équipe, dirigée par <<agent_name_FR>> , enquêtera et vous fournira une réponse complète dans un délai de <<resolution_timeline_FR>>",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nThank you for bringing your concerns to our attention. We have logged your complaint under case number <<case_number_EN>>. Our team, led by <<agent_name_EN>> , will investigate and provide a full response within <<resolution_timeline_EN>>"
       },
       "variables": [
         "agent_name",
@@ -1549,8 +1549,8 @@
         "en": "Dream Destinations: Our Top 3 Deals This Month!"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nPrêt(e) pour votre prochaine aventure ? Ce mois-ci, nous vous proposons des offres incroyables pour les Caraïbes, l'Europe et les Rocheuses ! Consultez toutes les promotions ici :  <<promotion_link_FR>>.\r\n\r\n(Pour vous désabonner, cliquez ici : <<unsubscribe_link_FR>>)",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nReady for your next adventure? This month, we're featuring incredible deals to the Caribbean, Europe, and the Rockies! View all promotions here:  <<promotion_link_EN>>.\r\n\r\n(To unsubscribe, click here: <<unsubscribe_link_EN>>)"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nPrêt(e) pour votre prochaine aventure ? Ce mois-ci, nous vous proposons des offres incroyables pour les Caraïbes, l'Europe et les Rocheuses ! Consultez toutes les promotions ici : <<promotion_link_FR>>.\r\n\r\n(Pour vous désabonner, cliquez ici : <<unsubscribe_link_FR>>)",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nReady for your next adventure? This month, we're featuring incredible deals to the Caribbean, Europe, and the Rockies! View all promotions here: <<promotion_link_EN>>.\r\n\r\n(To unsubscribe, click here: <<unsubscribe_link_EN>>)"
       },
       "variables": [
         "client_name",
@@ -1576,8 +1576,8 @@
         "en": "Emergency Contact Information While Travelling"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nPour votre tranquillité d'esprit, voici nos coordonnées d'urgence 24/7 pendant votre voyage :\r\n\r\n Téléphone :  <<emergency_number_FR>>\r\n Courriel :  <<after_hours_email_FR>>\r\n\r\nNous sommes là pour vous, quoi qu'il arrive",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nFor your peace of mind, here are our 24/7 emergency contact details while you are travelling:\r\n\r\n Phone:  <<emergency_number_EN>>\r\n Email:  <<after_hours_email_EN>>\r\n\r\nWe are here for you, no matter what"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nPour votre tranquillité d'esprit, voici nos coordonnées d'urgence 24/7 pendant votre voyage :\r\n\r\n Téléphone : <<emergency_number_FR>> Courriel : <<after_hours_email_FR>> Nous sommes là pour vous, quoi qu'il arrive",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nFor your peace of mind, here are our 24/7 emergency contact details while you are travelling:\r\n\r\n Phone: <<emergency_number_EN>> Email: <<after_hours_email_EN>> We are here for you, no matter what"
       },
       "variables": [
         "after_hours_email",
@@ -1603,8 +1603,8 @@
         "en": "Regarding Your Inquiry - Need More Details"
       },
       "body": {
-        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nMerci de nous avoir contactés concernant  <<inquiry_topic_FR>>. Afin de vous fournir les informations les plus précises, pourriez-vous nous donner quelques détails supplémentaires sur votre demande ?\r\n\r\nJe, <<agent_name_FR>>, suis impatient de vous lire bientôt",
-        "en": "Dear <<client_name_EN>>,\r\n\r\nThank you for reaching out regarding  <<inquiry_topic_EN>>. To provide you with the most accurate information, could you please provide a few more details about your request?\r\n\r\nI, <<agent_name_EN>>, look forward to hearing from you soon"
+        "fr": "Cher/Chère <<client_name_FR>>,\r\n\r\nMerci de nous avoir contactés concernant <<inquiry_topic_FR>>. Afin de vous fournir les informations les plus précises, pourriez-vous nous donner quelques détails supplémentaires sur votre demande ?\r\n\r\nJe, <<agent_name_FR>>, suis impatient de vous lire bientôt",
+        "en": "Dear <<client_name_EN>>,\r\n\r\nThank you for reaching out regarding <<inquiry_topic_EN>>. To provide you with the most accurate information, could you please provide a few more details about your request?\r\n\r\nI, <<agent_name_EN>>, look forward to hearing from you soon"
       },
       "variables": [
         "agent_name",
@@ -2727,7 +2727,7 @@
         "en": "Itinerary Change Notification"
       },
       "body": {
-        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nIl y a eu un léger changement à votre itinéraire pour le dossier <<booking_reference_FR>> : <<change_details_FR>>. Vous pouvez consulter votre nouvel itinéraire ici : <<new_itinerary_link_FR>>. Contactez‑nous pour toute question.\r\n\r\nMerci.",
+        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nIl y a eu un léger changement à votre itinéraire pour le dossier <<booking_reference_FR>> : <<change_details_FR>>. Vous pouvez consulter votre nouvel itinéraire ici : <<new_itinerary_link_FR>>. Contactez‑nous pour toute question.\r\n\r\nMerci.",
         "en": "Dear <<client_name_EN>>,\r\n\r\nThere has been a minor change to your itinerary for booking <<booking_reference_EN>>: <<change_details_EN>>. You can view your updated itinerary here: <<new_itinerary_link_EN>>. Let me know if you have any questions.\r\n\r\nThank you."
       },
       "variables": [
@@ -2867,7 +2867,7 @@
         "en": "Tour/Excursion Details"
       },
       "body": {
-        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nVoici les détails de votre excursion <<tour_name_FR>> : point de rencontre <<meeting_point_FR>> et heure de départ <<start_time_FR>>. Nous espérons que vous passerez un excellent moment!\r\n\r\nMerci.",
+        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nVoici les détails de votre excursion <<tour_name_FR>> : point de rencontre <<meeting_point_FR>> et heure de départ <<start_time_FR>>. Nous espérons que vous passerez un excellent moment!\r\n\r\nMerci.",
         "en": "Dear <<client_name_EN>>,\r\n\r\nHere are the details for your <<tour_name_EN>> tour. Meeting point: <<meeting_point_EN>>. Start time: <<start_time_EN>>. We hope you have a great time!\r\n\r\nThank you."
       },
       "variables": [
@@ -2923,7 +2923,7 @@
         "en": "Digital Boarding Pass Delivery"
       },
       "body": {
-        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nVoici votre carte d’embarquement numérique pour le vol <<flight_number_FR>> : <<boarding_pass_link_FR>>. Merci de la télécharger ou de l’imprimer avant votre départ.\r\n\r\nMerci.",
+        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nVoici votre carte d’embarquement numérique pour le vol <<flight_number_FR>> : <<boarding_pass_link_FR>>. Merci de la télécharger ou de l’imprimer avant votre départ.\r\n\r\nMerci.",
         "en": "Dear <<client_name_EN>>,\r\n\r\nHere is your digital boarding pass for flight <<flight_number_EN>>: <<boarding_pass_link_EN>>. Please download or print it before you travel.\r\n\r\nThank you."
       },
       "variables": [
@@ -3300,7 +3300,7 @@
         "en": "Health & Safety Alert"
       },
       "body": {
-        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nIl y a un avis important de santé/sécurité concernant <<destination_FR>> : <<alert_details_FR>>. Pour plus d’informations, veuillez consulter : <<cdc_link_FR>>. Faites‑nous savoir si vous devez modifier votre voyage.\r\n\r\nMerci.",
+        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nIl y a un avis important de santé/sécurité concernant <<destination_FR>> : <<alert_details_FR>>. Pour plus d’informations, veuillez consulter : <<cdc_link_FR>>. Faites‑nous savoir si vous devez modifier votre voyage.\r\n\r\nMerci.",
         "en": "Dear <<client_name_EN>>,\r\n\r\nThere is an important health or safety advisory for <<destination_EN>>: <<alert_details_EN>>. For more information, please consult: <<cdc_link_EN>>. Let us know if you need to modify your trip.\r\n\r\nThank you."
       },
       "variables": [
@@ -3356,7 +3356,7 @@
         "en": "Political Unrest Warning"
       },
       "body": {
-        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nOn signale des troubles politiques à <<destination_FR>> : <<unrest_details_FR>>. Veuillez consulter l’avis ici : <<government_link_FR>>. Contactez‑nous si vous souhaitez discuter de votre itinéraire.\r\n\r\nMerci.",
+        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nOn signale des troubles politiques à <<destination_FR>> : <<unrest_details_FR>>. Veuillez consulter l’avis ici : <<government_link_FR>>. Contactez‑nous si vous souhaitez discuter de votre itinéraire.\r\n\r\nMerci.",
         "en": "Dear <<client_name_EN>>,\r\n\r\nThere are reports of political unrest in <<destination_EN>>: <<unrest_details_EN>>. Please review the advisory here: <<government_link_EN>>. Contact us if you need to discuss your itinerary.\r\n\r\nThank you."
       },
       "variables": [
@@ -3468,7 +3468,7 @@
         "en": "Customs/Entry Rule Change"
       },
       "body": {
-        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nÀ compter du <<effective_date_FR>>, de nouvelles exigences douanières ou d’entrée s’appliqueront aux voyageurs se rendant à <<destination_FR>> : <<rule_change_FR>>. Veuillez vous assurer d’y répondre.\r\n\r\nMerci.",
+        "fr": "Bonjour <<client_name_FR>>,\r\n\r\nÀ compter du <<effective_date_FR>>, de nouvelles exigences douanières ou d’entrée s’appliqueront aux voyageurs se rendant à <<destination_FR>> : <<rule_change_FR>>. Veuillez vous assurer d’y répondre.\r\n\r\nMerci.",
         "en": "Dear <<client_name_EN>>,\r\n\r\nStarting <<effective_date_EN>>, new customs or entry requirements apply for travellers to <<destination_EN>>: <<rule_change_EN>>. Please ensure you meet these requirements.\r\n\r\nThank you."
       },
       "variables": [
@@ -3580,7 +3580,7 @@
         "en": "Group Member Registration Link"
       },
       "body": {
-        "fr": "Bonjour <<group_leader_name_FR>>,\r\n\r\nMerci de partager ce lien d’inscription avec votre groupe <<group_name_FR>>. Chaque membre doit enregistrer ses informations avant le <<deadline_FR>> : <<registration_link_FR>>. Nous sommes disponibles en cas de besoin.\r\n\r\nMerci.",
+        "fr": "Bonjour <<group_leader_name_FR>>,\r\n\r\nMerci de partager ce lien d’inscription avec votre groupe <<group_name_FR>>. Chaque membre doit enregistrer ses informations avant le <<deadline_FR>> : <<registration_link_FR>>. Nous sommes disponibles en cas de besoin.\r\n\r\nMerci.",
         "en": "Dear <<group_leader_name_EN>>,\r\n\r\nPlease share this registration link with your group <<group_name_EN>>. Each member should register their details by <<deadline_EN>>: <<registration_link_EN>>. Let us know if you need assistance.\r\n\r\nThank you."
       },
       "variables": [
@@ -3663,7 +3663,7 @@
         "en": "Travel Policy Violation Alert"
       },
       "body": {
-        "fr": "Bonjour <<contact_name_FR>>,\r\n\r\nNous avons identifié une infraction à la politique pour la demande de voyage de <<traveler_name_FR>> : <<reason_FR>>. Détail de la politique : <<policy_detail_FR>>. Veuillez nous indiquer la marche à suivre.\r\n\r\nMerci.",
+        "fr": "Bonjour <<contact_name_FR>>,\r\n\r\nNous avons identifié une infraction à la politique pour la demande de voyage de <<traveler_name_FR>> : <<reason_FR>>. Détail de la politique : <<policy_detail_FR>>. Veuillez nous indiquer la marche à suivre.\r\n\r\nMerci.",
         "en": "Dear <<contact_name_EN>>,\r\n\r\nWe have identified a policy violation in <<traveler_name_EN>>’s booking request: <<reason_EN>>. Detail of the policy: <<policy_detail_EN>>. Please advise on how to proceed.\r\n\r\nThank you."
       },
       "variables": [
