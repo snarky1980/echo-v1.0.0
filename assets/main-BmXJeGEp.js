@@ -18556,14 +18556,83 @@ const resolveVariableInfo$1 = (templatesData, name = "") => {
 };
 const guessSampleValue$1 = (templatesData, name = "") => {
   const info = resolveVariableInfo$1(templatesData, name);
-  if (info == null ? void 0 : info.example) return info.example;
+  const suffixMatch = (name || "").match(/_(FR|EN)$/i);
+  const suffix = suffixMatch ? suffixMatch[1].toUpperCase() : null;
+  const rawExample = (() => {
+    var _a, _b, _c, _d;
+    if (suffix === "EN") return ((_a = info == null ? void 0 : info.examples) == null ? void 0 : _a.en) ?? (info == null ? void 0 : info.example) ?? "";
+    if (suffix === "FR") return ((_b = info == null ? void 0 : info.examples) == null ? void 0 : _b.fr) ?? (info == null ? void 0 : info.example) ?? "";
+    return (info == null ? void 0 : info.example) ?? ((_c = info == null ? void 0 : info.examples) == null ? void 0 : _c.fr) ?? ((_d = info == null ? void 0 : info.examples) == null ? void 0 : _d.en) ?? "";
+  })();
   const normalized = (name || "").toLowerCase();
-  const format2 = (info == null ? void 0 : info.format) || (/date|jour|day/.test(normalized) ? "date" : /heure|time/.test(normalized) ? "time" : /montant|total|nombre|count|amount|num|quant/.test(normalized) ? "number" : "text");
-  switch (format2) {
+  const kind = (() => {
+    if (info == null ? void 0 : info.format) return info.format;
+    if (/date|jour|day/.test(normalized)) return "date";
+    if (/heure|time/.test(normalized)) return "time";
+    if (/(montant|total|amount|price|cost|refund|credit|deposit|payment)/.test(normalized)) return "currency";
+    if (/(nombre|count|num|quant)/.test(normalized)) return "number";
+    return "text";
+  })();
+  const mapFrPlaceholderToEn = (s = "") => {
+    const trimmed = String(s).trim();
+    if (!trimmed) return "";
+    if (/^valeur\s+à\s+d[ée]finir$/i.test(trimmed)) return "To be defined";
+    return trimmed;
+  };
+  const toEnSample = (example, k) => {
+    const val = String(example || "").trim();
+    if (!val) {
+      if (k === "date") return "2025-07-15";
+      if (k === "time") return "09:00";
+      if (k === "currency") return "$1,250.00";
+      if (k === "number") return "0";
+      return "Example";
+    }
+    if (/^https?:\/\//i.test(val) || /@/.test(val)) return val;
+    const mapped = mapFrPlaceholderToEn(val);
+    if (mapped !== val) return mapped;
+    if (k === "currency") {
+      const m = val.match(/([0-9][0-9\s\u00A0.,]*)\s*\$/);
+      if (m) {
+        const digits = m[1].replace(/\u00A0|\s/g, "").replace(/\.(?=\d{3})/g, "").replace(/,(\d{2})$/, ".$1");
+        const parts = digits.split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return `$${parts.join(".")}`;
+      }
+      if (/^\$?\d{1,3}(,\d{3})*(\.\d{2})?$/.test(val)) return val.startsWith("$") ? val : `$${val}`;
+      return "$1,250.00";
+    }
+    if (k === "date") {
+      return "2025-07-15";
+    }
+    if (k === "time") return "09:00";
+    return mapped;
+  };
+  const toFrSample = (example, k) => {
+    const val = String(example || "").trim();
+    if (!val) {
+      if (k === "date") return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      if (k === "time") return "09:00";
+      if (k === "currency") return "2 890,00 $";
+      if (k === "number") return "0";
+      return "…";
+    }
+    return val;
+  };
+  if (suffix === "EN") {
+    return toEnSample(rawExample, kind);
+  }
+  if (suffix === "FR") {
+    return toFrSample(rawExample, kind);
+  }
+  if (rawExample) return rawExample;
+  switch (kind) {
     case "date":
       return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
     case "time":
       return "09:00";
+    case "currency":
+      return "2 890,00 $";
     case "number":
       return "0";
     default:
@@ -22261,7 +22330,11 @@ const resolveVariableInfo = (templatesData, name = "") => {
   return templatesData.variables[baseName] || null;
 };
 const guessSampleValue = (templatesData, name = "") => {
+  var _a, _b, _c, _d;
   const info = resolveVariableInfo(templatesData, name);
+  const suffix = (_b = (_a = (name || "").match(/_(FR|EN)$/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.toLowerCase();
+  if (suffix === "en" && ((_c = info == null ? void 0 : info.examples) == null ? void 0 : _c.en)) return info.examples.en;
+  if (suffix === "fr" && ((_d = info == null ? void 0 : info.examples) == null ? void 0 : _d.fr)) return info.examples.fr;
   if (info == null ? void 0 : info.example) return info.example;
   const normalized = (name || "").toLowerCase();
   const format2 = (info == null ? void 0 : info.format) || (/date|jour|day/.test(normalized) ? "date" : /heure|time/.test(normalized) ? "time" : /montant|total|nombre|count|amount|num|quant/.test(normalized) ? "number" : "text");
@@ -22771,7 +22844,7 @@ function VariablesPopout({
                     }
                   }
                 },
-                placeholder: varInfo.example || "",
+                placeholder: varInfo.examples && (varInfo.examples[interfaceLanguage] || "") || varInfo.example || "",
                 className: `w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? "ea-popout-input-focused" : ""}`,
                 style: {
                   height: (() => {
@@ -23158,4 +23231,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DY5JnlAy.js.map
+//# sourceMappingURL=main-BmXJeGEp.js.map
