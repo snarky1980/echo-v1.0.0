@@ -9484,13 +9484,20 @@ const selectEntirePill$1 = (pill) => {
   selection.removeAllRanges();
   selection.addRange(range);
 };
-const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = "default" }) => {
+const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = "default", templateLanguage = "fr" }) => {
   const editorRef = reactExports.useRef(null);
   const [isFocused, setIsFocused] = reactExports.useState(false);
   const lastSelectionVarRef = reactExports.useRef(null);
   const autoSelectTrackerRef = reactExports.useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = reactExports.useRef(0);
   const clickSelectTimerRef = reactExports.useRef(null);
+  const getVarValue = reactExports.useCallback((name) => {
+    const lang = (templateLanguage || "fr").toLowerCase();
+    if (lang === "en") {
+      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
+    }
+    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+  }, [variables, templateLanguage]);
   const renderContent = (text) => {
     if (!text) return "";
     const regex = /<<([^>]+)>>/g;
@@ -9499,7 +9506,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     let match;
     while ((match = regex.exec(text)) !== null) {
       const varName = match[1];
-      const varValue = (variables == null ? void 0 : variables[varName]) || "";
+      const varValue = getVarValue(varName);
       const isFilled = varValue.trim().length > 0;
       const displayValue = isFilled ? varValue : `<<${varName}>>`;
       const storedValue = `<<${varName}>>`;
@@ -9563,7 +9570,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     if (editorRef.current.innerHTML !== rendered) {
       editorRef.current.innerHTML = rendered;
     }
-  }, [value, variables, isFocused]);
+  }, [value, variables, isFocused, getVarValue, templateLanguage]);
   reactExports.useEffect(() => {
     applyFocusedPill(focusedVarName);
   }, [focusedVarName, variables, applyFocusedPill]);
@@ -10604,7 +10611,8 @@ const RichTextPillEditor = React.forwardRef(({
   disabled = false,
   minHeight = "120px",
   showRichTextToolbar = true,
-  onRichTextCommand
+  onRichTextCommand,
+  templateLanguage = "fr"
 }, ref) => {
   const editorRef = reactExports.useRef(null);
   const [isFocused, setIsFocused] = reactExports.useState(false);
@@ -10615,6 +10623,13 @@ const RichTextPillEditor = React.forwardRef(({
   const autoSelectTrackerRef = reactExports.useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = reactExports.useRef(0);
   const clickSelectTimerRef = reactExports.useRef(null);
+  const getVarValue = reactExports.useCallback((name) => {
+    const lang = (templateLanguage || "fr").toLowerCase();
+    if (lang === "en") {
+      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
+    }
+    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+  }, [variables, templateLanguage]);
   const renderContent = (text) => {
     if (!text) return "";
     const regex = /<<([^>]+)>>/g;
@@ -10623,7 +10638,7 @@ const RichTextPillEditor = React.forwardRef(({
     let match;
     while ((match = regex.exec(text)) !== null) {
       const varName = match[1];
-      const varValue = (variables == null ? void 0 : variables[varName]) || "";
+      const varValue = getVarValue(varName);
       const isFilled = varValue.trim().length > 0;
       const displayValue = isFilled ? varValue : `<<${varName}>>`;
       const storedValue = `<<${varName}>>`;
@@ -10988,7 +11003,7 @@ const RichTextPillEditor = React.forwardRef(({
     if (firstRun || textChanged) {
       refreshAllPillTemplates(editor);
     }
-  }, [value, variables, isFocused]);
+  }, [value, variables, isFocused, getVarValue, templateLanguage]);
   reactExports.useEffect(() => {
     applyFocusedPill(focusedVarName);
   }, [focusedVarName, variables, applyFocusedPill]);
@@ -21443,6 +21458,7 @@ ${cleanBodyHtml}
                         manualEditRef.current.subject = true;
                       },
                       variables,
+                      templateLanguage,
                       placeholder: getPlaceholderText(),
                       onVariablesChange: handleInlineVariableChange,
                       focusedVarName: focusedVar,
@@ -21482,6 +21498,7 @@ ${cleanBodyHtml}
                       },
                       ref: bodyEditorRef,
                       variables,
+                      templateLanguage,
                       placeholder: getPlaceholderText(),
                       onVariablesChange: handleInlineVariableChange,
                       focusedVarName: focusedVar,
@@ -21966,7 +21983,13 @@ Shift+click to toggle preference`,
                 var _a2, _b;
                 const varInfo = (_a2 = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a2[varName];
                 if (!varInfo) return null;
-                const getVarValue = (name) => (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
+                const getVarValue = (name) => {
+                  const lang = (templateLanguage || "fr").toLowerCase();
+                  if (lang === "en") {
+                    return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
+                  }
+                  return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+                };
                 const currentValue = getVarValue(varName);
                 const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
                 return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-[10px] p-3 transition-all duration-200", style: {
@@ -22248,7 +22271,13 @@ function VariablesPopout({
       }
     }
   }, [initialVariables]);
-  const getVarValue = reactExports.useCallback((name) => (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "", [variables]);
+  const getVarValue = reactExports.useCallback((name) => {
+    const lang = (interfaceLanguage || "fr").toLowerCase();
+    if (lang === "en") {
+      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_FR`]) ?? "";
+    }
+    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? (variables == null ? void 0 : variables[`${name}_EN`]) ?? "";
+  }, [variables, interfaceLanguage]);
   const [isPinned, setIsPinned] = reactExports.useState(() => {
     try {
       return localStorage.getItem("ea_popout_pinned") === "true";
@@ -23100,4 +23129,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-CUzPm1mm.js.map
+//# sourceMappingURL=main-Dqb0bBzC.js.map
