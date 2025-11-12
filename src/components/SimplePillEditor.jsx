@@ -74,11 +74,8 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   // Resolve variable value by language preference
   const getVarValue = useCallback((name) => {
     const lang = (templateLanguage || 'fr').toLowerCase()
-    if (lang === 'en') {
-      return (variables?.[`${name}_EN`] ?? variables?.[name] ?? variables?.[`${name}_FR`] ?? '')
-    }
-    // default fr
-    return (variables?.[`${name}_FR`] ?? variables?.[name] ?? variables?.[`${name}_EN`] ?? '')
+    const key = `${name}_${lang === 'en' ? 'EN' : 'FR'}`
+    return variables?.[key] ?? ''
   }, [variables, templateLanguage])
 
   // Render the content with pills

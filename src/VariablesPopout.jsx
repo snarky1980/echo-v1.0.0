@@ -99,20 +99,8 @@ export default function VariablesPopout({
   }, [initialVariables])
     const getVarValue = useCallback((name) => {
       const lang = (interfaceLanguage || 'fr').toLowerCase()
-      if (lang === 'en') {
-        return (
-          variables?.[`${name}_EN`] ??
-          variables?.[name] ??
-          variables?.[`${name}_FR`] ??
-          ''
-        )
-      }
-      return (
-        variables?.[`${name}_FR`] ??
-        variables?.[name] ??
-        variables?.[`${name}_EN`] ??
-        ''
-      )
+      const key = `${name}_${lang === 'en' ? 'EN' : 'FR'}`
+      return variables?.[key] ?? ''
     }, [variables, interfaceLanguage])
   const [isPinned, setIsPinned] = useState(() => {
     try {

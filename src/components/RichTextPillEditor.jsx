@@ -159,10 +159,8 @@ const RichTextPillEditor = React.forwardRef(({
   // Resolve variable value by language preference
   const getVarValue = useCallback((name) => {
     const lang = (templateLanguage || 'fr').toLowerCase()
-    if (lang === 'en') {
-      return (variables?.[`${name}_EN`] ?? variables?.[name] ?? variables?.[`${name}_FR`] ?? '')
-    }
-    return (variables?.[`${name}_FR`] ?? variables?.[name] ?? variables?.[`${name}_EN`] ?? '')
+    const key = `${name}_${lang === 'en' ? 'EN' : 'FR'}`
+    return variables?.[key] ?? ''
   }, [variables, templateLanguage])
 
   // Render content with pills - IDENTICAL to SimplePillEditor
