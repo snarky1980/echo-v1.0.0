@@ -1,6 +1,7 @@
 /* eslint-disable no-console, no-prototype-builtins, no-unreachable, no-undef, no-empty */
 /* DEPLOY: 2025-10-15 07:40 - FIXED: Function hoisting error resolved */
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+import { normalizeVarKey } from './utils/variables'
 import { createPortal } from 'react-dom'
 import Fuse from 'fuse.js'
 import { loadState, saveState } from './utils/storage.js';
@@ -898,29 +899,57 @@ function App() {
 
   const updateFocusHighlight = useCallback((varName) => {
     try {
-      const marks = document.querySelectorAll('mark.var-highlight.focused')
-      const pills = document.querySelectorAll('.var-pill.focused')
-      marks.forEach((n) => n.classList.remove('focused'))
-      pills.forEach((n) => n.classList.remove('focused'))
-      if (!varName) return
-      const safe = typeof CSS !== 'undefined' && CSS?.escape ? CSS.escape(varName) : varName
-      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add('focused'))
-      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add('focused'))
+      const normalized = normalizeVarKey(varName)
+      const marks = document.querySelectorAll('mark.var-highlight')
+      const pills = document.querySelectorAll('.var-pill')
+
+      marks.forEach((node) => {
+        const nodeKey = node.getAttribute('data-var')
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized
+        node.classList.toggle('focused', !!isMatch)
+      })
+
+      pills.forEach((node) => {
+        const nodeKey = node.getAttribute('data-var')
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized
+        node.classList.toggle('focused', !!isMatch)
+      })
     } catch (err) {
       console.warn('Failed to update focus highlight', err)
     }
   }, [])
 
+  const scrollFocusIntoView = useCallback((varName) => {
+    const normalized = normalizeVarKey(varName)
+    if (!normalized) return
+    requestAnimationFrame(() => {
+      const pill = Array.from(document.querySelectorAll('.var-pill')).find((node) => normalizeVarKey(node.getAttribute('data-var')) === normalized)
+      const mark = pill ? null : Array.from(document.querySelectorAll('mark.var-highlight')).find((node) => normalizeVarKey(node.getAttribute('data-var')) === normalized)
+      const target = pill || mark
+      if (!target) return
+      try {
+        target.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      } catch {}
+    })
+  }, [])
+
   const updateHoverHighlight = useCallback((varName) => {
     try {
-      const marks = document.querySelectorAll('mark.var-highlight.hovered')
-      const pills = document.querySelectorAll('.var-pill.hovered')
-      marks.forEach((n) => n.classList.remove('hovered'))
-      pills.forEach((n) => n.classList.remove('hovered'))
-      if (!varName) return
-      const safe = typeof CSS !== 'undefined' && CSS?.escape ? CSS.escape(varName) : varName
-      document.querySelectorAll(`mark.var-highlight[data-var="${safe}"]`).forEach((n) => n.classList.add('hovered'))
-      document.querySelectorAll(`.var-pill[data-var="${safe}"]`).forEach((n) => n.classList.add('hovered'))
+      const normalized = normalizeVarKey(varName)
+      const marks = document.querySelectorAll('mark.var-highlight')
+      const pills = document.querySelectorAll('.var-pill')
+
+      marks.forEach((node) => {
+        const nodeKey = node.getAttribute('data-var')
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized
+        node.classList.toggle('hovered', !!isMatch)
+      })
+
+      pills.forEach((node) => {
+        const nodeKey = node.getAttribute('data-var')
+        const isMatch = normalized && normalizeVarKey(nodeKey) === normalized
+        node.classList.toggle('hovered', !!isMatch)
+      })
     } catch (err) {
       console.warn('Failed to update hover highlight', err)
     }
@@ -1383,6 +1412,7 @@ function App() {
           const next = msg.varName ?? null
           setFocusedVar(next)
           updateFocusHighlight(next)
+          scrollFocusIntoView(next)
           return
         }
 
@@ -1551,6 +1581,7 @@ function App() {
           popoutChannel.postMessage({
             type: 'focusedVar',
             varName: focusedVar ?? null,
+            normalizedVar: normalizeVarKey(focusedVar) || null,
             sender: popoutSenderIdRef.current
           })
         } catch {}
@@ -1563,6 +1594,7 @@ function App() {
       try {
         localStorage.setItem('ea_focused_var', JSON.stringify({ 
           focusedVar, 
+          normalizedVar: normalizeVarKey(focusedVar) || null,
           timestamp: Date.now(),
           sender: varsSenderIdRef.current 
         }))
@@ -3743,6 +3775,7 @@ ${cleanBodyHtml}
                               popoutChannelRef.current.postMessage({
                                 type: 'focusedVar',
                                 varName: varName || null,
+                                normalizedVar: normalizeVarKey(varName) || null,
                                 sender: popoutSenderIdRef.current
                               })
                             } catch (e) {
@@ -3778,6 +3811,7 @@ ${cleanBodyHtml}
                               popoutChannelRef.current.postMessage({
                                 type: 'focusedVar',
                                 varName: varName || null,
+                                normalizedVar: normalizeVarKey(varName) || null,
                                 sender: popoutSenderIdRef.current
                               })
                             } catch (e) {

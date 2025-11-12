@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { varKeysMatch } from '../utils/variables';
 
 const escapeHtml = (input = '') =>
   String(input)
@@ -111,19 +112,11 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     const editor = editorRef.current;
     if (!editor) return;
 
-    editor.querySelectorAll('.var-pill.focused').forEach((pill) => {
-      pill.classList.remove('focused');
+    editor.querySelectorAll('.var-pill').forEach((pill) => {
+      const pillVar = pill.getAttribute('data-var');
+      const isMatch = varName ? varKeysMatch(pillVar, varName) : false;
+      pill.classList.toggle('focused', !!isMatch);
     });
-
-    if (!varName) return;
-
-    try {
-      const selector = `.var-pill[data-var="${escapeSelector(varName)}"]`;
-      const matches = editor.querySelectorAll(selector);
-      matches.forEach((pill) => pill.classList.add('focused'));
-    } catch (err) {
-      console.warn('Unable to focus pill:', err);
-    }
   }, []);
 
   const queueAutoSelectForPill = useCallback((pill, varName) => {

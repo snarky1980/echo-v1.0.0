@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Edit3, X, RotateCcw, Pin, PinOff } from 'lucide-react'
+import { normalizeVarKey, varKeysMatch } from './utils/variables'
 
 const LANGUAGE_SUFFIXES = ['FR', 'EN']
 
@@ -166,26 +167,43 @@ export default function VariablesPopout({
   }, [isPinned])
 
   const notifyFocusChange = (varName, broadcast = true) => {
-    const next = varName ?? null
-    const previous = focusedVarRef.current ?? null
-    if (previous === next) {
-      if (!broadcast) return
-    } else {
-      focusedVarRef.current = next
-      setFocusedVar(next)
-      lastScrollFocusRef.current = next
+    const nextRaw = varName ?? null
+    const prevRaw = focusedVarRef.current ?? null
+    const nextNormalized = normalizeVarKey(nextRaw)
+    const prevNormalized = normalizeVarKey(prevRaw)
+
+    if (prevNormalized !== nextNormalized || prevRaw !== nextRaw) {
+      focusedVarRef.current = nextRaw
+      setFocusedVar(nextRaw)
+      lastScrollFocusRef.current = nextNormalized
+    } else if (!broadcast) {
+      return
     }
 
-    if (!broadcast || !channelRef.current) return
+    if (broadcast) {
+      if (channelRef.current) {
+        try {
+          channelRef.current.postMessage({
+            type: 'focusedVar',
+            varName: nextRaw,
+            normalizedVar: nextNormalized || null,
+            sender: senderIdRef.current
+          })
+        } catch (e) {
+          console.error('Failed to send focus update:', e)
+        }
+      }
 
-    try {
-      channelRef.current.postMessage({
-        type: 'focusedVar',
-        varName: next,
-        sender: senderIdRef.current
-      })
-    } catch (e) {
-      console.error('Failed to send focus update:', e)
+      try {
+        localStorage.setItem('ea_focused_var', JSON.stringify({
+          focusedVar: nextRaw,
+          normalizedVar: nextNormalized || null,
+          timestamp: Date.now(),
+          sender: senderIdRef.current
+        }))
+      } catch (storageError) {
+        console.warn('Unable to persist focus sync payload:', storageError)
+      }
     }
   }
 
@@ -219,17 +237,18 @@ export default function VariablesPopout({
 
           if (message.type === 'focusedVar') {
             const next = message.varName ?? null
+            const normalized = message.normalizedVar || normalizeVarKey(next)
             notifyFocusChange(next, false)
 
-            // Reflect focus visually on cards immediately
             document.querySelectorAll('.ea-popout-card').forEach((card) => {
               const cardVar = card.getAttribute('data-var')
-              if (cardVar === next) {
+              const matches = normalized && normalizeVarKey(cardVar) === normalized
+              if (matches) {
                 card.classList.add('ea-popout-focused')
-                if (lastScrollFocusRef.current !== next) {
+                if (lastScrollFocusRef.current !== normalized) {
                   try {
                     card.scrollIntoView({ block: 'center', behavior: 'smooth' })
-                    lastScrollFocusRef.current = next
+                    lastScrollFocusRef.current = normalized
                   } catch {}
                 }
               } else {
@@ -238,7 +257,7 @@ export default function VariablesPopout({
 
               const textarea = card.querySelector('textarea')
               if (textarea) {
-                if (cardVar === next) {
+                if (matches) {
                   textarea.classList.add('ea-popout-input-focused')
                 } else {
                   textarea.classList.remove('ea-popout-input-focused')
@@ -246,22 +265,19 @@ export default function VariablesPopout({
               }
             })
 
-            if (!next) {
+            if (!normalized) {
               lastScrollFocusRef.current = null
             }
             return
           }
 
           if (message.type === 'variableHovered') {
-            // Update hover styling on cards when main window hovers over pills
             const hoveredVar = message.varName ?? null
+            const hoveredNormalized = normalizeVarKey(hoveredVar)
             document.querySelectorAll('.ea-popout-card').forEach((card) => {
               const cardVarName = card.getAttribute('data-var')
-              if (cardVarName === hoveredVar) {
-                card.classList.add('ea-popout-hovered')
-              } else {
-                card.classList.remove('ea-popout-hovered')
-              }
+              const matches = hoveredNormalized && normalizeVarKey(cardVarName) === hoveredNormalized
+              card.classList.toggle('ea-popout-hovered', !!matches)
             })
             return
           }
@@ -513,7 +529,7 @@ export default function VariablesPopout({
             }
 
             const currentValue = getVarValue(varName)
-            const isFocused = (focusedVar === varName)
+            const isFocused = varKeysMatch(focusedVar, varName)
             const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
 
             return (
