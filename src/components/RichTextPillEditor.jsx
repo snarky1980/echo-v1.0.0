@@ -153,6 +153,7 @@ const RichTextPillEditor = React.forwardRef(({
   const hasMountedRef = useRef(false);
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = useRef(0);
+  const clickSelectTimerRef = useRef(null);
 
   // Render content with pills - IDENTICAL to SimplePillEditor
   const renderContent = (text) => {
@@ -461,11 +462,20 @@ const RichTextPillEditor = React.forwardRef(({
     if (pillElement && editorRef.current.contains(pillElement)) {
       const clickCount = event.detail;
       const varName = pillElement.getAttribute('data-var') || null;
-      // Single click: select entire pill for quick replace. Double+ click: allow native caret for precise editing.
+      // Single click: schedule select-all shortly. Double-click: cancel and allow native caret in pill.
       if (clickCount === 1) {
-        event.preventDefault();
-        selectEntirePill(pillElement);
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+        }
+        clickSelectTimerRef.current = setTimeout(() => {
+          selectEntirePill(pillElement);
+          clickSelectTimerRef.current = null;
+        }, 220);
       } else if (clickCount >= 2) {
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+          clickSelectTimerRef.current = null;
+        }
         autoSelectSuppressedUntilRef.current = Date.now() + 600;
       }
       emitFocusedVarChange(varName);

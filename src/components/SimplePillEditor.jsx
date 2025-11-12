@@ -69,6 +69,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
   const lastSelectionVarRef = useRef(null);
   const autoSelectTrackerRef = useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = useRef(0);
+  const clickSelectTimerRef = useRef(null);
 
   // Render the content with pills
   const renderContent = (text) => {
@@ -320,11 +321,20 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     if (pillElement && editorRef.current.contains(pillElement)) {
       const clickCount = event.detail;
       const varName = pillElement.getAttribute('data-var') || null;
-      // Single click: select entire pill for quick replace. Double (or more) clicks: allow native caret/edit behavior.
+      // Single click: schedule select-all shortly. Double-click: cancel scheduled select and allow native caret.
       if (clickCount === 1) {
-        event.preventDefault();
-        selectEntirePill(pillElement);
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+        }
+        clickSelectTimerRef.current = setTimeout(() => {
+          selectEntirePill(pillElement);
+          clickSelectTimerRef.current = null;
+        }, 220);
       } else if (clickCount >= 2) {
+        if (clickSelectTimerRef.current) {
+          clearTimeout(clickSelectTimerRef.current);
+          clickSelectTimerRef.current = null;
+        }
         // Suppress any auto-select behavior for a short window so caret stays inside
         autoSelectSuppressedUntilRef.current = Date.now() + 600;
       }
