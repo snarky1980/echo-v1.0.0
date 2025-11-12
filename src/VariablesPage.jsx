@@ -229,6 +229,13 @@ export default function VariablesPage() {
               const guessed = inferTemplateFromVariables(templatesData, data.variables || {})
               if (guessed) setPendingTemplateId(guessed)
             }
+            // If we already have templates, apply template selection immediately to avoid flicker or fallback
+            if (templatesData && data.templateId) {
+              applyTemplateSelection(templatesData, data.templateId, {
+                preferLanguage: data.templateLanguage,
+                hydrateVariables: true
+              })
+            }
             return
           }
           // Also handle sync completion in case popout and page are both open

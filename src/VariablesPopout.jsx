@@ -85,6 +85,18 @@ export default function VariablesPopout({
   })
   
   const [variables, setVariables] = useState(initialVariables || {})
+  const lastInitialVarsRef = useRef(initialVariables)
+  // Keep local variables in sync with prop changes from parent page
+  useEffect(() => {
+    if (lastInitialVarsRef.current !== initialVariables) {
+      lastInitialVarsRef.current = initialVariables
+      if (initialVariables && typeof initialVariables === 'object') {
+        setVariables({ ...initialVariables })
+      } else {
+        setVariables({})
+      }
+    }
+  }, [initialVariables])
   const getVarValue = useCallback((name) => (
     variables?.[name] ??
     variables?.[`${name}_EN`] ??
