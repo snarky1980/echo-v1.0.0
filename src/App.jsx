@@ -612,7 +612,7 @@ const guessSampleValue = (templatesData, name = '') => {
   }
 }
 
-const buildInitialVariables = (template, templatesData) => {
+const buildInitialVariables = (template, templatesData, langOverride) => {
   const seed = {}
   if (!template?.variables || !Array.isArray(template.variables)) return seed
   template.variables.forEach((baseName) => {
@@ -623,7 +623,7 @@ const buildInitialVariables = (template, templatesData) => {
       if (key === baseName) {
         const info = resolveVariableInfo(templatesData, baseName)
         if (info) {
-          const lang = (templateLanguage || 'fr').toLowerCase()
+          const lang = (langOverride || 'fr').toLowerCase()
           // Support object example { fr, en }
           if (info.example && typeof info.example === 'object') {
             seed[key] = info.example[lang] ?? info.example.fr ?? info.example.en ?? ''
@@ -2033,7 +2033,7 @@ function App() {
         if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
           e.preventDefault()
           if (templatesData) {
-            const initialVars = buildInitialVariables(selectedTemplate, templatesData)
+            const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage)
             setVariables(prev => applyAssignments(prev, initialVars))
           }
         }
@@ -2595,7 +2595,7 @@ function App() {
   // Load a selected template
   useEffect(() => {
     if (selectedTemplate) {
-      const initialVars = buildInitialVariables(selectedTemplate, templatesData)
+      const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage)
 
       console.log('🔄 Template loaded, initializing variables (with samples if empty):', initialVars)
 
@@ -3260,7 +3260,7 @@ ${cleanBodyHtml}
       return
     }
 
-    const initialVars = buildInitialVariables(selectedTemplate, templatesData)
+    const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage)
 
     variablesRef.current = initialVars
     setVariables(initialVars)
@@ -4331,7 +4331,7 @@ ${cleanBodyHtml}
                   <Button
                     onClick={() => {
                       if (!selectedTemplate || !templatesData) return
-                      const initialVars = buildInitialVariables(selectedTemplate, templatesData)
+                      const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage)
                       setVariables(prev => applyAssignments(prev, initialVars))
                     }}
                     variant="outline"
