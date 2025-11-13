@@ -23,7 +23,7 @@
       "Voyages d'affaires",
       "Voyages de groupe"
     ],
-    "updatedAt": "2025-11-13T23:10:21.739Z"
+    "updatedAt": "2025-11-13T23:12:27.876Z"
   },
   "variables": {
     "booking_reference": {
@@ -1635,7 +1635,7 @@
   },
   "templates": [
     {
-      "id": "b001",
+      "id": "b001_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1664,7 +1664,7 @@
       ]
     },
     {
-      "id": "q002",
+      "id": "q002_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -1692,7 +1692,7 @@
       ]
     },
     {
-      "id": "p003",
+      "id": "p003_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -1720,7 +1720,7 @@
       ]
     },
     {
-      "id": "c004",
+      "id": "c004_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -1748,7 +1748,7 @@
       ]
     },
     {
-      "id": "i005",
+      "id": "i005_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -1776,7 +1776,7 @@
       ]
     },
     {
-      "id": "p006",
+      "id": "p006_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -1803,7 +1803,7 @@
       ]
     },
     {
-      "id": "t007",
+      "id": "t007_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -1831,7 +1831,7 @@
       ]
     },
     {
-      "id": "g008",
+      "id": "g008_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -1859,7 +1859,7 @@
       ]
     },
     {
-      "id": "c009",
+      "id": "c009_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -1886,7 +1886,7 @@
       ]
     },
     {
-      "id": "i010",
+      "id": "i010_1",
       "category": "Assurance",
       "category_fr": "Assurance",
       "category_en": "Insurance",
@@ -1914,7 +1914,7 @@
       ]
     },
     {
-      "id": "v011",
+      "id": "v011_1",
       "category": "Visa & documentation",
       "category_fr": "Visa & documentation",
       "category_en": "Visa & Documentation",
@@ -1942,7 +1942,7 @@
       ]
     },
     {
-      "id": "c012",
+      "id": "c012_1",
       "category": "Plaintes",
       "category_fr": "Plaintes",
       "category_en": "Complaints",
@@ -1970,7 +1970,7 @@
       ]
     },
     {
-      "id": "m013",
+      "id": "m013_1",
       "category": "Marketing & promotions",
       "category_fr": "Marketing & promotions",
       "category_en": "Marketing & Promotions",
@@ -1997,7 +1997,7 @@
       ]
     },
     {
-      "id": "e014",
+      "id": "e014_1",
       "category": "Urgence",
       "category_fr": "Urgence",
       "category_en": "Emergency",
@@ -2024,7 +2024,7 @@
       ]
     },
     {
-      "id": "g015",
+      "id": "g015_1",
       "category": "Demande générale",
       "category_fr": "Demande générale",
       "category_en": "General Inquiry",
@@ -2051,7 +2051,7 @@
       ]
     },
     {
-      "id": "b016",
+      "id": "b016_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2078,7 +2078,7 @@
       ]
     },
     {
-      "id": "b017",
+      "id": "b017_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2106,7 +2106,7 @@
       ]
     },
     {
-      "id": "b018",
+      "id": "b018_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2134,7 +2134,7 @@
       ]
     },
     {
-      "id": "b019",
+      "id": "b019_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2162,7 +2162,7 @@
       ]
     },
     {
-      "id": "b020",
+      "id": "b020_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2190,7 +2190,7 @@
       ]
     },
     {
-      "id": "b021",
+      "id": "b021_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2217,7 +2217,7 @@
       ]
     },
     {
-      "id": "b022",
+      "id": "b022_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2244,7 +2244,7 @@
       ]
     },
     {
-      "id": "b023",
+      "id": "b023_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2271,7 +2271,7 @@
       ]
     },
     {
-      "id": "b024",
+      "id": "b024_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2298,7 +2298,7 @@
       ]
     },
     {
-      "id": "b025",
+      "id": "b025_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -2325,7 +2325,7 @@
       ]
     },
     {
-      "id": "q026",
+      "id": "q026_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2353,7 +2353,7 @@
       ]
     },
     {
-      "id": "q027",
+      "id": "q027_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2380,7 +2380,7 @@
       ]
     },
     {
-      "id": "q028",
+      "id": "q028_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2407,7 +2407,7 @@
       ]
     },
     {
-      "id": "q029",
+      "id": "q029_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2435,7 +2435,7 @@
       ]
     },
     {
-      "id": "q030",
+      "id": "q030_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2463,7 +2463,7 @@
       ]
     },
     {
-      "id": "q031",
+      "id": "q031_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2489,7 +2489,7 @@
       ]
     },
     {
-      "id": "q032",
+      "id": "q032_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2515,7 +2515,7 @@
       ]
     },
     {
-      "id": "q033",
+      "id": "q033_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2542,7 +2542,7 @@
       ]
     },
     {
-      "id": "q034",
+      "id": "q034_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2569,7 +2569,7 @@
       ]
     },
     {
-      "id": "q035",
+      "id": "q035_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2596,7 +2596,7 @@
       ]
     },
     {
-      "id": "p036",
+      "id": "p036_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2624,7 +2624,7 @@
       ]
     },
     {
-      "id": "p037",
+      "id": "p037_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2652,7 +2652,7 @@
       ]
     },
     {
-      "id": "p038",
+      "id": "p038_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2680,7 +2680,7 @@
       ]
     },
     {
-      "id": "p039",
+      "id": "p039_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2708,7 +2708,7 @@
       ]
     },
     {
-      "id": "p040",
+      "id": "p040_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2736,7 +2736,7 @@
       ]
     },
     {
-      "id": "p041",
+      "id": "p041_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2764,7 +2764,7 @@
       ]
     },
     {
-      "id": "p042",
+      "id": "p042_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2792,7 +2792,7 @@
       ]
     },
     {
-      "id": "p043",
+      "id": "p043_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2820,7 +2820,7 @@
       ]
     },
     {
-      "id": "p044",
+      "id": "p044_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2847,7 +2847,7 @@
       ]
     },
     {
-      "id": "p045",
+      "id": "p045_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2874,7 +2874,7 @@
       ]
     },
     {
-      "id": "c046",
+      "id": "c046_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2901,7 +2901,7 @@
       ]
     },
     {
-      "id": "c047",
+      "id": "c047_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2929,7 +2929,7 @@
       ]
     },
     {
-      "id": "c048",
+      "id": "c048_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2957,7 +2957,7 @@
       ]
     },
     {
-      "id": "c049",
+      "id": "c049_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2984,7 +2984,7 @@
       ]
     },
     {
-      "id": "c050",
+      "id": "c050_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -3011,7 +3011,7 @@
       ]
     },
     {
-      "id": "c051",
+      "id": "c051_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -3039,7 +3039,7 @@
       ]
     },
     {
-      "id": "c052",
+      "id": "c052_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -3066,7 +3066,7 @@
       ]
     },
     {
-      "id": "c053",
+      "id": "c053_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -3093,7 +3093,7 @@
       ]
     },
     {
-      "id": "c054",
+      "id": "c054_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -3121,7 +3121,7 @@
       ]
     },
     {
-      "id": "c055",
+      "id": "c055_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -3148,7 +3148,7 @@
       ]
     },
     {
-      "id": "i056",
+      "id": "i056_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3176,7 +3176,7 @@
       ]
     },
     {
-      "id": "i057",
+      "id": "i057_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3205,7 +3205,7 @@
       ]
     },
     {
-      "id": "i058",
+      "id": "i058_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3233,7 +3233,7 @@
       ]
     },
     {
-      "id": "i059",
+      "id": "i059_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3261,7 +3261,7 @@
       ]
     },
     {
-      "id": "i060",
+      "id": "i060_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3288,7 +3288,7 @@
       ]
     },
     {
-      "id": "i061",
+      "id": "i061_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3316,7 +3316,7 @@
       ]
     },
     {
-      "id": "i062",
+      "id": "i062_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3344,7 +3344,7 @@
       ]
     },
     {
-      "id": "i063",
+      "id": "i063_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3371,7 +3371,7 @@
       ]
     },
     {
-      "id": "i064",
+      "id": "i064_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3398,7 +3398,7 @@
       ]
     },
     {
-      "id": "i065",
+      "id": "i065_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -3425,7 +3425,7 @@
       ]
     },
     {
-      "id": "p066",
+      "id": "p066_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3452,7 +3452,7 @@
       ]
     },
     {
-      "id": "p067",
+      "id": "p067_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3479,7 +3479,7 @@
       ]
     },
     {
-      "id": "p068",
+      "id": "p068_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3506,7 +3506,7 @@
       ]
     },
     {
-      "id": "p069",
+      "id": "p069_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3533,7 +3533,7 @@
       ]
     },
     {
-      "id": "p070",
+      "id": "p070_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3560,7 +3560,7 @@
       ]
     },
     {
-      "id": "p071",
+      "id": "p071_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3587,7 +3587,7 @@
       ]
     },
     {
-      "id": "p072",
+      "id": "p072_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3613,7 +3613,7 @@
       ]
     },
     {
-      "id": "p073",
+      "id": "p073_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3640,7 +3640,7 @@
       ]
     },
     {
-      "id": "p074",
+      "id": "p074_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3665,7 +3665,7 @@
       ]
     },
     {
-      "id": "p075",
+      "id": "p075_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3693,7 +3693,7 @@
       ]
     },
     {
-      "id": "t076",
+      "id": "t076_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3721,7 +3721,7 @@
       ]
     },
     {
-      "id": "t077",
+      "id": "t077_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3749,7 +3749,7 @@
       ]
     },
     {
-      "id": "t078",
+      "id": "t078_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3777,7 +3777,7 @@
       ]
     },
     {
-      "id": "t079",
+      "id": "t079_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3805,7 +3805,7 @@
       ]
     },
     {
-      "id": "t080",
+      "id": "t080_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3833,7 +3833,7 @@
       ]
     },
     {
-      "id": "t081",
+      "id": "t081_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3861,7 +3861,7 @@
       ]
     },
     {
-      "id": "t082",
+      "id": "t082_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3889,7 +3889,7 @@
       ]
     },
     {
-      "id": "t083",
+      "id": "t083_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3917,7 +3917,7 @@
       ]
     },
     {
-      "id": "t084",
+      "id": "t084_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3945,7 +3945,7 @@
       ]
     },
     {
-      "id": "t085",
+      "id": "t085_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3973,7 +3973,7 @@
       ]
     },
     {
-      "id": "g086",
+      "id": "g086_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -4001,7 +4001,7 @@
       ]
     },
     {
-      "id": "g087",
+      "id": "g087_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -4029,7 +4029,7 @@
       ]
     },
     {
-      "id": "g088",
+      "id": "g088_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -4056,7 +4056,7 @@
       ]
     },
     {
-      "id": "c089",
+      "id": "c089_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -4084,7 +4084,7 @@
       ]
     },
     {
-      "id": "c090",
+      "id": "c090_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -4112,7 +4112,7 @@
       ]
     },
     {
-      "id": "c091",
+      "id": "c091_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -4139,7 +4139,7 @@
       ]
     },
     {
-      "id": "c092",
+      "id": "c092_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -4167,7 +4167,7 @@
       ]
     },
     {
-      "id": "g093",
+      "id": "g093_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -4195,7 +4195,7 @@
       ]
     },
     {
-      "id": "c094",
+      "id": "c094_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -4222,7 +4222,7 @@
       ]
     },
     {
-      "id": "g095",
+      "id": "g095_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -4249,7 +4249,7 @@
       ]
     },
     {
-      "id": "g096",
+      "id": "g096_1",
       "category": "Demande générale",
       "category_fr": "Demande générale",
       "category_en": "General Inquiry",
@@ -4277,7 +4277,7 @@
       ]
     },
     {
-      "id": "g097",
+      "id": "g097_1",
       "category": "Demande générale",
       "category_fr": "Demande générale",
       "category_en": "General Inquiry",
@@ -4304,7 +4304,7 @@
       ]
     },
     {
-      "id": "e098",
+      "id": "e098_1",
       "category": "Urgence",
       "category_fr": "Urgence",
       "category_en": "Emergency",
@@ -4331,7 +4331,7 @@
       ]
     },
     {
-      "id": "i099",
+      "id": "i099_1",
       "category": "Assurance",
       "category_fr": "Assurance",
       "category_en": "Insurance",
@@ -4358,7 +4358,7 @@
       ]
     },
     {
-      "id": "c100",
+      "id": "c100_1",
       "category": "Plaintes",
       "category_fr": "Plaintes",
       "category_en": "Complaints",
