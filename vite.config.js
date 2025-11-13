@@ -67,6 +67,7 @@ export default defineConfig(({ mode }) => {
     writeBundle(options) {
       const outDir = options.dir || 'dist';
       const root = process.cwd();
+      const stamp = (process.env.GITHUB_SHA && String(process.env.GITHUB_SHA).slice(0, 7)) || String(Date.now());
       // Write a .nojekyll file to disable Jekyll processing on GitHub Pages
       try {
         fs.writeFileSync(path.resolve(outDir, '.nojekyll'), '');
@@ -74,7 +75,7 @@ export default defineConfig(({ mode }) => {
         console.warn('[copy-admin-static] failed to write .nojekyll:', e?.message || e);
       }
       const files = [
-        { src: path.resolve(root, 'admin.html'), dst: path.resolve(outDir, 'admin.html') }, // legacy redirect retained
+        { src: path.resolve(root, 'admin.html'), dst: path.resolve(outDir, 'admin.html') }, // will be replaced by admin-simple content below
         { src: path.resolve(root, 'admin-simple.html'), dst: path.resolve(outDir, 'admin-simple.html') },
         { src: path.resolve(root, 'admin-simple-help.html'), dst: path.resolve(outDir, 'admin-simple-help.html') },
         { src: path.resolve(root, 'help.html'), dst: path.resolve(outDir, 'help.html') },
@@ -88,9 +89,38 @@ export default defineConfig(({ mode }) => {
       ];
       // ensure assets dir
       fs.mkdirSync(path.resolve(outDir, 'assets'), { recursive: true });
-      for (const f of [...files, ...assets]) {
+      const toCopy = [...files, ...assets];
+      for (const f of toCopy) {
         try {
-          if (fs.existsSync(f.src)) {
+          if (!fs.existsSync(f.src)) continue;
+          const isHtml = f.src.endsWith('.html');
+          if (isHtml && path.basename(f.src) === 'admin-simple.html') {
+            try {
+              let html = fs.readFileSync(f.src, 'utf-8');
+              html = html.replace(
+                /(<script\s+src=["']\.\/assets\/admin-simple\.js)(["'])/,
+                `$1?v=${stamp}$2`
+              );
+              fs.writeFileSync(f.dst, html, 'utf-8');
+            } catch {
+              // fallback to copy
+              fs.copyFileSync(f.src, f.dst);
+            }
+          } else if (isHtml && path.basename(f.dst) === 'admin.html') {
+            // Ensure /admin serves the same content as admin-simple without redirect
+            try {
+              const srcSimple = path.resolve(root, 'admin-simple.html');
+              let html = fs.readFileSync(srcSimple, 'utf-8');
+              html = html.replace(
+                /(<script\s+src=["']\.\/assets\/admin-simple\.js)(["'])/,
+                `$1?v=${stamp}$2`
+              );
+              fs.writeFileSync(f.dst, html, 'utf-8');
+            } catch {
+              // fallback to copy original admin.html if something goes wrong
+              fs.copyFileSync(f.src, f.dst);
+            }
+          } else {
             fs.copyFileSync(f.src, f.dst);
           }
         } catch (e) {
