@@ -74,16 +74,13 @@ export default defineConfig(({ mode }) => {
         console.warn('[copy-admin-static] failed to write .nojekyll:', e?.message || e);
       }
       const files = [
-        { src: path.resolve(root, 'admin.html'), dst: path.resolve(outDir, 'admin.html') }, // legacy redirect
-        { src: path.resolve(root, 'admin-excel.html'), dst: path.resolve(outDir, 'admin-excel.html') }, // legacy redirect
+        { src: path.resolve(root, 'admin.html'), dst: path.resolve(outDir, 'admin.html') }, // legacy redirect retained
         { src: path.resolve(root, 'admin-simple.html'), dst: path.resolve(outDir, 'admin-simple.html') },
         { src: path.resolve(root, 'admin-simple-help.html'), dst: path.resolve(outDir, 'admin-simple-help.html') },
         { src: path.resolve(root, 'help.html'), dst: path.resolve(outDir, 'help.html') },
         { src: path.resolve(root, '404.html'), dst: path.resolve(outDir, '404.html') },
       ];
       const assets = [
-        { src: path.resolve(root, 'assets', 'admin-console.js'), dst: path.resolve(outDir, 'assets', 'admin-console.js') },
-        { src: path.resolve(root, 'assets', 'admin-excel.js'), dst: path.resolve(outDir, 'assets', 'admin-excel.js') },
         { src: path.resolve(root, 'assets', 'admin-simple.js'), dst: path.resolve(outDir, 'assets', 'admin-simple.js') },
         { src: path.resolve(root, 'assets', 'ai-helper.js'), dst: path.resolve(outDir, 'assets', 'ai-helper.js') },
         { src: path.resolve(root, 'assets', 'ai-optional.js'), dst: path.resolve(outDir, 'assets', 'ai-optional.js') },

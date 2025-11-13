@@ -1,19 +1,9 @@
-// Admin Console for Email Assistant v6
+// Deprecated admin console script. Redirect to admin-simple and no-op.
 (function () {
-  try { window.__EA_SCRIPT_LOADED = Date.now(); } catch {}
-  const JSON_PATH = './complete_email_templates.json';
-  const DRAFT_KEY = 'ea_admin_draft_v2';
+  try { console.warn('[admin-console] This console is retired. Redirecting to admin-simple.html'); } catch {}
+  try { window.location.replace('../admin-simple.html'); } catch {}
+})();
 
-  // State
-  let data = null;              // { metadata, variables, templates }
-  let lang = (function(){ try { return localStorage.getItem('ea_admin_lang') || 'fr'; } catch { return 'fr'; } })(); // UI edit language toggle for localized fields
-  let selectedTemplateId = null;
-  let searchTerm = '';
-  let filterCategory = 'all';
-  let bulkMode = false;
-  let selectedTemplateIds = new Set();
-  // When true, the next sidebar render will focus and scroll the active tile into view
-  let _revealActiveOnRender = false;
 
   // DOM
   const $ = (sel, root = document) => root.querySelector(sel);
