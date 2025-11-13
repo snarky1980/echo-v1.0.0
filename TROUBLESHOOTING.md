@@ -103,3 +103,31 @@ npm run preview
 3. Try in incognito/private browsing mode
 4. Try different browser
 5. Check if you can see ANY buttons in the UI
+
+---
+
+# Module script MIME error (text/jsx)
+
+If you see this in the browser console:
+
+```
+Failed to load module script: Expected a JavaScript module script but the server responded with a MIME type of "text/jsx". Strict MIME type checking is enforced for module scripts per HTML spec.
+```
+
+Cause:
+- You’re serving the project root `index.html` directly, which references `src/main.jsx` (meant for Vite dev). A plain static server serves `.jsx` as `text/jsx`, which browsers won’t execute as modules.
+
+Fix options:
+- Dev server: `npm run dev`
+- Production preview: `npm run build && npm run preview`
+- Plain static server: serve the built output, not the root
+
+```bash
+npm run build
+npx http-server -p 5173 dist
+# open http://localhost:5173
+```
+
+Notes:
+- `index.html` is transformed by Vite during build; the script tag is rewritten to `/assets/main-<hash>.js` under `dist/`.
+- Serving the repo root with a generic static server will load raw `.jsx` and trigger this MIME error.

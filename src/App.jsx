@@ -493,19 +493,106 @@ const resolveVariableInfo = (templatesData, name = '') => {
 
 const guessSampleValue = (templatesData, name = '') => {
   const info = resolveVariableInfo(templatesData, name)
-  if (info?.example) return info.example
+  const suffixMatch = (name || '').match(/_(FR|EN)$/i)
+  const suffix = suffixMatch ? suffixMatch[1].toUpperCase() : null
+
+  // Prefer per-language examples when available
+  const rawExample = (() => {
+    if (suffix === 'EN') return info?.examples?.en ?? info?.example ?? ''
+    if (suffix === 'FR') return info?.examples?.fr ?? info?.example ?? ''
+    // Base: prefer FR then EN for determinism
+    return info?.example ?? info?.examples?.fr ?? info?.examples?.en ?? ''
+  })()
   const normalized = (name || '').toLowerCase()
-  const format = info?.format || (
-    /date|jour|day/.test(normalized) ? 'date' :
-    /heure|time/.test(normalized) ? 'time' :
-    /montant|total|nombre|count|amount|num|quant/.test(normalized) ? 'number' :
-    'text'
-  )
-  switch (format) {
+
+  // Heuristic: determine intended kind
+  const kind = (() => {
+    if (info?.format) return info.format
+    if (/date|jour|day/.test(normalized)) return 'date'
+    if (/heure|time/.test(normalized)) return 'time'
+    if (/(montant|total|amount|price|cost|refund|credit|deposit|payment)/.test(normalized)) return 'currency'
+    if (/(nombre|count|num|quant)/.test(normalized)) return 'number'
+    return 'text'
+  })()
+
+  // Map common FR placeholder to EN
+  const mapFrPlaceholderToEn = (s = '') => {
+    const trimmed = String(s).trim()
+    if (!trimmed) return ''
+    if (/^valeur\s+à\s+d[ée]finir$/i.test(trimmed)) return 'To be defined'
+    return trimmed
+  }
+
+  // Build EN-friendly example if needed
+  const toEnSample = (example, k) => {
+    const val = String(example || '').trim()
+    if (!val) {
+      // Fallbacks by kind
+      if (k === 'date') return '2025-07-15'
+      if (k === 'time') return '09:00'
+      if (k === 'currency') return '$1,250.00'
+      if (k === 'number') return '0'
+      return 'Example'
+    }
+    // URLs and emails are language-agnostic
+    if (/^https?:\/\//i.test(val) || /@/.test(val)) return val
+    // Common FR placeholder phrase
+    const mapped = mapFrPlaceholderToEn(val)
+    if (mapped !== val) return mapped
+    if (k === 'currency') {
+      // Convert FR-styled currency like "3 425,50 $" -> "$3,425.50"
+      const m = val.match(/([0-9][0-9\s\u00A0.,]*)\s*\$/)
+      if (m) {
+        const digits = m[1]
+          .replace(/\u00A0|\s/g, '') // remove thin/normal spaces
+          .replace(/\.(?=\d{3})/g, '') // remove thousand dots if any
+          .replace(/,(\d{2})$/, '.$1') // decimal comma -> dot
+        // Insert commas for thousands
+        const parts = digits.split('.')
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        return `$${parts.join('.')}`
+      }
+      // If it already looks EN-ish
+      if (/^\$?\d{1,3}(,\d{3})*(\.\d{2})?$/.test(val)) return val.startsWith('$') ? val : `$${val}`
+      return '$1,250.00'
+    }
+    if (k === 'date') {
+      // Prefer ISO for simplicity
+      return '2025-07-15'
+    }
+    if (k === 'time') return '09:00'
+    return mapped
+  }
+
+  // Build FR-friendly example fallback
+  const toFrSample = (example, k) => {
+    const val = String(example || '').trim()
+    if (!val) {
+      if (k === 'date') return new Date().toISOString().slice(0, 10)
+      if (k === 'time') return '09:00'
+      if (k === 'currency') return '2 890,00 $'
+      if (k === 'number') return '0'
+      return '…'
+    }
+    return val
+  }
+
+  if (suffix === 'EN') {
+    return toEnSample(rawExample, kind)
+  }
+  if (suffix === 'FR') {
+    return toFrSample(rawExample, kind)
+  }
+
+  // Base (no suffix): keep as dataset provides or generic by kind
+  if (rawExample) return rawExample
+  switch (kind) {
     case 'date':
       return new Date().toISOString().slice(0, 10)
     case 'time':
       return '09:00'
+    case 'currency':
+      return '2 890,00 $'
     case 'number':
       return '0'
     default:
@@ -2486,6 +2573,37 @@ function App() {
       manualEditRef.current = { subject: false, body: false }
     }
   }, [selectedTemplate, templateLanguage, interfaceLanguage, templatesData])
+
+  // Seed language-specific variables (_FR/_EN) from base on load/switch
+  useEffect(() => {
+    if (!selectedTemplate) return
+    const list = Array.isArray(selectedTemplate.variables) ? selectedTemplate.variables : []
+    if (!list.length) return
+    setVariables((prev) => {
+      if (!prev) return prev
+      let next = prev
+      let changed = false
+      for (const baseName of list) {
+        const baseVal = (prev[baseName] || '').trim()
+        if (!baseVal) continue
+        const enKey = `${baseName}_EN`
+        const frKey = `${baseName}_FR`
+        const enVal = (prev[enKey] || '').trim()
+        const frVal = (prev[frKey] || '').trim()
+        if (!enVal) {
+          if (next === prev) next = { ...prev }
+          next[enKey] = baseVal
+          changed = true
+        }
+        if (!frVal) {
+          if (next === prev) next = { ...prev }
+          next[frKey] = baseVal
+          changed = true
+        }
+      }
+      return changed ? next : prev
+    })
+  }, [selectedTemplate, templateLanguage])
 
 
   // When the user manually edits the subject/body, automatically try to reverse sync the values back into variables

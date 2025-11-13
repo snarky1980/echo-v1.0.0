@@ -138,11 +138,8 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: 5173,
       strictPort: true,
-      allowedHosts: [
-        'localhost',
-        '.manusvm.computer',
-        '5173-im5gj2w5mcpkrgebe5r7m-eb3d8c81.manusvm.computer'
-      ],
+      // Allow any forwarded dev host (Codespaces, tunnels, etc.)
+      // Removing allowedHosts avoids 502/403 when hostnames vary.
     },
     preview: {
       port: 5175,

@@ -44,6 +44,10 @@ const resolveVariableInfo = (templatesData, name = '') => {
 
 const guessSampleValue = (templatesData, name = '') => {
   const info = resolveVariableInfo(templatesData, name)
+  // Prefer per-language examples when available based on suffix
+  const suffix = (name || '').match(/_(FR|EN)$/i)?.[1]?.toLowerCase()
+  if (suffix === 'en' && info?.examples?.en) return info.examples.en
+  if (suffix === 'fr' && info?.examples?.fr) return info.examples.fr
   if (info?.example) return info.example
   const normalized = (name || '').toLowerCase()
   const format = info?.format || (
@@ -624,7 +628,7 @@ export default function VariablesPopout({
                         }
                       }
                     }}
-                    placeholder={varInfo.example || ''}
+                    placeholder={(varInfo.examples && (varInfo.examples[interfaceLanguage] || '')) || varInfo.example || ''}
                     className={`w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? 'ea-popout-input-focused' : ''}`}
                     style={{
                       height: (() => {

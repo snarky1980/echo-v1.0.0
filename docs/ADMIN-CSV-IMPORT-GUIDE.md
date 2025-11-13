@@ -35,7 +35,7 @@ The Email Assistant admin console supports importing email templates and variabl
 - Variable names and definitions
 - French and English descriptions
 - Data format specifications (text, number, date, time)
-- Example values
+- Example values per language (FR/EN supported)
 
 **Templates** (Email Templates)
 - Template metadata (ID, category, title, description)
@@ -300,7 +300,7 @@ Once everything looks good:
 ### Variables CSV Schema
 
 ```csv
-name,description_fr,description_en,format,example
+name,description_fr,description_en,format,example_fr,example_en
 ```
 
 | Column | Required | Type | Description | Example |
@@ -309,13 +309,20 @@ name,description_fr,description_en,format,example
 | `description_fr` | Yes | Text | French description | `Nom du client` |
 | `description_en` | Yes | Text | English description | `Client name` |
 | `format` | Yes | Enum | `text`, `number`, `date`, or `time` | `text` |
-| `example` | Yes | Text | Example value | `Marie Dubois` |
+| `example_fr` | Recommended | Text | French example value | `Marie Dubois` |
+| `example_en` | Recommended | Text | English example value | `Mary Jones` |
+
+Notes:
+- The admin console and app now prefer per-language examples when present: FR uses `example_fr`, EN uses `example_en`.
+- A legacy `example` column is still accepted as a fallback if per-language columns are not provided.
 
 **Alternative column names accepted:**
 - `name`: also `variable`, `var`, `key`
 - `description_fr`: also `desc_fr`, `descriptionfr`
 - `description_en`: also `desc_en`, `descriptionen`
-- `example`: also `example_fr`, `exemple`
+- `example_fr`: also `exemple_fr`, `exemple`
+- `example_en`: exact match only
+- `example`: used as fallback when per-language examples are missing
 
 ### Templates CSV Schema
 

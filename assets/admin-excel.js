@@ -338,7 +338,13 @@ import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm';
         if (metaEn?.description) variables[key].description.en = metaEn.description;
         if (!variables[key].description.fr) variables[key].description.fr = `Valeur pour ${key}`;
         if (!variables[key].description.en) variables[key].description.en = `Value for ${key}`;
-        const sample = metaEn?.defaultValue || metaFr?.defaultValue;
+        // Capture per-language defaults when provided
+        const exFr = metaFr?.defaultValue || '';
+        const exEn = metaEn?.defaultValue || '';
+        if (exFr || exEn) {
+          variables[key].examples = { fr: exFr, en: exEn };
+        }
+        const sample = exFr || exEn;
         if (sample) {
           variables[key].example = sample;
         } else if (!variables[key].example) {
