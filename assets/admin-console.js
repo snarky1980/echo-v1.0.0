@@ -1,19 +1,9 @@
-// Admin Console for Email Assistant v6
+// Deprecated admin console script. Redirect to admin-simple and no-op.
 (function () {
-  try { window.__EA_SCRIPT_LOADED = Date.now(); } catch {}
-  const JSON_PATH = './complete_email_templates.json';
-  const DRAFT_KEY = 'ea_admin_draft_v2';
+  try { console.warn('[admin-console] This console is retired. Redirecting to admin-simple.html'); } catch {}
+  try { window.location.replace('../admin-simple.html'); } catch {}
+})();
 
-  // State
-  let data = null;              // { metadata, variables, templates }
-  let lang = (function(){ try { return localStorage.getItem('ea_admin_lang') || 'fr'; } catch { return 'fr'; } })(); // UI edit language toggle for localized fields
-  let selectedTemplateId = null;
-  let searchTerm = '';
-  let filterCategory = 'all';
-  let bulkMode = false;
-  let selectedTemplateIds = new Set();
-  // When true, the next sidebar render will focus and scroll the active tile into view
-  let _revealActiveOnRender = false;
 
   // DOM
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -962,11 +952,7 @@
       });
       function replacePlaceholders(txt) {
         return String(txt||'').replace(/<<([^>]+)>>/g, (m, g1) => {
-          if (values[g1] !== undefined) return values[g1];
-          const v = data.variables && data.variables[g1];
-          const byLang = v && v.examples && v.examples[lang];
-          const fallback = v && v.example;
-          return byLang || fallback || m;
+          return (values[g1] !== undefined ? values[g1] : (data.variables && data.variables[g1] && data.variables[g1].example) || m);
         });
       }
       function updatePreview() {
@@ -1071,7 +1057,7 @@
                 <div class="title">${escapeHtml(k)}</div>
                 <div class="chips">
                   <span class="badge">${escapeHtml(v.format || 'text')}</span>
-                  <span class="pill">ex: ${escapeHtml((v.examples && v.examples[lang]) || v.example || '')}</span>
+                  <span class="pill">ex: ${escapeHtml(v.example || '')}</span>
                 </div>
               </div>
               <div class="row">
@@ -1832,30 +1818,26 @@
     if (!header) return vars;
     const sep = header.includes(';') && !header.includes(',') ? ';' : ',';
     const keys = header.split(sep).map(s => s.trim().toLowerCase());
-
+    
     for (const line of lines) {
       if (!line.trim()) continue;
       const cells = splitCsvLine(line, sep);
       const obj = {};
       keys.forEach((k, i) => obj[k] = cells[i] ?? '');
-
+      
       const name = (obj.name || obj.variable || obj.var || obj.key || '').trim();
       if (!name) continue;
-
+      
       const desc_fr = (obj.description_fr || obj.desc_fr || obj.descriptionfr || '').trim();
       const desc_en = (obj.description_en || obj.desc_en || obj.descriptionen || '').trim();
       const format = (obj.format || 'text').trim();
-      const example_fr = (obj.example_fr || obj.exemple_fr || obj.exemple || '').trim();
-      const example_en = (obj.example_en || '').trim();
-      const example = (obj.example || example_fr || example_en || '').trim();
-
-      const meta = {
+      const example = (obj.example || obj.example_fr || obj.exemple || '').trim();
+      
+      vars[name] = {
         description: { fr: desc_fr, en: desc_en },
         format: format,
         example: example
       };
-      if (example_fr || example_en) meta.examples = { fr: example_fr || '', en: example_en || '' };
-      vars[name] = meta;
     }
     return vars;
   }
@@ -1872,11 +1854,6 @@
         lib[name].description = meta.description || lib[name].description;
         lib[name].format = meta.format || lib[name].format;
         lib[name].example = meta.example || lib[name].example;
-        if (meta.examples) {
-          lib[name].examples = Object.assign({}, lib[name].examples || {}, meta.examples);
-          // Keep example in sync if empty
-          if (!lib[name].example) lib[name].example = lib[name].examples.fr || lib[name].examples.en || '';
-        }
       }
     }
     return added;
