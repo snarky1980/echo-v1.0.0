@@ -619,6 +619,23 @@ const buildInitialVariables = (template, templatesData) => {
     const variants = new Set([baseName])
     LANGUAGE_SUFFIXES.forEach((suffix) => variants.add(`${baseName}_${suffix}`))
     variants.forEach((key) => {
+      // For base (unsuffixed) variable prefer templateLanguage-specific default
+      if (key === baseName) {
+        const info = resolveVariableInfo(templatesData, baseName)
+        if (info) {
+          const lang = (templateLanguage || 'fr').toLowerCase()
+          // Support object example { fr, en }
+          if (info.example && typeof info.example === 'object') {
+            seed[key] = info.example[lang] ?? info.example.fr ?? info.example.en ?? ''
+            return
+          }
+          // Support examples map
+          if (info.examples && info.examples[lang]) {
+            seed[key] = info.examples[lang]
+            return
+          }
+        }
+      }
       seed[key] = guessSampleValue(templatesData, key)
     })
   })
@@ -1873,6 +1890,19 @@ function App() {
   useEffect(() => {
     const loadTemplatesData = async () => {
       try {
+    // Prefer locally published admin dataset if available
+    try {
+      const adminLocal = localStorage.getItem('ea_admin_templates_data');
+      if (adminLocal) {
+        const parsed = JSON.parse(adminLocal);
+        if (parsed && typeof parsed === 'object' && Array.isArray(parsed.templates) && parsed.templates.length) {
+          if (debug) console.log('[EA][Debug] Using locally published admin templates dataset');
+          setTemplatesData(parsed);
+          setLoading(false);
+          return; // Skip remote fetch
+        }
+      }
+    } catch (e) { if (debug) console.warn('[EA][Debug] local admin dataset parse failed', e); }
     if (debug) console.log('[EA][Debug] Fetching templates (prefer raw main data)...')
   const REPO_RAW_URL = (import.meta?.env?.VITE_TEMPLATES_URL) || 'https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json'
         const LOCAL_URL = './complete_email_templates.json'
