@@ -81,12 +81,24 @@ export default function VariablesPage() {
         if (Array.isArray(template.variables)) {
           template.variables.forEach((varName) => {
             const info = catalog[varName]
-            const example = info?.example || ''
+            const example = (() => {
+              const ex = info?.example
+              if (ex && typeof ex === 'object') return ex.fr || ex.en || ''
+              return ex || ''
+            })()
             fallback[varName] = example
             allowedKeys.add(varName)
             suffixes.forEach((suffix) => {
               const composite = `${varName}_${suffix}`
-              fallback[composite] = example
+              // For suffixed variables prefer matching language if object form present
+              const ex = info?.example
+              if (ex && typeof ex === 'object') {
+                if (/_(FR)$/i.test(composite)) fallback[composite] = ex.fr || ex.en || ''
+                else if (/_(EN)$/i.test(composite)) fallback[composite] = ex.en || ex.fr || ''
+                else fallback[composite] = ex.fr || ex.en || ''
+              } else {
+                fallback[composite] = example
+              }
               allowedKeys.add(composite)
             })
           })

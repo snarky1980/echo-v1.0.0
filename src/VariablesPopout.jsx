@@ -48,6 +48,12 @@ const guessSampleValue = (templatesData, name = '') => {
   const suffix = (name || '').match(/_(FR|EN)$/i)?.[1]?.toLowerCase()
   if (suffix === 'en' && info?.examples?.en) return info.examples.en
   if (suffix === 'fr' && info?.examples?.fr) return info.examples.fr
+  // Support object example { fr, en }
+  if (info?.example && typeof info.example === 'object') {
+    if (suffix === 'en') return info.example.en ?? info.example.fr ?? ''
+    if (suffix === 'fr') return info.example.fr ?? info.example.en ?? ''
+    return info.example.fr ?? info.example.en ?? ''
+  }
   if (info?.example) return info.example
   const normalized = (name || '').toLowerCase()
   const format = info?.format || (
@@ -628,7 +634,12 @@ export default function VariablesPopout({
                         }
                       }
                     }}
-                    placeholder={(varInfo.examples && (varInfo.examples[interfaceLanguage] || '')) || varInfo.example || ''}
+                    placeholder={(() => {
+                      if (varInfo.examples && varInfo.examples[interfaceLanguage]) return varInfo.examples[interfaceLanguage]
+                      const ex = varInfo.example
+                      if (ex && typeof ex === 'object') return interfaceLanguage === 'en' ? (ex.en || ex.fr || '') : (ex.fr || ex.en || '')
+                      return ex || ''
+                    })()}
                     className={`w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? 'ea-popout-input-focused' : ''}`}
                     style={{
                       height: (() => {

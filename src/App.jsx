@@ -496,12 +496,24 @@ const guessSampleValue = (templatesData, name = '') => {
   const suffixMatch = (name || '').match(/_(FR|EN)$/i)
   const suffix = suffixMatch ? suffixMatch[1].toUpperCase() : null
 
-  // Prefer per-language examples when available
+  // Prefer per-language examples when available.
+  // Support legacy string example and new object shape { fr, en }.
   const rawExample = (() => {
-    if (suffix === 'EN') return info?.examples?.en ?? info?.example ?? ''
-    if (suffix === 'FR') return info?.examples?.fr ?? info?.example ?? ''
-    // Base: prefer FR then EN for determinism
-    return info?.example ?? info?.examples?.fr ?? info?.examples?.en ?? ''
+    const exObj = info?.example && typeof info.example === 'object' && (info.example.fr || info.example.en) ? info.example : null
+    const getFromExampleObject = (lang) => {
+      if (!exObj) return null
+      if (lang === 'EN') return exObj.en ?? exObj.fr ?? ''
+      if (lang === 'FR') return exObj.fr ?? exObj.en ?? ''
+      return exObj.fr ?? exObj.en ?? ''
+    }
+    if (suffix === 'EN') return info?.examples?.en ?? getFromExampleObject('EN') ?? (typeof info?.example === 'string' ? info.example : '') ?? ''
+    if (suffix === 'FR') return info?.examples?.fr ?? getFromExampleObject('FR') ?? (typeof info?.example === 'string' ? info.example : '') ?? ''
+    // Base (no suffix): prefer FR then EN
+    return (info?.examples?.fr
+      ?? info?.examples?.en
+      ?? getFromExampleObject('FR')
+      ?? (typeof info?.example === 'string' ? info.example : '')
+      ?? '')
   })()
   const normalized = (name || '').toLowerCase()
 
