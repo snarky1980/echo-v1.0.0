@@ -104,6 +104,17 @@ export default function VariablesPopout({
   })
   
   const [variables, setVariables] = useState(initialVariables || {})
+  const varInputRefs = useRef({})
+
+  // Auto-resize helper for textareas
+  const autoResize = useCallback((el) => {
+    if (!el) return
+    try {
+      el.style.height = 'auto'
+      const next = Math.max(32, el.scrollHeight)
+      el.style.height = `${next}px`
+    } catch {}
+  }, [])
   const lastInitialVarsRef = useRef(initialVariables)
   // Keep local variables in sync with prop changes from parent page
   useEffect(() => {
@@ -116,6 +127,14 @@ export default function VariablesPopout({
       }
     }
   }, [initialVariables])
+
+  // Resize all inputs whenever variables change (content update) or on mount
+  useEffect(() => {
+    try {
+      const map = varInputRefs.current || {}
+      Object.values(map).forEach((el) => autoResize(el))
+    } catch {}
+  }, [variables, autoResize])
 
   const activeLanguageCode = useMemo(() => (templateLanguage || 'fr').toUpperCase(), [templateLanguage])
   const targetVarForLanguage = useCallback((name = '') => {
@@ -147,7 +166,7 @@ export default function VariablesPopout({
   const channelRef = useRef(null)
   const senderIdRef = useRef(Math.random().toString(36).slice(2))
   const retryIntervalRef = useRef(null)
-  const varInputRefs = useRef({})
+  // varInputRefs declared earlier
   const focusedVarRef = useRef(focusedVar)
   const sendTimerRef = useRef(null)
   const lastSentAtRef = useRef(0)
@@ -622,13 +641,14 @@ export default function VariablesPopout({
                     id={sanitizedVarId}
                     name={sanitizedVarId}
                     value={currentValue}
-                    onChange={(e) => updateVariable(varName, e.target.value)}
+                    onChange={(e) => { updateVariable(varName, e.target.value); autoResize(e.target) }}
                     onFocus={(e) => {
                       notifyFocusChange(varName)
                       requestAnimationFrame(() => {
                         try {
                           e.target.select()
                         } catch {}
+                        autoResize(e.target)
                       })
                     }}
                     onBlur={() => notifyFocusChange(null)}
@@ -664,13 +684,7 @@ export default function VariablesPopout({
                       }
                       return ex || ''
                     })()}
-                    className={`w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? 'ea-popout-input-focused' : ''}`}
-                    style={{
-                      height: (() => {
-                        const lines = (currentValue.match(/\n/g) || []).length + 1
-                        return lines <= 2 ? (lines === 1 ? '32px' : '52px') : '52px'
-                      })()
-                    }}
+                    className={`w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none overflow-hidden transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? 'ea-popout-input-focused' : ''}`}
                   />
                 </div>
               </div>
