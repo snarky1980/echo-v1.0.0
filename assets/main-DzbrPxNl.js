@@ -20317,7 +20317,7 @@ function App() {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "Enter") {
         e.preventDefault();
         if (selectedTemplate) {
-          openEmail();
+          setShowComposeChooser(true);
         }
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "/") {
@@ -21374,6 +21374,7 @@ ${cleanBodyHtml}
     document.addEventListener("mouseup", onUp);
   };
   const [showResetWarning, setShowResetWarning] = reactExports.useState(false);
+  const [showComposeChooser, setShowComposeChooser] = reactExports.useState(false);
   const handleResetClick = () => {
     setShowResetWarning(true);
   };
@@ -21396,36 +21397,22 @@ ${cleanBodyHtml}
     setFocusedVar(null);
     setShowResetWarning(false);
   };
-  const openEmail = () => {
-    if (debug) console.log("[mailto] composing with subject:", finalSubject);
+  const composeOutlookWebHtml = () => {
+    var _a2, _b;
     const resolvedSubject = replaceVariablesWithValues(finalSubject, variables2);
+    const bodyHtmlSource = ((_b = (_a2 = bodyEditorRef.current) == null ? void 0 : _a2.getHtml) == null ? void 0 : _b.call(_a2)) ?? finalBody;
     const resolvedBodyText = replaceVariablesWithValues(finalBody, variables2);
-    if (!resolvedSubject && !resolvedBodyText) {
-      alert(templateLanguage === "fr" ? "Sélectionnez un modèle avant l'envoi." : "Select a template before sending.");
-      return;
-    }
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables2, resolvedBodyText);
     const subject = encodeURIComponent(resolvedSubject || "");
-    const body = encodeURIComponent((resolvedBodyText || "").replace(/\r?\n/g, "\r\n"));
-    const url = `mailto:?subject=${subject}&body=${body}`;
-    const active = document.activeElement;
-    const original = active == null ? void 0 : active.textContent;
-    if (active) active.textContent = templateLanguage === "fr" ? "Ouverture…" : "Opening…";
-    try {
-      const a = document.createElement("a");
-      a.href = url;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch {
-      try {
-        window.location.href = url;
-      } catch {
-      }
+    const bodyHtml = encodeURIComponent(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${bodyResult.html || ""}</body></html>`);
+    const owaUrl = `https://outlook.office.com/mail/deeplink/compose?subject=${subject}&body=${bodyHtml}&bodyType=HTML`;
+    const win = window.open(owaUrl, "_blank");
+    if (!win) {
+      alert(interfaceLanguage === "fr" ? "Veuillez autoriser les fenêtres pop-up pour ouvrir Outlook Web." : "Please allow pop-ups to open Outlook Web.");
     }
-    setTimeout(() => {
-      if (active && original) active.textContent = original;
-    }, 1800);
+  };
+  const composeOutlookClassicEml = () => {
+    exportAs("eml");
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen", style: { background: "linear-gradient(to bottom right, #f8fafc, #fefbe8, #e0f2fe)" }, children: [
     debug && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { position: "fixed", bottom: 8, left: 8, background: "#1e293b", color: "#fff", padding: "8px 12px", borderRadius: 8, fontSize: 12, zIndex: 9999, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }, children: [
@@ -22251,7 +22238,7 @@ ${cleanBodyHtml}
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Button,
                     {
-                      onClick: openEmail,
+                      onClick: () => setShowComposeChooser(true),
                       className: "font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3",
                       style: { background: "#2c3d50", borderRadius: "12px" },
                       onMouseEnter: (e) => {
@@ -22260,10 +22247,10 @@ ${cleanBodyHtml}
                       onMouseLeave: (e) => {
                         e.currentTarget.style.transform = "translateY(0)";
                       },
-                      title: interfaceLanguage === "fr" ? "Composer avec votre client courriel" : "Compose with your mail client",
+                      title: interfaceLanguage === "fr" ? "Ouvrir un nouveau courriel" : "Open a new email",
                       children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { className: "h-5 w-5 mr-2" }),
-                        interfaceLanguage === "fr" ? "Composer (mailto)" : "Compose (mailto)"
+                        interfaceLanguage === "fr" ? "Ouvrir dans un courriel" : "Open in an email"
                       ]
                     }
                   )
@@ -22307,6 +22294,40 @@ ${cleanBodyHtml}
           }
         )
       ] })
+    ] }) }),
+    showComposeChooser && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full p-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-gray-900 mb-2", children: interfaceLanguage === "fr" ? "Ouvrir un nouveau courriel" : "Open a new email" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-gray-600", children: interfaceLanguage === "fr" ? "Choisissez où composer. Le format riche (gras, surlignage, styles) est pleinement conservé via Outlook classique (.eml)." : "Choose where to compose. Rich formatting (bold, highlights, styles) is fully preserved via Outlook Classic (.eml)." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-3 sm:grid-cols-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            onClick: () => {
+              composeOutlookClassicEml();
+              setShowComposeChooser(false);
+            },
+            variant: "outline",
+            className: "w-full border-2",
+            style: { borderColor: "#2c3d50", color: "#2c3d50" },
+            children: interfaceLanguage === "fr" ? "Outlook (classique) – format riche" : "Outlook (Classic) – rich format"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button,
+          {
+            onClick: () => {
+              composeOutlookWebHtml();
+              setShowComposeChooser(false);
+            },
+            className: "w-full text-white",
+            style: { background: "#2c3d50" },
+            children: interfaceLanguage === "fr" ? "Outlook Web (HTML)" : "Outlook Web (HTML)"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: () => setShowComposeChooser(false), children: interfaceLanguage === "fr" ? "Annuler" : "Cancel" }) })
     ] }) }),
     showVariablePopup && varsMinimized && !varsOnlyMode && reactDomExports.createPortal(
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -23786,4 +23807,4 @@ const isHelpOnly = params.get("helpOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : isHelpOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(HelpPopout, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-B2bOLoU8.js.map
+//# sourceMappingURL=main-DzbrPxNl.js.map
