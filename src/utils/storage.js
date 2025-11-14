@@ -27,7 +27,7 @@ export const saveState = (state) => {
   }
 };
 
-const getDefaultState = () => ({
+export const getDefaultState = () => ({
   interfaceLanguage: 'fr',
   templateLanguage: 'fr',
   searchQuery: '',
@@ -36,3 +36,11 @@ const getDefaultState = () => ({
   favorites: [],
   favoritesOnly: false
 });
+
+export const clearState = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch (err) {
+    console.warn('Error clearing state from localStorage:', err)
+  }
+}
