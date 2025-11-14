@@ -22893,6 +22893,16 @@ function VariablesPopout({
     templateLanguage
   });
   const [variables2, setVariables] = reactExports.useState(initialVariables || {});
+  const varInputRefs = reactExports.useRef({});
+  const autoResize = reactExports.useCallback((el) => {
+    if (!el) return;
+    try {
+      el.style.height = "auto";
+      const next = Math.max(32, el.scrollHeight);
+      el.style.height = `${next}px`;
+    } catch {
+    }
+  }, []);
   const lastInitialVarsRef = reactExports.useRef(initialVariables);
   reactExports.useEffect(() => {
     if (lastInitialVarsRef.current !== initialVariables) {
@@ -22904,6 +22914,13 @@ function VariablesPopout({
       }
     }
   }, [initialVariables]);
+  reactExports.useEffect(() => {
+    try {
+      const map = varInputRefs.current || {};
+      Object.values(map).forEach((el) => autoResize(el));
+    } catch {
+    }
+  }, [variables2, autoResize]);
   const activeLanguageCode = reactExports.useMemo(() => (templateLanguage || "fr").toUpperCase(), [templateLanguage]);
   const targetVarForLanguage = reactExports.useCallback((name = "") => {
     if (/_(FR|EN)$/i.test(name)) return name;
@@ -22933,7 +22950,6 @@ function VariablesPopout({
   const channelRef = reactExports.useRef(null);
   const senderIdRef = reactExports.useRef(Math.random().toString(36).slice(2));
   const retryIntervalRef = reactExports.useRef(null);
-  const varInputRefs = reactExports.useRef({});
   const focusedVarRef = reactExports.useRef(focusedVar);
   const sendTimerRef = reactExports.useRef(null);
   const lastSentAtRef = reactExports.useRef(0);
@@ -23356,7 +23372,10 @@ function VariablesPopout({
                 id: sanitizedVarId,
                 name: sanitizedVarId,
                 value: currentValue,
-                onChange: (e) => updateVariable(varName, e.target.value),
+                onChange: (e) => {
+                  updateVariable(varName, e.target.value);
+                  autoResize(e.target);
+                },
                 onFocus: (e) => {
                   notifyFocusChange(varName);
                   requestAnimationFrame(() => {
@@ -23364,6 +23383,7 @@ function VariablesPopout({
                       e.target.select();
                     } catch {
                     }
+                    autoResize(e.target);
                   });
                 },
                 onBlur: () => notifyFocusChange(null),
@@ -23395,13 +23415,7 @@ function VariablesPopout({
                   }
                   return ex || "";
                 })(),
-                className: `w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? "ea-popout-input-focused" : ""}`,
-                style: {
-                  height: (() => {
-                    const lines = (currentValue.match(/\n/g) || []).length + 1;
-                    return lines <= 2 ? lines === 1 ? "32px" : "52px" : "52px";
-                  })()
-                }
+                className: `w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none overflow-hidden transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? "ea-popout-input-focused" : ""}`
               }
             )
           ] })
@@ -23807,4 +23821,4 @@ const isHelpOnly = params.get("helpOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : isHelpOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(HelpPopout, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DzbrPxNl.js.map
+//# sourceMappingURL=main-DRCemYf4.js.map
