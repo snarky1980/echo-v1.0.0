@@ -157,8 +157,12 @@ const RichTextPillEditor = React.forwardRef(({
   const clickSelectTimerRef = useRef(null);
 
   // Resolve variable value by language preference
-  const getVarValue = useCallback((name) => {
+  const getVarValue = useCallback((name = '') => {
     const lang = (templateLanguage || 'fr').toLowerCase()
+    const suffix = name.match(/_(fr|en)$/i)?.[1]?.toLowerCase()
+    if (suffix) {
+      return variables?.[name] ?? ''
+    }
     if (lang === 'en') {
       return variables?.[`${name}_EN`] ?? variables?.[name] ?? ''
     }

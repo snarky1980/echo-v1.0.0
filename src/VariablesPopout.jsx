@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Edit3, X, RotateCcw, Pin, PinOff } from 'lucide-react'
 import { normalizeVarKey, varKeysMatch } from './utils/variables'
 
 const LANGUAGE_SUFFIXES = ['FR', 'EN']
 
-const expandVariableAssignment = (varName, value) => {
+const expandVariableAssignment = (varName, value, preferredLanguage = null) => {
   const assignments = {}
   if (!varName) return assignments
   assignments[varName] = value
@@ -13,9 +13,16 @@ const expandVariableAssignment = (varName, value) => {
     const base = match[1]
     assignments[base] = value
   } else {
-    LANGUAGE_SUFFIXES.forEach((suffix) => {
-      assignments[`${varName}_${suffix}`] = value
-    })
+    const targetLang = (preferredLanguage && LANGUAGE_SUFFIXES.includes(preferredLanguage.toUpperCase()))
+      ? preferredLanguage.toUpperCase()
+      : null
+    if (targetLang) {
+      assignments[`${varName}_${targetLang}`] = value
+    } else {
+      LANGUAGE_SUFFIXES.forEach((suffix) => {
+        assignments[`${varName}_${suffix}`] = value
+      })
+    }
   }
   return assignments
 }
@@ -85,13 +92,15 @@ export default function VariablesPopout({
   selectedTemplate, 
   templatesData, 
   initialVariables, 
-  interfaceLanguage 
+  interfaceLanguage,
+  templateLanguage = 'fr'
 }) {
   console.log('🔍 VariablesPopout props:', {
     selectedTemplate: selectedTemplate?.id,
     templatesData: !!templatesData,
     initialVariables,
-    interfaceLanguage
+    interfaceLanguage,
+    templateLanguage
   })
   
   const [variables, setVariables] = useState(initialVariables || {})
@@ -107,13 +116,24 @@ export default function VariablesPopout({
       }
     }
   }, [initialVariables])
-    const getVarValue = useCallback((name) => {
-      const lang = (interfaceLanguage || 'fr').toLowerCase()
-      if (lang === 'en') {
-        return variables?.[`${name}_EN`] ?? variables?.[name] ?? ''
-      }
-      return variables?.[`${name}_FR`] ?? variables?.[name] ?? ''
-    }, [variables, interfaceLanguage])
+
+  const activeLanguageCode = useMemo(() => (templateLanguage || 'fr').toUpperCase(), [templateLanguage])
+  const targetVarForLanguage = useCallback((name = '') => {
+    if (/_(FR|EN)$/i.test(name)) return name
+    return `${name}_${activeLanguageCode}`
+  }, [activeLanguageCode])
+
+  const getVarValue = useCallback((name = '') => {
+    const lang = (templateLanguage || 'fr').toLowerCase()
+    const suffix = name.match(/_(fr|en)$/i)?.[1]?.toLowerCase()
+    if (suffix) {
+      return variables?.[name] ?? ''
+    }
+    if (lang === 'en') {
+      return variables?.[`${name}_EN`] ?? variables?.[name] ?? ''
+    }
+    return variables?.[`${name}_FR`] ?? variables?.[name] ?? ''
+  }, [variables, templateLanguage])
   const [isPinned, setIsPinned] = useState(() => {
     try {
       return localStorage.getItem('ea_popout_pinned') === 'true'
@@ -385,7 +405,7 @@ export default function VariablesPopout({
 
   const updateVariable = (varName, value) => {
     let pending = null
-    const assignments = expandVariableAssignment(varName, value)
+    const assignments = expandVariableAssignment(varName, value, activeLanguageCode)
     setVariables(prev => {
       const next = applyAssignments(prev, assignments)
       if (next !== prev) {
@@ -400,7 +420,7 @@ export default function VariablesPopout({
 
   const removeVariable = (varName) => {
     let pending = null
-    const assignments = expandVariableAssignment(varName, '')
+    const assignments = expandVariableAssignment(varName, '', activeLanguageCode)
     setVariables(prev => {
       const next = applyAssignments(prev, assignments)
       if (next !== prev) {
@@ -427,9 +447,10 @@ export default function VariablesPopout({
   }
 
   const reinitializeVariable = (varName) => {
-    const exampleValue = guessSampleValue(templatesData, varName)
+    const targetName = targetVarForLanguage(varName)
+    const exampleValue = guessSampleValue(templatesData, targetName)
     let pending = null
-    const assignments = expandVariableAssignment(varName, exampleValue)
+    const assignments = expandVariableAssignment(varName, exampleValue, activeLanguageCode)
     setVariables(prev => {
       const next = applyAssignments(prev, assignments)
       if (next !== prev) {
@@ -554,6 +575,7 @@ export default function VariablesPopout({
             const currentValue = getVarValue(varName)
             const isFocused = varKeysMatch(focusedVar, varName)
             const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
+            const langForDisplay = (templateLanguage || interfaceLanguage || 'fr').toLowerCase()
 
             return (
               <div
@@ -573,7 +595,7 @@ export default function VariablesPopout({
                   {/* Label and buttons */}
                   <div className="mb-2 flex items-start justify-between gap-3">
                     <label htmlFor={sanitizedVarId} className="text-sm font-semibold text-gray-900 flex-1 leading-tight">
-                      {varInfo.description?.[interfaceLanguage] || varName}
+                      {varInfo.description?.[langForDisplay] || varInfo.description?.fr || varInfo.description?.en || varName}
                     </label>
                     <div className="shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
                       <button
@@ -635,9 +657,11 @@ export default function VariablesPopout({
                       }
                     }}
                     placeholder={(() => {
-                      if (varInfo.examples && varInfo.examples[interfaceLanguage]) return varInfo.examples[interfaceLanguage]
+                      if (varInfo.examples && varInfo.examples[langForDisplay]) return varInfo.examples[langForDisplay]
                       const ex = varInfo.example
-                      if (ex && typeof ex === 'object') return interfaceLanguage === 'en' ? (ex.en || ex.fr || '') : (ex.fr || ex.en || '')
+                      if (ex && typeof ex === 'object') {
+                        return langForDisplay === 'en' ? (ex.en || ex.fr || '') : (ex.fr || ex.en || '')
+                      }
                       return ex || ''
                     })()}
                     className={`w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? 'ea-popout-input-focused' : ''}`}

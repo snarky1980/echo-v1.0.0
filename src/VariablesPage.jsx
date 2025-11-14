@@ -374,6 +374,7 @@ export default function VariablesPage() {
       templatesData={templatesData}
       initialVariables={variables}
       interfaceLanguage={interfaceLanguage}
+      templateLanguage={pendingTemplateLanguage || interfaceLanguage}
     />
   )
 }

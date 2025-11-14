@@ -2,6 +2,7 @@
 /* DEPLOY: 2025-10-15 07:40 - FIXED: Function hoisting error resolved */
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { normalizeVarKey } from './utils/variables'
+import canonicalTemplatesRaw from '../complete_email_templates.json'
 import { createPortal } from 'react-dom'
 import Fuse from 'fuse.js'
 import { loadState, saveState } from './utils/storage.js';
@@ -569,11 +570,10 @@ const guessSampleValue = (templatesData, name = '') => {
       return '$1,250.00'
     }
     if (k === 'date') {
-      // Prefer ISO for simplicity
-      return '2025-07-15'
+      return val
     }
     if (k === 'time') return '09:00'
-    return mapped
+    return val
   }
 
   // Build FR-friendly example fallback
@@ -612,6 +612,104 @@ const guessSampleValue = (templatesData, name = '') => {
   }
 }
 
+const hasText = (value) => typeof value === 'string' && value.trim().length > 0
+
+const normalizeVariableEntry = (entry = {}) => {
+  const textValue = (value) => (typeof value === 'string' ? value : '')
+  const normalized = { ...entry }
+  const desc = entry?.description || {}
+  normalized.description = {
+    fr: textValue(desc.fr),
+    en: textValue(desc.en)
+  }
+  const example = entry?.example
+  if (example && typeof example === 'object') {
+    normalized.example = {
+      fr: textValue(example.fr),
+      en: textValue(example.en)
+    }
+  } else if (typeof example === 'string') {
+    normalized.example = { fr: example, en: example }
+  } else {
+    normalized.example = { fr: '', en: '' }
+  }
+  normalized.format = entry?.format || 'text'
+  if (entry?.examples) {
+    normalized.examples = entry.examples
+  }
+  return normalized
+}
+
+const normalizeVariableLibrary = (library = {}) => {
+  const normalized = {}
+  Object.entries(library || {}).forEach(([key, value]) => {
+    normalized[key] = normalizeVariableEntry(value || {})
+  })
+  return normalized
+}
+
+const mergeVariableLibraries = (primaryVars = {}, fallbackVars = {}) => {
+  const merged = {}
+  const keys = new Set([
+    ...Object.keys(fallbackVars || {}),
+    ...Object.keys(primaryVars || {})
+  ])
+  keys.forEach((key) => {
+    const primaryEntry = primaryVars[key]
+    const fallbackEntry = fallbackVars[key]
+    if (!primaryEntry && !fallbackEntry) return
+    const combined = {
+      format: primaryEntry?.format || fallbackEntry?.format || 'text',
+      description: {
+        fr: hasText(primaryEntry?.description?.fr)
+          ? primaryEntry.description.fr
+          : (fallbackEntry?.description?.fr || ''),
+        en: hasText(primaryEntry?.description?.en)
+          ? primaryEntry.description.en
+          : (fallbackEntry?.description?.en || '')
+      },
+      example: {
+        fr: hasText(primaryEntry?.example?.fr)
+          ? primaryEntry.example.fr
+          : (fallbackEntry?.example?.fr || ''),
+        en: hasText(primaryEntry?.example?.en)
+          ? primaryEntry.example.en
+          : (fallbackEntry?.example?.en || '')
+      }
+    }
+    const examples = primaryEntry?.examples || fallbackEntry?.examples
+    if (examples) combined.examples = examples
+    merged[key] = combined
+  })
+  return merged
+}
+
+const mergeTemplateDatasets = (primary = {}, fallback = null) => {
+  const normalizedPrimaryVars = normalizeVariableLibrary(primary?.variables || {})
+  if (!fallback) {
+    return {
+      ...primary,
+      variables: normalizedPrimaryVars
+    }
+  }
+  const normalizedFallbackVars = normalizeVariableLibrary(fallback?.variables || {})
+  const merged = {
+    ...(fallback || {}),
+    ...(primary || {})
+  }
+  merged.metadata = {
+    ...(fallback?.metadata || {}),
+    ...(primary?.metadata || {})
+  }
+  merged.templates = (Array.isArray(primary?.templates) && primary.templates.length)
+    ? primary.templates
+    : (fallback?.templates || [])
+  merged.variables = mergeVariableLibraries(normalizedPrimaryVars, normalizedFallbackVars)
+  return merged
+}
+
+const CANONICAL_TEMPLATES = mergeTemplateDatasets(canonicalTemplatesRaw, null)
+
 const buildInitialVariables = (template, templatesData, langOverride) => {
   const seed = {}
   if (!template?.variables || !Array.isArray(template.variables)) return seed
@@ -642,7 +740,7 @@ const buildInitialVariables = (template, templatesData, langOverride) => {
   return seed
 }
 
-const expandVariableAssignment = (varName, value) => {
+const expandVariableAssignment = (varName, value, preferredLanguage = null) => {
   const assignments = {}
   if (!varName) return assignments
   assignments[varName] = value
@@ -651,9 +749,16 @@ const expandVariableAssignment = (varName, value) => {
     const base = match[1]
     assignments[base] = value
   } else {
-    LANGUAGE_SUFFIXES.forEach((suffix) => {
-      assignments[`${varName}_${suffix}`] = value
-    })
+    const targetLang = (preferredLanguage && LANGUAGE_SUFFIXES.includes(preferredLanguage.toUpperCase()))
+      ? preferredLanguage.toUpperCase()
+      : null
+    if (targetLang) {
+      assignments[`${varName}_${targetLang}`] = value
+    } else {
+      LANGUAGE_SUFFIXES.forEach((suffix) => {
+        assignments[`${varName}_${suffix}`] = value
+      })
+    }
   }
   return assignments
 }
@@ -912,6 +1017,7 @@ function App() {
   const [interfaceLanguage, setInterfaceLanguage] = useState(savedState.interfaceLanguage || 'fr') // Interface language
   const [templateLanguage, setTemplateLanguage] = useState(savedState.templateLanguage || 'fr')   // Template language
   const [selectedTemplate, setSelectedTemplate] = useState(null)
+  const [selectedTemplateId, setSelectedTemplateId] = useState(savedState.selectedTemplateId || null)
   const [searchQuery, setSearchQuery] = useState(savedState.searchQuery || '')
   const [selectedCategory, setSelectedCategory] = useState(savedState.selectedCategory || 'all')
   
@@ -1011,7 +1117,6 @@ function App() {
   const manualEditRef = useRef({ subject: false, body: false })
   const pendingTemplateIdRef = useRef(null)
   const canUseBC = typeof window !== 'undefined' && 'BroadcastChannel' in window
-  const selectedTemplateId = selectedTemplate?.id
 
   const updateFocusHighlight = useCallback((varName) => {
     try {
@@ -1256,6 +1361,7 @@ function App() {
         templateLanguage,
         searchQuery,
         selectedCategory,
+        selectedTemplateId,
         variables,
         favorites,
         favoritesOnly
@@ -1263,7 +1369,7 @@ function App() {
     }, 300) // 300ms debounce
     
     return () => clearTimeout(timeoutId)
-  }, [interfaceLanguage, templateLanguage, searchQuery, selectedCategory, variables, favorites, favoritesOnly])
+  }, [interfaceLanguage, templateLanguage, searchQuery, selectedCategory, selectedTemplateId, variables, favorites, favoritesOnly])
 
   // Persist pane sizes
   useEffect(() => {
@@ -1642,14 +1748,15 @@ function App() {
   // Emit selected template and language so pop-out stays in sync
   useEffect(() => {
     if (!canUseBC) return
+    const activeTemplateId = selectedTemplateRef.current?.id || selectedTemplateId || null
     const ch = varsChannelRef.current
     if (!ch) return
-    const payload = { type: 'update', templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current }
+    const payload = { type: 'update', templateId: activeTemplateId, templateLanguage, sender: varsSenderIdRef.current }
     try { ch.postMessage(payload) } catch {}
     // Also notify popout channel directly for immediate template-language sync
     const popCh = popoutChannelRef.current
     if (popCh) {
-      try { popCh.postMessage({ type: 'variablesUpdated', variables: { ...variablesRef.current }, templateId: selectedTemplateId || null, templateLanguage, sender: popoutSenderIdRef.current }) } catch {}
+      try { popCh.postMessage({ type: 'variablesUpdated', variables: { ...variablesRef.current }, templateId: activeTemplateId, templateLanguage, sender: popoutSenderIdRef.current }) } catch {}
     }
   }, [selectedTemplateId, templateLanguage])
 
@@ -1658,8 +1765,9 @@ function App() {
     const channel = popoutChannelRef.current
     if (!channel) return
 
+    const activeTemplateId = selectedTemplateRef.current?.id || selectedTemplateId || null
     const skipMeta = skipPopoutBroadcastRef.current
-    if (skipMeta?.pending && skipMeta.templateId === (selectedTemplateId || null) && skipMeta.templateLanguage === (templateLanguage || null)) {
+    if (skipMeta?.pending && skipMeta.templateId === activeTemplateId && skipMeta.templateLanguage === (templateLanguage || null)) {
       skipPopoutBroadcastRef.current = { pending: false, templateId: null, templateLanguage: null }
       return
     }
@@ -1669,7 +1777,7 @@ function App() {
       channel.postMessage({
         type: 'variablesUpdated',
         variables: { ...variables }, // send fresh shallow copy to avoid mutation references
-        templateId: selectedTemplateId || null,
+        templateId: activeTemplateId,
         templateLanguage,
         sender: popoutSenderIdRef.current
       })
@@ -1888,68 +1996,100 @@ function App() {
 
   // Load template data on startup
   useEffect(() => {
-    const loadTemplatesData = async () => {
+    const tryLoadAdminDataset = () => {
       try {
-    // Prefer locally published admin dataset if available
-    try {
-      const adminLocal = localStorage.getItem('ea_admin_templates_data');
-      if (adminLocal) {
-        const parsed = JSON.parse(adminLocal);
-        if (parsed && typeof parsed === 'object' && Array.isArray(parsed.templates) && parsed.templates.length) {
-          if (debug) console.log('[EA][Debug] Using locally published admin templates dataset');
-          setTemplatesData(parsed);
-          setLoading(false);
-          return; // Skip remote fetch
-        }
-      }
-    } catch (e) { if (debug) console.warn('[EA][Debug] local admin dataset parse failed', e); }
-    if (debug) console.log('[EA][Debug] Fetching templates (prefer raw main data)...')
-  const REPO_RAW_URL = (import.meta?.env?.VITE_TEMPLATES_URL) || 'https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json'
-        const LOCAL_URL = './complete_email_templates.json'
-        // Absolute path based on Vite base for GitHub Pages (e.g., /email-assistant-v8-fixed/)
-        const BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/'
-        const ABSOLUTE_URL = (BASE_URL.endsWith('/') ? BASE_URL : BASE_URL + '/') + 'complete_email_templates.json'
-        const ts = Date.now()
-        const withBust = (u) => u + (u.includes('?') ? '&' : '?') + 'cb=' + ts
-  // Prefer raw data stored on main branch so deployments don't overwrite edits
-  const candidates = [withBust(REPO_RAW_URL), withBust(ABSOLUTE_URL), withBust(LOCAL_URL)]
-
-        let loaded = null
-        let lastErr = null
-        for (const url of candidates) {
-          try {
-            if (debug) console.log('[EA][Debug] Try fetch', url)
-            const resp = await fetch(url, { cache: 'no-cache' })
-            if (!resp.ok) throw new Error('HTTP ' + resp.status)
-            const j = await resp.json()
-            loaded = j
-            break
-          } catch (e) {
-            lastErr = e
-            if (debug) console.warn('[EA][Debug] fetch candidate failed', url, e?.message || e)
+        const adminLocal = localStorage.getItem('ea_admin_templates_data')
+        if (adminLocal) {
+          const parsed = JSON.parse(adminLocal)
+          if (parsed && typeof parsed === 'object' && Array.isArray(parsed.templates) && parsed.templates.length) {
+            if (debug) console.log('[EA][Debug] Using locally published admin templates dataset')
+            return parsed
           }
         }
-        if (!loaded) throw lastErr || new Error('No template source reachable')
-        setTemplatesData(loaded)
-        if (debug) console.log('[EA][Debug] Templates loaded:', loaded.templates?.length)
+      } catch (e) {
+        if (debug) console.warn('[EA][Debug] local admin dataset parse failed', e)
+      }
+      return null
+    }
+
+    const fetchTemplatesFromSources = async () => {
+      if (debug) console.log('[EA][Debug] Fetching templates (prefer raw main data)...')
+      const REPO_RAW_URL = (import.meta?.env?.VITE_TEMPLATES_URL) || 'https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json'
+      const LOCAL_URL = './complete_email_templates.json'
+      const BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) ? import.meta.env.BASE_URL : '/'
+      const ABSOLUTE_URL = (BASE_URL.endsWith('/') ? BASE_URL : BASE_URL + '/') + 'complete_email_templates.json'
+      const ts = Date.now()
+      const withBust = (u) => u + (u.includes('?') ? '&' : '?') + 'cb=' + ts
+      const candidates = [withBust(REPO_RAW_URL), withBust(ABSOLUTE_URL), withBust(LOCAL_URL)]
+
+      let loaded = null
+      let lastErr = null
+      for (const url of candidates) {
+        try {
+          if (debug) console.log('[EA][Debug] Try fetch', url)
+          const resp = await fetch(url, { cache: 'no-cache' })
+          if (!resp.ok) throw new Error('HTTP ' + resp.status)
+          const j = await resp.json()
+          loaded = j
+          break
+        } catch (e) {
+          lastErr = e
+          if (debug) console.warn('[EA][Debug] fetch candidate failed', url, e?.message || e)
+        }
+      }
+      if (!loaded) throw lastErr || new Error('No template source reachable')
+      return loaded
+    }
+
+    const loadTemplatesData = async () => {
+      const canonicalDataset = CANONICAL_TEMPLATES
+      const adminDataset = tryLoadAdminDataset()
+      if (adminDataset) {
+        setTemplatesData(mergeTemplateDatasets(adminDataset, canonicalDataset))
+        setLoading(false)
+        try {
+          const fallbackDataset = await fetchTemplatesFromSources()
+          if (fallbackDataset) {
+            setTemplatesData((prev) => mergeTemplateDatasets(prev || canonicalDataset, fallbackDataset))
+            if (debug) console.log('[EA][Debug] Admin dataset merged with fallback metadata')
+          }
+        } catch (fallbackError) {
+          if (debug) console.warn('[EA][Debug] Fallback template fetch failed', fallbackError)
+        }
+        return
+      }
+
+      setTemplatesData(canonicalDataset)
+      try {
+        const remoteData = await fetchTemplatesFromSources()
+        if (remoteData) {
+          setTemplatesData(mergeTemplateDatasets(remoteData, canonicalDataset))
+          if (debug) console.log('[EA][Debug] Templates loaded:', remoteData?.templates?.length)
+        }
       } catch (error) {
         console.error('Error loading templates data:', error)
       } finally {
         setLoading(false)
       }
     }
-    
+
     loadTemplatesData()
-  }, [])
+  }, [debug])
 
   // Auto-select first template after load to avoid "no template" UX if user hasn't picked one
   useEffect(() => {
     if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates) && templatesData.templates.length > 0) {
-      const first = templatesData.templates[0]
-      setSelectedTemplate(first)
-      if (debug) console.log('[EA][Debug] Auto-selected first template:', first.id)
+      let templateToSelect = null
+      if (selectedTemplateId) {
+        templateToSelect = templatesData.templates.find(t => t.id === selectedTemplateId)
+      }
+      if (!templateToSelect) {
+        templateToSelect = templatesData.templates[0]
+      }
+      setSelectedTemplate(templateToSelect)
+      if (debug) console.log('[EA][Debug] Auto-selected template:', templateToSelect.id)
     }
-  }, [loading, templatesData, selectedTemplate, debug])
+  }, [loading, templatesData, selectedTemplate, selectedTemplateId, debug])
 
   /**
    * URL PARAMETER SUPPORT FOR DEEP LINK SHARING
@@ -1976,6 +2116,25 @@ function App() {
       }
     }
   }, [templatesData]) // Triggers when templates are loaded
+
+  /**
+   * REBUILD VARIABLES WHEN TEMPLATE CHANGES
+   * Ensures popout receives correct variables for the selected template
+   */
+  const lastRebuiltTemplateId = useRef(null)
+  useEffect(() => {
+    if (!selectedTemplate || !templatesData) return
+    
+    // Only rebuild if template actually changed (avoid rebuilding on every re-render)
+    if (lastRebuiltTemplateId.current === selectedTemplate.id) return
+    lastRebuiltTemplateId.current = selectedTemplate.id
+    
+    // Rebuild variables with the new template's variable list
+    const newVariables = buildInitialVariables(selectedTemplate, templatesData, templateLanguage)
+    setVariables(newVariables)
+    
+    if (debug) console.log('[EA][Debug] Rebuilt variables for template:', selectedTemplate.id, 'vars:', Object.keys(newVariables).slice(0, 5))
+  }, [selectedTemplate, templatesData, templateLanguage, debug])
 
   /**
    * KEYBOARD SHORTCUTS FOR PROFESSIONAL UX
@@ -3609,7 +3768,10 @@ ${cleanBodyHtml}
                         <div
                           key={template.id}
                           ref={(el) => { if (el) itemRefs.current[template.id] = el }}
-                          onClick={() => setSelectedTemplate(template)}
+                          onClick={() => {
+                            setSelectedTemplate(template)
+                            setSelectedTemplateId(template.id)
+                          }}
                           onMouseDown={() => setPressedCardId(template.id)}
                           onMouseUp={() => setPressedCardId(null)}
                           onMouseLeave={() => setPressedCardId(null)}
@@ -4414,8 +4576,12 @@ ${cleanBodyHtml}
                   const varInfo = templatesData?.variables?.[varName]
                   if (!varInfo) return null
                   
-                  const getVarValue = (name) => {
+                  const getVarValue = (name = '') => {
                     const lang = (templateLanguage || 'fr').toLowerCase()
+                    const suffix = name.match(/_(fr|en)$/i)?.[1]?.toLowerCase()
+                    if (suffix) {
+                      return variables?.[name] ?? ''
+                    }
                     if (lang === 'en') {
                       return variables?.[`${name}_EN`] ?? variables?.[name] ?? ''
                     }
@@ -4424,6 +4590,11 @@ ${cleanBodyHtml}
 
                   const currentValue = getVarValue(varName)
                   const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, '-')}`
+                  const langForDisplay = (templateLanguage || interfaceLanguage || 'fr').toLowerCase()
+                  const targetVarForLanguage = (name) => {
+                    if (/_(FR|EN)$/i.test(name)) return name
+                    return `${name}_${(templateLanguage || 'fr').toUpperCase()}`
+                  }
                   
                   return (
                     <div key={varName} className="rounded-[10px] p-3 transition-all duration-200" style={{ 
@@ -4440,15 +4611,15 @@ ${cleanBodyHtml}
                       <div className="bg-white rounded-[8px] p-4 border" style={{ border: '1px solid rgba(190, 210, 140, 0.4)' }}>
                         <div className="mb-2 flex items-start justify-between gap-3">
                           <label htmlFor={sanitizedVarId} className="text-[14px] font-semibold text-gray-900 flex-1 leading-tight">
-                            {varInfo?.description?.[interfaceLanguage] || varName}
+                            {varInfo?.description?.[langForDisplay] || varInfo?.description?.fr || varInfo?.description?.en || varName}
                           </label>
                           <div className="shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity">
                             <button
                               className="text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#aca868] hover:bg-[#f0fbfb]"
                               title={interfaceLanguage==='fr'?'Remettre l’exemple':'Reset to example'}
                               onClick={() => {
-                                const exampleValue = guessSampleValue(templatesData, varName)
-                                const assignments = expandVariableAssignment(varName, exampleValue)
+                                const exampleValue = guessSampleValue(templatesData, targetVarForLanguage(varName))
+                                const assignments = expandVariableAssignment(varName, exampleValue, (templateLanguage || 'fr').toUpperCase())
                                 setVariables(prev => applyAssignments(prev, assignments))
                               }}
                             >Ex.</button>
@@ -4456,7 +4627,7 @@ ${cleanBodyHtml}
                               className="text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#7f1d1d] hover:bg-[#fee2e2]"
                               title={interfaceLanguage==='fr'?'Effacer ce champ':'Clear this field'}
                               onClick={() => {
-                                const assignments = expandVariableAssignment(varName, '')
+                                const assignments = expandVariableAssignment(varName, '', (templateLanguage || 'fr').toUpperCase())
                                 setVariables(prev => applyAssignments(prev, assignments))
                               }}
                             >X</button>
@@ -4471,7 +4642,7 @@ ${cleanBodyHtml}
                             const newValue = e.target.value
                             // Only update if value actually changed
                             if (newValue !== currentValue) {
-                              const assignments = expandVariableAssignment(varName, newValue)
+                              const assignments = expandVariableAssignment(varName, newValue, (templateLanguage || 'fr').toUpperCase())
                               setVariables(prev => applyAssignments(prev, assignments))
                             }
                             // Auto-resize (max 2 lines)
@@ -4516,7 +4687,14 @@ ${cleanBodyHtml}
                             }
                           }}
                           onBlur={() => setFocusedVar(prev => (prev===varName? null : prev))}
-                          placeholder={varInfo?.example || ''}
+                          placeholder={(() => {
+                            if (varInfo.examples && varInfo.examples[langForDisplay]) return varInfo.examples[langForDisplay]
+                            const ex = varInfo?.example
+                            if (ex && typeof ex === 'object') {
+                              return langForDisplay === 'en' ? (ex.en || ex.fr || '') : (ex.fr || ex.en || '')
+                            }
+                            return ex || ''
+                          })()}
                           className="w-full min-h-[32px] border-2 input-rounded border-[#e6eef5] resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 flex items-center"
                           style={{ 
                             height: (() => {
