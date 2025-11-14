@@ -12582,6 +12582,10 @@ const translations = {
           answer: "Oui. À l'ouverture, le popup synchronise immédiatement les valeurs actuelles grâce à l'extraction directe de l'objet et du message. Les modifications faites dans le texte sont détectées automatiquement."
         },
         {
+          question: "Comment revenir à l'écran « Sélectionner un modèle » ?",
+          answer: "Par défaut, ECHO n'ouvre plus automatiquement un modèle au premier chargement. Si vous souhaitez repartir d'un état vierge, utilisez l'URL avec ?reset=1 (ex. https://.../index.html?reset=1)."
+        },
+        {
           question: "Comment revenir aux valeurs par défaut ?",
           answer: "Utilisez le bouton Réinitialiser dans l'éditeur. Il recharge le modèle sélectionné, restaure les valeurs d'exemple et efface les champs personnalisés."
         },
@@ -12756,6 +12760,10 @@ const translations = {
           answer: "Yes. Opening the popout triggers an immediate sync that extracts the current subject and body. Text edits are auto-detected and reflected back."
         },
         {
+          question: "How do I get back to “Select a template”?",
+          answer: "By default, ECHO no longer auto-opens a template on first load. To start fresh, use the URL with ?reset=1 (e.g., https://.../index.html?reset=1)."
+        },
+        {
           question: "How do I restore default example values?",
           answer: "Use the Reset button in the editor. It reloads the selected template, restores example values, and clears custom text fields."
         },
@@ -12818,7 +12826,7 @@ const translations = {
         {
           value: "template",
           label: "Submit a template",
-          helper: "Send a template for review or publication",
+          helper: "Send a new template or a modification",
           messageLabel: "Describe your template",
           placeholder: "Summarize tone, audience, context, and any review notes.",
           extraField: {
@@ -12876,6 +12884,20 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
       message: "",
       extra: ""
     };
+  });
+  const [templateDetails, setTemplateDetails] = reactExports.useState({
+    templateType: "new",
+    // 'new' | 'modify'
+    existingId: "",
+    languages: { fr: false, en: false },
+    titleFr: "",
+    titleEn: "",
+    category: "",
+    audience: "",
+    context: "",
+    variablePlan: "",
+    examples: "",
+    deadline: ""
   });
   const [status, setStatus] = reactExports.useState("idle");
   const [errors, setErrors] = reactExports.useState({});
@@ -12949,6 +12971,17 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
     if (!formData.message.trim()) {
       validationErrors.message = strings.contact.form.validation.messageRequired;
     }
+    if (formData.category === "template") {
+      if (!templateDetails.languages.fr && !templateDetails.languages.en) {
+        validationErrors.languages = language === "fr" ? "Choisissez au moins une langue (FR ou EN)." : "Choose at least one language (FR or EN).";
+      }
+      if (!templateDetails.templateType) {
+        validationErrors.templateType = language === "fr" ? "Sélectionnez le type." : "Select the type.";
+      }
+      if (templateDetails.templateType === "modify" && !templateDetails.existingId.trim()) {
+        validationErrors.existingId = language === "fr" ? "Indiquez l’ID ou le nom du modèle existant." : "Provide the existing template ID or name.";
+      }
+    }
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
       return;
@@ -12966,6 +12999,21 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
         submittedAt: (/* @__PURE__ */ new Date()).toISOString(),
         product: "ECHO"
       };
+      if (formData.category === "template") {
+        payload.templateDetails = {
+          type: templateDetails.templateType,
+          existingId: templateDetails.existingId || void 0,
+          languages: Object.keys(templateDetails.languages).filter((k) => templateDetails.languages[k]),
+          titleFr: templateDetails.titleFr || void 0,
+          titleEn: templateDetails.titleEn || void 0,
+          category: templateDetails.category || void 0,
+          audience: templateDetails.audience || void 0,
+          context: templateDetails.context || void 0,
+          variablePlan: templateDetails.variablePlan || void 0,
+          examples: templateDetails.examples || void 0,
+          deadline: templateDetails.deadline || void 0
+        };
+      }
       const response = await fetch(submissionUrl, {
         method: "POST",
         headers: {
@@ -12984,6 +13032,19 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
         message: "",
         extra: ""
       }));
+      setTemplateDetails({
+        templateType: "new",
+        existingId: "",
+        languages: { fr: false, en: false },
+        titleFr: "",
+        titleEn: "",
+        category: "",
+        audience: "",
+        context: "",
+        variablePlan: "",
+        examples: "",
+        deadline: ""
+      });
     } catch (error) {
       console.error("Contact form submission failed:", error);
       setStatus("error");
@@ -13217,6 +13278,167 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
                   ),
                   errors.message ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-normal text-red-600", children: errors.message }) : null
                 ] }),
+                formData.category === "template" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 rounded-xl border border-[#e6eef5] bg-white p-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Type de demande" : "Request type" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "select",
+                        {
+                          className: "h-9 rounded-md border border-slate-300 px-2 text-sm",
+                          value: templateDetails.templateType,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, templateType: e.target.value })),
+                          "aria-invalid": Boolean(errors.templateType),
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "new", children: language === "fr" ? "Nouveau modèle" : "New template" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "modify", children: language === "fr" ? "Modification d'un modèle" : "Modification of existing" })
+                          ]
+                        }
+                      ),
+                      errors.templateType ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-normal text-red-600", children: errors.templateType }) : null
+                    ] }),
+                    templateDetails.templateType === "modify" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "ID/nom du modèle existant" : "Existing template ID/name" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.existingId,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, existingId: e.target.value })),
+                          placeholder: language === "fr" ? "Ex. q002 – Avis de fermeture" : "e.g. q002 – Closure notice",
+                          "aria-invalid": Boolean(errors.existingId)
+                        }
+                      ),
+                      errors.existingId ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-normal text-red-600", children: errors.existingId }) : null
+                    ] }) : null
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("fieldset", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Langue de votre soumission" : "Submission language" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 text-sm", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "input",
+                            {
+                              type: "checkbox",
+                              checked: templateDetails.languages.fr,
+                              onChange: (e) => setTemplateDetails((p) => ({ ...p, languages: { ...p.languages, fr: e.target.checked } }))
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "FR" })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "input",
+                            {
+                              type: "checkbox",
+                              checked: templateDetails.languages.en,
+                              onChange: (e) => setTemplateDetails((p) => ({ ...p, languages: { ...p.languages, en: e.target.checked } }))
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "EN" })
+                        ] })
+                      ] }),
+                      errors.languages ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-normal text-red-600", children: errors.languages }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-normal text-slate-500", children: language === "fr" ? "Envoyez au moins en français ou en anglais." : "Submit in English or French at minimum." })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Catégorie suggérée" : "Suggested category" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.category,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, category: e.target.value })),
+                          placeholder: language === "fr" ? "Ex. Voyages, RH, IT" : "e.g., Travel, HR, IT"
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Titre FR" : "Title (FR)" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.titleFr,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, titleFr: e.target.value })),
+                          placeholder: language === "fr" ? "Intitulé côté FR (si connu)" : "French title (if known)"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Titre EN" : "Title (EN)" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.titleEn,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, titleEn: e.target.value })),
+                          placeholder: language === "fr" ? "Titre anglais (si connu)" : "English title (if known)"
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Public visé" : "Audience" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.audience,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, audience: e.target.value })),
+                          placeholder: language === "fr" ? "Ex. employés, gestionnaires, partenaires" : "e.g., employees, managers, partners"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Contexte" : "Context" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.context,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, context: e.target.value })),
+                          placeholder: language === "fr" ? "Ex. annonce, rappel, incident" : "e.g., announcement, reminder, incident"
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Où insérer les variables ?" : "Where should variables go?" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Textarea,
+                      {
+                        rows: 4,
+                        value: templateDetails.variablePlan,
+                        onChange: (e) => setTemplateDetails((p) => ({ ...p, variablePlan: e.target.value })),
+                        placeholder: language === "fr" ? "Ex.: <<date_evenement>> dans l'objet, <<nom_client>> au début du message, etc." : "e.g., <<event_date>> in Subject, <<client_name>> at start of body, etc."
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-normal text-slate-500", children: language === "fr" ? "Ajoutez ce que vous savez; nous compléterons si nécessaire." : "Add what you know; we can fill in the rest." })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-4 md:grid-cols-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Exemples (valeurs connues)" : "Examples (known values)" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Textarea,
+                        {
+                          rows: 3,
+                          value: templateDetails.examples,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, examples: e.target.value })),
+                          placeholder: language === "fr" ? "Ex.: date_evenement = 10-17 juin 2025" : "e.g., event_date = June 10–17, 2025"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: language === "fr" ? "Échéance (facultatif)" : "Deadline (optional)" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Input,
+                        {
+                          value: templateDetails.deadline,
+                          onChange: (e) => setTemplateDetails((p) => ({ ...p, deadline: e.target.value })),
+                          placeholder: language === "fr" ? "Ex.: d'ici le 15 juin" : "e.g., by June 15"
+                        }
+                      )
+                    ] })
+                  ] })
+                ] }) : null,
                 (selectedCategory == null ? void 0 : selectedCategory.extraField) ? /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex flex-col gap-1 text-sm font-medium text-slate-700", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                     selectedCategory.extraField.label,
@@ -19121,7 +19343,7 @@ function App() {
     const saved = localStorage.getItem("ea_show_highlights");
     return saved === null ? true : saved === "true";
   });
-  const supportEmail = reactExports.useMemo(() => {
+  reactExports.useMemo(() => {
     try {
       const envEmail = __vite_import_meta_env__ == null ? void 0 : __vite_import_meta_env__.VITE_SUPPORT_EMAIL;
       if (typeof envEmail === "string") {
@@ -19132,7 +19354,7 @@ function App() {
     }
     return "jskennedy80@gmail.com";
   }, []);
-  const supportFormEndpoint = reactExports.useMemo(() => {
+  reactExports.useMemo(() => {
     try {
       const endpoint = __vite_import_meta_env__ == null ? void 0 : __vite_import_meta_env__.VITE_SUPPORT_FORM_ENDPOINT;
       if (typeof endpoint === "string" && endpoint.trim().length) {
@@ -21283,7 +21505,22 @@ ${cleanBodyHtml}
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Button,
         {
-          onClick: () => setShowHelpCenter(true),
+          onClick: () => {
+            var _a2, _b, _c, _d;
+            try {
+              const url = new URL(window.location.href);
+              url.searchParams.set("helpOnly", "1");
+              url.searchParams.set("lang", interfaceLanguage);
+              const w = Math.min(900, (((_a2 = window.screen) == null ? void 0 : _a2.availWidth) || window.innerWidth) - 80);
+              const h = Math.min(700, (((_b = window.screen) == null ? void 0 : _b.availHeight) || window.innerHeight) - 120);
+              const left = Math.max(0, Math.floor(((((_c = window.screen) == null ? void 0 : _c.availWidth) || window.innerWidth) - w) / 2));
+              const top = Math.max(0, Math.floor(((((_d = window.screen) == null ? void 0 : _d.availHeight) || window.innerHeight) - h) / 3));
+              const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1,noopener=1`;
+              const win = window.open(url.toString(), "_blank", features);
+              if (win && win.focus) win.focus();
+            } catch {
+            }
+          },
           variant: "outline",
           className: "fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all",
           style: { borderColor: "rgba(44, 61, 80, 0.5)", color: "#2c3d50" },
@@ -22542,15 +22779,6 @@ Shift+click to toggle preference`,
       ) }),
       document.body
     ),
-    showHelpCenter && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      HelpCenter,
-      {
-        language: interfaceLanguage,
-        onClose: () => setShowHelpCenter(false),
-        supportEmail,
-        contactEndpoint: supportFormEndpoint
-      }
-    ),
     showAIPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-50", "aria-modal": "true", role: "dialog", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/40", onClick: () => setShowAIPanel(false) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-0 h-full w-[420px] bg-white shadow-2xl border-l border-gray-200 p-4 flex flex-col", children: [
@@ -23490,6 +23718,19 @@ function VariablesPage() {
     }
   );
 }
+function HelpPopout() {
+  const params2 = new URLSearchParams(window.location.search);
+  const langParam = params2.get("lang");
+  const language = langParam === "en" ? "en" : "fr";
+  const supportEmail = params2.get("support") || "jskennedy80@gmail.com";
+  const onClose = reactExports.useMemo(() => () => {
+    try {
+      window.close();
+    } catch {
+    }
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx(HelpCenter, { language, onClose, supportEmail }) });
+}
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -23541,7 +23782,8 @@ Check console for details`);
 }
 const params = new URLSearchParams(window.location.search);
 const isVarsOnly = params.get("varsOnly") === "1";
+const isHelpOnly = params.get("helpOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
-  /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
+  /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : isHelpOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(HelpPopout, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-FHxYNNvH.js.map
+//# sourceMappingURL=main-B2bOLoU8.js.map
