@@ -69,12 +69,31 @@
       <button class="btn" id="btn-export-xlsx" title="Exporter toutes les données courantes en Excel (.xlsx)">Exporter Excel</button>
       <button class="btn primary" id="btn-export">Exporter JSON</button>
       <button class="btn danger" id="btn-update-json" title="Remplacer entièrement les données depuis un collage / fichier JSON">Mettre à jour JSON</button>
+      <button class="btn" id="btn-category-colors" title="Gérer les couleurs des catégories">Couleurs</button>
       <button class="btn" id="btn-github" title="Configurer publication GitHub">GitHub</button>
       <button class="btn" id="btn-reset">Réinitialiser</button>
       <button class="btn" id="btn-help">Aide</button>
     </div>
 
     <div id="notice" class="notice"></div>
+
+    <!-- Category Colors Modal -->
+    <div id="modal-category-colors" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;width:min(720px,92vw);max-height:85vh;display:flex;flex-direction:column">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <strong>Couleurs des catégories</strong>
+          <button onclick="document.getElementById('modal-category-colors').style.display='none'" style="border:0;background:transparent;font-size:18px;cursor:pointer">×</button>
+        </div>
+        <div id="category-colors-body" style="padding:14px;overflow:auto;flex:1">
+          <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Définir une couleur indicatrice pour chaque catégorie (affichée dans le sélecteur de modèles).</p>
+          <div id="category-colors-list" style="display:grid;gap:10px"></div>
+        </div>
+        <div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn" onclick="document.getElementById('modal-category-colors').style.display='none'">Fermer</button>
+          <button class="btn primary" id="btn-save-category-colors">Enregistrer</button>
+        </div>
+      </div>
+    </div>
 
     <div class="frame">
       <aside class="panel">
@@ -135,7 +154,7 @@
       </main>
     </div>
 
-    <script src="./assets/admin-simple.js?v=1763119953365"></script>
+    <script src="./assets/admin-simple.js?v=1763123007166"></script>
     <script>
       // Lightweight badge population: fetch raw main JSON headers quickly
       (async function(){

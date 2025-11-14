@@ -8448,6 +8448,13 @@ const getDefaultState = () => ({
   favorites: [],
   favoritesOnly: false
 });
+const clearState = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (err) {
+    console.warn("Error clearing state from localStorage:", err);
+  }
+};
 /**
  * @license lucide-react v0.510.0 - ISC
  *
@@ -18244,7 +18251,31 @@ const CATEGORY_BADGE_STYLES = {
   "Sécurité et droits d'auteur": { bg: "#fff4d8", border: "#ffd98f", text: "#6b4600" },
   default: { bg: "#e6f0ff", border: "#c7dbff", text: "#8a7530" }
 };
-const getCategoryBadgeStyle = (category = "") => CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default;
+const CATEGORY_INDICATOR_COLORS_DEFAULT = {
+  "Devis et approbations": "#1d5f58",
+  "Devis et approbation": "#1d5f58",
+  "Documents et formats": "#4932a8",
+  "Délai et livraison": "#b35b1f",
+  "Délais et livraison": "#b35b1f",
+  "Précisions et instructions client": "#1f593a",
+  "Suivi et annulation": "#8f1e46",
+  "Sécurité et droits d'auteur": "#7a5717",
+  default: "#5a88b5"
+};
+const getCategoryBadgeStyle = (category = "", customColors = {}) => {
+  if (customColors[category]) {
+    const baseColor = customColors[category];
+    return {
+      bg: baseColor + "20",
+      // 20% opacity for background
+      border: baseColor + "80",
+      // 80% opacity for border
+      text: baseColor
+    };
+  }
+  return CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default;
+};
+const getCategoryIndicatorColor = (category = "", customColors = {}) => customColors[category] || CATEGORY_INDICATOR_COLORS_DEFAULT[category] || CATEGORY_INDICATOR_COLORS_DEFAULT.default;
 const customEditorStyles = `
   /* Translation Bureau Brand Colors - EXACT MATCH from original design */
   :root {
@@ -19002,7 +19033,29 @@ function App() {
       return false;
     }
   }, []);
-  const savedState = loadState();
+  const skipSavedState = reactExports.useMemo(() => {
+    try {
+      return new URLSearchParams(window.location.search).get("reset") === "1";
+    } catch {
+      return false;
+    }
+  }, []);
+  const savedState = reactExports.useMemo(() => skipSavedState ? getDefaultState() : loadState(), [skipSavedState]);
+  reactExports.useEffect(() => {
+    if (!skipSavedState) return;
+    clearState();
+    try {
+      localStorage.removeItem("ea_last_template_id");
+      localStorage.removeItem("ea_last_template_lang");
+    } catch {
+    }
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("reset");
+      window.history.replaceState(null, "", url.toString());
+    } catch {
+    }
+  }, [skipSavedState]);
   const [templatesData, setTemplatesData] = reactExports.useState(null);
   const [loading, setLoading] = reactExports.useState(true);
   const [interfaceLanguage, setInterfaceLanguage] = reactExports.useState(savedState.interfaceLanguage || "fr");
@@ -19985,17 +20038,19 @@ function App() {
     loadTemplatesData();
   }, [debug]);
   reactExports.useEffect(() => {
-    if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates) && templatesData.templates.length > 0) {
-      let templateToSelect = null;
-      if (selectedTemplateId) {
-        templateToSelect = templatesData.templates.find((t2) => t2.id === selectedTemplateId);
-      }
-      if (!templateToSelect) {
-        templateToSelect = templatesData.templates[0];
-      }
-      setSelectedTemplate(templateToSelect);
-      if (debug) console.log("[EA][Debug] Auto-selected template:", templateToSelect.id);
+    var _a2;
+    if (!loading || selectedTemplate || !((_a2 = templatesData == null ? void 0 : templatesData.templates) == null ? void 0 : _a2.length)) return;
+    if (!selectedTemplateId) {
+      if (debug) console.log("[EA][Debug] Template load complete without saved selection; awaiting user pick");
+      return;
     }
+    const templateToSelect = templatesData.templates.find((t2) => t2.id === selectedTemplateId);
+    if (!templateToSelect) {
+      if (debug) console.warn("[EA][Debug] Saved template id not found in catalog:", selectedTemplateId);
+      return;
+    }
+    setSelectedTemplate(templateToSelect);
+    if (debug) console.log("[EA][Debug] Auto-selected restored template:", templateToSelect.id);
   }, [loading, templatesData, selectedTemplate, selectedTemplateId, debug]);
   reactExports.useEffect(() => {
     if (!templatesData) return;
@@ -21414,9 +21469,10 @@ ${cleanBodyHtml}
                   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white", style: { minHeight: (count2 + 1) * ITEM_H }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: topPad } }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: filteredTemplates.slice(start, end).map((template) => {
-                      var _a2;
-                      const badgeStyle = getCategoryBadgeStyle(template.category);
-                      const badgeLabel = ((_a2 = t.categories) == null ? void 0 : _a2[template.category]) || template.category;
+                      var _a2, _b, _c;
+                      const badgeStyle = getCategoryBadgeStyle(template.category, ((_a2 = templatesData == null ? void 0 : templatesData.metadata) == null ? void 0 : _a2.categoryColors) || {});
+                      const indicatorColor = getCategoryIndicatorColor(template.category, ((_b = templatesData == null ? void 0 : templatesData.metadata) == null ? void 0 : _b.categoryColors) || {});
+                      const badgeLabel = ((_c = t.categories) == null ? void 0 : _c[template.category]) || template.category;
                       return /* @__PURE__ */ jsxRuntimeExports.jsx(
                         "div",
                         {
@@ -21439,10 +21495,19 @@ ${cleanBodyHtml}
                           } : { borderRadius: "14px", transform: pressedCardId === template.id ? "scale(0.995)" : void 0, boxShadow: pressedCardId === template.id ? "inset 0 0 0 1px rgba(0,0,0,0.05)" : void 0, scrollMarginTop: 220 },
                           children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between", children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-gray-900 text-[13px] mb-1", title: template.title[templateLanguage], children: renderHighlighted(
-                                template.title[templateLanguage],
-                                getMatchRanges(template.id, `title.${templateLanguage}`)
-                              ) }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                  "span",
+                                  {
+                                    className: "h-2.5 w-2.5 rounded-full shadow-sm",
+                                    style: { backgroundColor: indicatorColor, border: "1px solid rgba(0,0,0,0.08)" }
+                                  }
+                                ),
+                                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-gray-900 text-[13px]", title: template.title[templateLanguage], children: renderHighlighted(
+                                  template.title[templateLanguage],
+                                  getMatchRanges(template.id, `title.${templateLanguage}`)
+                                ) })
+                              ] }),
                               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2", title: template.description[templateLanguage], children: renderHighlighted(
                                 template.description[templateLanguage],
                                 getMatchRanges(template.id, `description.${templateLanguage}`)
@@ -21573,9 +21638,9 @@ ${cleanBodyHtml}
                   )
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3 space-y-3", children: filteredTemplates.slice(0, 80).map((template) => {
-                  var _a2;
-                  const badgeStyle = getCategoryBadgeStyle(template.category);
-                  const badgeLabel = ((_a2 = t.categories) == null ? void 0 : _a2[template.category]) || template.category;
+                  var _a2, _b;
+                  const badgeStyle = getCategoryBadgeStyle(template.category, ((_a2 = templatesData == null ? void 0 : templatesData.metadata) == null ? void 0 : _a2.categoryColors) || {});
+                  const badgeLabel = ((_b = t.categories) == null ? void 0 : _b[template.category]) || template.category;
                   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => {
                     setSelectedTemplate(template);
                     setShowMobileTemplates(false);
@@ -23479,4 +23544,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DzMZE6r4.js.map
+//# sourceMappingURL=main-FHxYNNvH.js.map
