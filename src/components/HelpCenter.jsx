@@ -87,6 +87,10 @@ const translations = {
           answer: 'Oui. À l\'ouverture, le popup synchronise immédiatement les valeurs actuelles grâce à l\'extraction directe de l\'objet et du message. Les modifications faites dans le texte sont détectées automatiquement.'
         },
         {
+          question: 'Comment revenir à l\'écran « Sélectionner un modèle » ?',
+          answer: 'Par défaut, ECHO n\'ouvre plus automatiquement un modèle au premier chargement. Si vous souhaitez repartir d\'un état vierge, utilisez l\'URL avec ?reset=1 (ex. https://.../index.html?reset=1).' 
+        },
+        {
           question: 'Comment revenir aux valeurs par défaut ?',
           answer: 'Utilisez le bouton Réinitialiser dans l\'éditeur. Il recharge le modèle sélectionné, restaure les valeurs d\'exemple et efface les champs personnalisés.'
         },
@@ -261,6 +265,10 @@ const translations = {
           answer: 'Yes. Opening the popout triggers an immediate sync that extracts the current subject and body. Text edits are auto-detected and reflected back.'
         },
         {
+          question: 'How do I get back to “Select a template”?',
+          answer: 'By default, ECHO no longer auto-opens a template on first load. To start fresh, use the URL with ?reset=1 (e.g., https://.../index.html?reset=1).'
+        },
+        {
           question: 'How do I restore default example values?',
           answer: 'Use the Reset button in the editor. It reloads the selected template, restores example values, and clears custom text fields.'
         },
@@ -323,7 +331,7 @@ const translations = {
         {
           value: 'template',
           label: 'Submit a template',
-          helper: 'Send a template for review or publication',
+          helper: 'Send a new template or a modification',
           messageLabel: 'Describe your template',
           placeholder: 'Summarize tone, audience, context, and any review notes.',
           extraField: {
@@ -384,6 +392,19 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
     message: '',
     extra: ''
   }))
+  const [templateDetails, setTemplateDetails] = useState({
+    templateType: 'new', // 'new' | 'modify'
+    existingId: '',
+    languages: { fr: false, en: false },
+    titleFr: '',
+    titleEn: '',
+    category: '',
+    audience: '',
+    context: '',
+    variablePlan: '',
+    examples: '',
+    deadline: ''
+  })
   const [status, setStatus] = useState('idle')
   const [errors, setErrors] = useState({})
 
@@ -471,6 +492,21 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
       validationErrors.message = strings.contact.form.validation.messageRequired
     }
 
+    // Additional validation for template submissions
+    if (formData.category === 'template') {
+      if (!templateDetails.languages.fr && !templateDetails.languages.en) {
+        validationErrors.languages = language === 'fr'
+          ? 'Choisissez au moins une langue (FR ou EN).'
+          : 'Choose at least one language (FR or EN).'
+      }
+      if (!templateDetails.templateType) {
+        validationErrors.templateType = language === 'fr' ? 'Sélectionnez le type.' : 'Select the type.'
+      }
+      if (templateDetails.templateType === 'modify' && !templateDetails.existingId.trim()) {
+        validationErrors.existingId = language === 'fr' ? 'Indiquez l’ID ou le nom du modèle existant.' : 'Provide the existing template ID or name.'
+      }
+    }
+
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors)
       return
@@ -489,6 +525,22 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
         language,
         submittedAt: new Date().toISOString(),
         product: 'ECHO'
+      }
+
+      if (formData.category === 'template') {
+        payload.templateDetails = {
+          type: templateDetails.templateType,
+          existingId: templateDetails.existingId || undefined,
+          languages: Object.keys(templateDetails.languages).filter((k) => templateDetails.languages[k]),
+          titleFr: templateDetails.titleFr || undefined,
+          titleEn: templateDetails.titleEn || undefined,
+          category: templateDetails.category || undefined,
+          audience: templateDetails.audience || undefined,
+          context: templateDetails.context || undefined,
+          variablePlan: templateDetails.variablePlan || undefined,
+          examples: templateDetails.examples || undefined,
+          deadline: templateDetails.deadline || undefined
+        }
       }
 
       const response = await fetch(submissionUrl, {
@@ -511,6 +563,19 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
         message: '',
         extra: ''
       }))
+      setTemplateDetails({
+        templateType: 'new',
+        existingId: '',
+        languages: { fr: false, en: false },
+        titleFr: '',
+        titleEn: '',
+        category: '',
+        audience: '',
+        context: '',
+        variablePlan: '',
+        examples: '',
+        deadline: ''
+      })
     } catch (error) {
       console.error('Contact form submission failed:', error)
       setStatus('error')
@@ -842,6 +907,152 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
                       <span className="text-xs font-normal text-red-600">{errors.message}</span>
                     ) : null}
                   </label>
+
+                  {formData.category === 'template' ? (
+                    <div className="space-y-4 rounded-xl border border-[#e6eef5] bg-white p-4">
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Type de demande' : 'Request type'}</span>
+                          <select
+                            className="h-9 rounded-md border border-slate-300 px-2 text-sm"
+                            value={templateDetails.templateType}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, templateType: e.target.value }))}
+                            aria-invalid={Boolean(errors.templateType)}
+                          >
+                            <option value="new">{language === 'fr' ? 'Nouveau modèle' : 'New template'}</option>
+                            <option value="modify">{language === 'fr' ? 'Modification d\'un modèle' : 'Modification of existing'}</option>
+                          </select>
+                          {errors.templateType ? (
+                            <span className="text-xs font-normal text-red-600">{errors.templateType}</span>
+                          ) : null}
+                        </label>
+
+                        {templateDetails.templateType === 'modify' ? (
+                          <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                            <span>{language === 'fr' ? 'ID/nom du modèle existant' : 'Existing template ID/name'}</span>
+                            <Input
+                              value={templateDetails.existingId}
+                              onChange={(e) => setTemplateDetails((p) => ({ ...p, existingId: e.target.value }))}
+                              placeholder={language === 'fr' ? 'Ex. q002 – Avis de fermeture' : 'e.g. q002 – Closure notice'}
+                              aria-invalid={Boolean(errors.existingId)}
+                            />
+                            {errors.existingId ? (
+                              <span className="text-xs font-normal text-red-600">{errors.existingId}</span>
+                            ) : null}
+                          </label>
+                        ) : null}
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <fieldset className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Langue de votre soumission' : 'Submission language'}</span>
+                          <div className="flex items-center gap-4 text-sm">
+                            <label className="inline-flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={templateDetails.languages.fr}
+                                onChange={(e) => setTemplateDetails((p) => ({ ...p, languages: { ...p.languages, fr: e.target.checked } }))}
+                              />
+                              <span>FR</span>
+                            </label>
+                            <label className="inline-flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={templateDetails.languages.en}
+                                onChange={(e) => setTemplateDetails((p) => ({ ...p, languages: { ...p.languages, en: e.target.checked } }))}
+                              />
+                              <span>EN</span>
+                            </label>
+                          </div>
+                          {errors.languages ? (
+                            <span className="text-xs font-normal text-red-600">{errors.languages}</span>
+                          ) : (
+                            <span className="text-xs font-normal text-slate-500">{language === 'fr' ? 'Envoyez au moins en français ou en anglais.' : 'Submit in English or French at minimum.'}</span>
+                          )}
+                        </fieldset>
+
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Catégorie suggérée' : 'Suggested category'}</span>
+                          <Input
+                            value={templateDetails.category}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, category: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Ex. Voyages, RH, IT' : 'e.g., Travel, HR, IT'}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Titre FR' : 'Title (FR)'}</span>
+                          <Input
+                            value={templateDetails.titleFr}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, titleFr: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Intitulé côté FR (si connu)' : 'French title (if known)'}
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Titre EN' : 'Title (EN)'}</span>
+                          <Input
+                            value={templateDetails.titleEn}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, titleEn: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Titre anglais (si connu)' : 'English title (if known)'}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Public visé' : 'Audience'}</span>
+                          <Input
+                            value={templateDetails.audience}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, audience: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Ex. employés, gestionnaires, partenaires' : 'e.g., employees, managers, partners'}
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Contexte' : 'Context'}</span>
+                          <Input
+                            value={templateDetails.context}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, context: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Ex. annonce, rappel, incident' : 'e.g., announcement, reminder, incident'}
+                          />
+                        </label>
+                      </div>
+
+                      <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                        <span>{language === 'fr' ? 'Où insérer les variables ?' : 'Where should variables go?'}</span>
+                        <Textarea
+                          rows={4}
+                          value={templateDetails.variablePlan}
+                          onChange={(e) => setTemplateDetails((p) => ({ ...p, variablePlan: e.target.value }))}
+                          placeholder={language === 'fr'
+                            ? 'Ex.: <<date_evenement>> dans l\'objet, <<nom_client>> au début du message, etc.'
+                            : 'e.g., <<event_date>> in Subject, <<client_name>> at start of body, etc.'}
+                        />
+                        <span className="text-xs font-normal text-slate-500">{language === 'fr' ? 'Ajoutez ce que vous savez; nous compléterons si nécessaire.' : 'Add what you know; we can fill in the rest.'}</span>
+                      </label>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Exemples (valeurs connues)' : 'Examples (known values)'}</span>
+                          <Textarea
+                            rows={3}
+                            value={templateDetails.examples}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, examples: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Ex.: date_evenement = 10-17 juin 2025' : 'e.g., event_date = June 10–17, 2025'}
+                          />
+                        </label>
+                        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                          <span>{language === 'fr' ? 'Échéance (facultatif)' : 'Deadline (optional)'}</span>
+                          <Input
+                            value={templateDetails.deadline}
+                            onChange={(e) => setTemplateDetails((p) => ({ ...p, deadline: e.target.value }))}
+                            placeholder={language === 'fr' ? 'Ex.: d\'ici le 15 juin' : 'e.g., by June 15'}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ) : null}
 
                   {selectedCategory?.extraField ? (
                     <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">

@@ -3625,7 +3625,20 @@ ${cleanBodyHtml}
 
   {/* Fixed Help button - bottom-right corner */}
   <Button
-    onClick={() => setShowHelpCenter(true)}
+    onClick={() => {
+      try {
+        const url = new URL(window.location.href)
+        url.searchParams.set('helpOnly', '1')
+        url.searchParams.set('lang', interfaceLanguage)
+        const w = Math.min(900, (window.screen?.availWidth || window.innerWidth) - 80)
+        const h = Math.min(700, (window.screen?.availHeight || window.innerHeight) - 120)
+        const left = Math.max(0, Math.floor(((window.screen?.availWidth || window.innerWidth) - w) / 2))
+        const top = Math.max(0, Math.floor(((window.screen?.availHeight || window.innerHeight) - h) / 3))
+        const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1,noopener=1`
+        const win = window.open(url.toString(), '_blank', features)
+        if (win && win.focus) win.focus()
+      } catch {}
+    }}
     variant="outline"
     className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all"
     style={{ borderColor: 'rgba(44, 61, 80, 0.5)', color: '#2c3d50' }}
@@ -4853,14 +4866,7 @@ ${cleanBodyHtml}
         document.body
       )}
 
-      {showHelpCenter && (
-        <HelpCenter
-          language={interfaceLanguage}
-          onClose={() => setShowHelpCenter(false)}
-          supportEmail={supportEmail}
-          contactEndpoint={supportFormEndpoint}
-        />
-      )}
+      {/* Help center now opens in a popout */}
 
       {/* Slide-over AI panel */}
       {showAIPanel && (
