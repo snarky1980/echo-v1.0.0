@@ -2206,11 +2206,11 @@ function App() {
         }
       }
       
-      // Ctrl/Cmd + Shift + Enter: Open email compose (mailto)
+      // Ctrl/Cmd + Shift + Enter: Open compose chooser
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Enter') {
         e.preventDefault()
         if (selectedTemplate) {
-          openEmail()
+          setShowComposeChooser(true)
         }
       }
   // (Removed stray conditional referencing undefined variables from earlier experimental code)
@@ -3456,6 +3456,7 @@ ${cleanBodyHtml}
 
   // Reset form with confirmation
   const [showResetWarning, setShowResetWarning] = useState(false)
+  const [showComposeChooser, setShowComposeChooser] = useState(false)
   
   const handleResetClick = () => {
     setShowResetWarning(true)
@@ -3485,35 +3486,25 @@ ${cleanBodyHtml}
     setShowResetWarning(false)
   }
 
-  // Simplified single mailto launcher (reverted from multi-protocol + web logic)
-  const openEmail = () => {
-    if (debug) console.log('[mailto] composing with subject:', finalSubject)
+  // Compose helpers: Outlook Web (HTML) and Outlook Classic (.eml)
+  const composeOutlookWebHtml = () => {
     const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
+    const bodyHtmlSource = bodyEditorRef.current?.getHtml?.() ?? finalBody
     const resolvedBodyText = replaceVariablesWithValues(finalBody, variables)
-    if (!resolvedSubject && !resolvedBodyText) {
-      alert(templateLanguage === 'fr' ? 'Sélectionnez un modèle avant l\'envoi.' : 'Select a template before sending.')
-      return
-    }
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText)
+
     const subject = encodeURIComponent(resolvedSubject || '')
-    // Preserve basic line breaks for mailto
-    const body = encodeURIComponent((resolvedBodyText || '').replace(/\r?\n/g, '\r\n'))
-    const url = `mailto:?subject=${subject}&body=${body}`
-    // Provide quick user feedback by changing button label briefly
-    const active = document.activeElement
-    const original = active?.textContent
-    if (active) active.textContent = templateLanguage === 'fr' ? 'Ouverture…' : 'Opening…'
-    // Use anchor to better trigger default client without replacing SPA history
-    try {
-      const a = document.createElement('a')
-      a.href = url
-      a.style.display = 'none'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-    } catch {
-      try { window.location.href = url } catch {}
+    const bodyHtml = encodeURIComponent(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${bodyResult.html || ''}</body></html>`)
+    const owaUrl = `https://outlook.office.com/mail/deeplink/compose?subject=${subject}&body=${bodyHtml}&bodyType=HTML`
+    const win = window.open(owaUrl, '_blank')
+    if (!win) {
+      alert(interfaceLanguage === 'fr' ? 'Veuillez autoriser les fenêtres pop-up pour ouvrir Outlook Web.' : 'Please allow pop-ups to open Outlook Web.')
     }
-    setTimeout(() => { if (active && original) active.textContent = original }, 1800)
+  }
+
+  const composeOutlookClassicEml = () => {
+    // Reuse exportAs('eml') for full-fidelity rich text in Outlook (classic)
+    exportAs('eml')
   }
 
   return (
@@ -4334,17 +4325,17 @@ ${cleanBodyHtml}
                       {copySuccess === 'all' ? t.copied : (t.copyAll || 'All')}
                     </Button>
 
-                    {/* Single mailto compose button */}
+                    {/* Compose button with chooser */}
                     <Button 
-                      onClick={openEmail}
+                      onClick={() => setShowComposeChooser(true)}
                       className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3"
                       style={{ background: '#2c3d50', borderRadius: '12px' }}
                       onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-                      title={interfaceLanguage === 'fr' ? 'Composer avec votre client courriel' : 'Compose with your mail client'}
+                      title={interfaceLanguage === 'fr' ? 'Ouvrir un nouveau courriel' : 'Open a new email'}
                     >
                       <Send className="h-5 w-5 mr-2" />
-                      {interfaceLanguage === 'fr' ? 'Composer (mailto)' : 'Compose (mailto)'}
+                      {interfaceLanguage === 'fr' ? 'Ouvrir dans un courriel' : 'Open in an email'}
                     </Button>
                   </div>
                   </div>
@@ -4396,6 +4387,46 @@ ${cleanBodyHtml}
                 style={{ borderColor: '#7f1d1d' }}
               >
                 {t.confirm}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Compose chooser dialog */}
+      {showComposeChooser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full p-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                {interfaceLanguage === 'fr' ? 'Ouvrir un nouveau courriel' : 'Open a new email'}
+              </h2>
+              <p className="text-sm text-gray-600">
+                {interfaceLanguage === 'fr'
+                  ? 'Choisissez où composer. Le format riche (gras, surlignage, styles) est pleinement conservé via Outlook classique (.eml).'
+                  : 'Choose where to compose. Rich formatting (bold, highlights, styles) is fully preserved via Outlook Classic (.eml).'}
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button
+                onClick={() => { composeOutlookClassicEml(); setShowComposeChooser(false) }}
+                variant="outline"
+                className="w-full border-2"
+                style={{ borderColor: '#2c3d50', color: '#2c3d50' }}
+              >
+                {interfaceLanguage === 'fr' ? 'Outlook (classique) – format riche' : 'Outlook (Classic) – rich format'}
+              </Button>
+              <Button
+                onClick={() => { composeOutlookWebHtml(); setShowComposeChooser(false) }}
+                className="w-full text-white"
+                style={{ background: '#2c3d50' }}
+              >
+                {interfaceLanguage === 'fr' ? 'Outlook Web (HTML)' : 'Outlook Web (HTML)'}
+              </Button>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <Button variant="ghost" onClick={() => setShowComposeChooser(false)}>
+                {interfaceLanguage === 'fr' ? 'Annuler' : 'Cancel'}
               </Button>
             </div>
           </div>
