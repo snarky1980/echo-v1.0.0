@@ -38,12 +38,12 @@ const translations = {
         ]
       },
       copying: {
-        heading: 'Copier & Outlook',
+        heading: 'Copier & Envoyer',
         points: [
-          'Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles.',
-          'Deux options Outlook: « Ouvrir dans Outlook classique » (application de bureau) et « Ouvrir dans Outlook Web » (navigateur).',
-          '« Ouvrir dans Outlook classique » tente d\'utiliser l\'application de bureau via les protocoles outlook:// et ms-outlook:. Si votre organisation bloque ces liens, utilisez Copier tout ou le bouton Web.',
-          'Le lien direct (icône de lien) inclut l\'identifiant et la langue dans l\'URL.'
+          'Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles et le formatage riche (gras, surlignage, etc.).',
+          'Le bouton « Ouvrir dans un courriel » génère un lien mailto qui ouvre votre client de messagerie par défaut (Outlook, Gmail, etc.) et insère automatiquement l\'objet et le corps en texte brut.',
+          'Important : Le formatage riche est perdu avec le bouton mailto. Pour conserver le gras, les couleurs et le surlignage, utilisez « Copier Tout » puis collez dans votre client préféré.',
+          'Le lien direct (icône de lien) inclut l\'identifiant et la langue dans l\'URL pour partager le modèle avec des collègues.'
         ]
       },
       favorites: {
@@ -60,7 +60,7 @@ const translations = {
           ['Ctrl/Cmd + Entrée', 'Copier tout'],
           ['Ctrl/Cmd + B', 'Copier le corps'],
           ['Ctrl/Cmd + J', 'Copier l\'objet'],
-          ['Ctrl/Cmd + Shift + Entrée', 'Ouvrir dans Outlook'],
+          ['Ctrl/Cmd + Shift + Entrée', 'Ouvrir dans un courriel'],
           ['Ctrl/Cmd + /', 'Focus sur la recherche'],
           ['Ctrl/Cmd + R (Variables)', 'Réinitialiser aux exemples'],
           ['Ctrl/Cmd + Shift + V (Variables)', 'Collage intelligent var: valeur']
@@ -112,11 +112,11 @@ const translations = {
           ]
         },
         {
-          title: 'Le bouton “Ouvrir dans Outlook” ne fait rien',
+          title: 'Le bouton “Ouvrir dans un courriel” ne fait rien',
           steps: [
             'Confirmez qu\'un modèle est sélectionné. Le bouton s\'active uniquement quand un contenu final est disponible.',
-            'Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook.',
-            'Si cela ouvre Outlook (nouveau) ou le web, définissez « Outlook (classique) » comme application Courriel par défaut dans Windows et comme gestionnaire pour les protocoles outlook et ms-outlook.'
+            'Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez « Copier Tout » puis collez manuellement dans votre client de messagerie.',
+            'Si rien ne se produit, vérifiez que vous avez un client de messagerie par défaut configuré dans Windows (Paramètres > Applications > Applications par défaut > E-mail).'
           ]
         }
       ]
@@ -216,12 +216,12 @@ const translations = {
         ]
       },
       copying: {
-        heading: 'Copying & Outlook',
+        heading: 'Copying & Sending',
         points: [
-          'Copy Subject / Copy Body / Copy All buttons include your current values.',
-          'Two Outlook options: “Open in Outlook Classic” (desktop app) and “Open in Outlook Web” (browser).',
-          '“Open in Outlook Classic” tries desktop via outlook:// and ms-outlook: protocols. If your org blocks these, use Copy All or the Web button.',
-          'The direct-link icon includes id & language in the URL.'
+          'Copy Subject / Copy Body / Copy All buttons include your current values and preserve rich formatting (bold, highlights, etc.).',
+          'The "Open in an email" button generates a mailto link that opens your default email client (Outlook, Gmail, etc.) and pre-fills the subject and body with plain text.',
+          'Important: Rich formatting is lost when using the mailto button. To preserve bold, colors, and highlights, use "Copy All" and paste into your preferred client.',
+          'The direct-link icon includes id & language in the URL to share the template with colleagues.'
         ]
       },
       favorites: {
@@ -238,7 +238,7 @@ const translations = {
           ['Ctrl/Cmd + Enter', 'Copy all'],
           ['Ctrl/Cmd + B', 'Copy body'],
           ['Ctrl/Cmd + J', 'Copy subject'],
-          ['Ctrl/Cmd + Shift + Enter', 'Open in Outlook'],
+          ['Ctrl/Cmd + Shift + Enter', 'Open in an email'],
           ['Ctrl/Cmd + /', 'Focus search'],
           ['Ctrl/Cmd + R (Variables)', 'Reset to examples'],
           ['Ctrl/Cmd + Shift + V (Variables)', 'Smart paste var: value']
@@ -290,11 +290,11 @@ const translations = {
           ]
         },
         {
-          title: '“Open in Outlook” button does nothing',
+          title: '"Open in an email" button does nothing',
           steps: [
             'Confirm that a template is selected. The button is enabled only when final content is available.',
-            'Some organizations block `mailto:` links. If that\'s the case, use Copy all and paste into Outlook manually.',
-            'If this opens New Outlook or the web, set “Outlook (Classic)” as the default Email app on Windows and as the handler for outlook and ms-outlook protocols.'
+            'Some organizations block `mailto:` links. If that\'s the case, use "Copy All" and paste into your email client manually.',
+            'If nothing happens, check that you have a default email client configured in Windows (Settings > Apps > Default apps > Email).'
           ]
         }
       ]
@@ -384,9 +384,23 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
   const strings = useMemo(() => translations[language] || translations.fr, [language])
   const contactOptions = strings.contact?.options || []
   const closeBtnRef = useRef(null)
+  const contactFormRef = useRef(null)
   const [query, setQuery] = useState('')
+  
+  // Check URL for initial category
+  const initialCategory = useMemo(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const cat = params.get('category')
+      if (cat && contactOptions.some(opt => opt.value === cat)) {
+        return cat
+      }
+    } catch {}
+    return contactOptions[0]?.value || 'support'
+  }, [contactOptions])
+  
   const [formData, setFormData] = useState(() => ({
-    category: contactOptions[0]?.value || 'support',
+    category: initialCategory,
     name: '',
     email: '',
     message: '',
@@ -436,14 +450,21 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
     document.body.style.overflow = 'hidden'
 
     requestAnimationFrame(() => {
-      closeBtnRef.current?.focus()
+      // If template category is pre-selected, scroll to contact form
+      if (initialCategory === 'template' && contactFormRef.current) {
+        setTimeout(() => {
+          contactFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 300)
+      } else {
+        closeBtnRef.current?.focus()
+      }
     })
 
     return () => {
       document.removeEventListener('keydown', handleKey)
       document.body.style.overflow = prevOverflow
     }
-  }, [onClose])
+  }, [onClose, initialCategory])
 
   const handleCategorySelect = (value) => {
     setFormData((prev) => ({ ...prev, category: value }))
@@ -840,7 +861,7 @@ export default function HelpCenter({ language = 'fr', onClose, supportEmail = 'j
 
               <Separator className="bg-[#e6eef5]" />
 
-              <section className="rounded-2xl border border-[#bfe7e3] bg-[#f5fffb] p-6">
+              <section ref={contactFormRef} className="rounded-2xl border border-[#bfe7e3] bg-[#f5fffb] p-6">
                 <div className="flex items-center gap-2 text-[#145a64]">
                   <Mail className="h-5 w-5" aria-hidden="true" />
                   <h3 className="text-lg font-semibold">{strings.contact.heading}</h3>

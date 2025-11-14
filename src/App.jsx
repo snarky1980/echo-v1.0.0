@@ -22,28 +22,25 @@ import { ScrollArea } from './components/ui/scroll-area.jsx'
 import { useToast } from './components/ui/toast.jsx'
 import './App.css'
 
-const CATEGORY_BADGE_STYLES = {
-  'Devis et approbations': { bg: '#d9f5f0', border: '#97dcd0', text: '#0f3d47' },
-  'Devis et approbation': { bg: '#d9f5f0', border: '#97dcd0', text: '#0f3d47' },
-  'Documents et formats': { bg: '#ece8ff', border: '#c7bef5', text: '#372d70' },
-  'Délai et livraison': { bg: '#ffe9db', border: '#ffc9a9', text: '#7a3410' },
-  'Délais et livraison': { bg: '#ffe9db', border: '#ffc9a9', text: '#7a3410' },
-  'Précisions et instructions client': { bg: '#e5f7eb', border: '#b8e9c6', text: '#1f5135' },
-  'Suivi et annulation': { bg: '#ffe6f1', border: '#ffb7d6', text: '#6f2347' },
-  'Sécurité et droits d\'auteur': { bg: '#fff4d8', border: '#ffd98f', text: '#6b4600' },
-  default: { bg: '#e6f0ff', border: '#c7dbff', text: '#8a7530' }
-}
+const NAVY_TEXT = '#1c2f4a'
 
-const CATEGORY_INDICATOR_COLORS_DEFAULT = {
-  'Devis et approbations': '#1d5f58',
-  'Devis et approbation': '#1d5f58',
-  'Documents et formats': '#4932a8',
-  'Délai et livraison': '#b35b1f',
-  'Délais et livraison': '#b35b1f',
-  'Précisions et instructions client': '#1f593a',
-  'Suivi et annulation': '#8f1e46',
-  'Sécurité et droits d\'auteur': '#7a5717',
-  default: '#5a88b5'
+const CATEGORY_BADGE_STYLES = {
+  Annulations: { bg: '#ffe4e6', border: '#fecdd3', text: NAVY_TEXT },
+  Assurance: { bg: '#e0f2f1', border: '#99e9d3', text: NAVY_TEXT },
+  'Avis de voyage': { bg: '#fef3c7', border: '#fde68a', text: NAVY_TEXT },
+  'Demande générale': { bg: '#f1f5f9', border: '#cbd5f5', text: NAVY_TEXT },
+  Devis: { bg: '#ede9fe', border: '#c4b5fd', text: NAVY_TEXT },
+  'Itinéraire': { bg: '#e0f2fe', border: '#bae6fd', text: NAVY_TEXT },
+  'Marketing & promotions': { bg: '#fae8ff', border: '#f0abfc', text: NAVY_TEXT },
+  Paiements: { bg: '#dcfce7', border: '#bbf7d0', text: NAVY_TEXT },
+  Plaintes: { bg: '#ffedd5', border: '#fdba74', text: NAVY_TEXT },
+  'Réservation': { bg: '#dbeafe', border: '#bfdbfe', text: NAVY_TEXT },
+  'Suivi post-voyage': { bg: '#f7fee7', border: '#d9f99d', text: NAVY_TEXT },
+  'Urgence': { bg: '#fee2e2', border: '#fecaca', text: NAVY_TEXT },
+  'Visa & documentation': { bg: '#cffafe', border: '#a5f3fc', text: NAVY_TEXT },
+  "Voyages d'affaires": { bg: '#e0e7ff', border: '#c7d2fe', text: NAVY_TEXT },
+  'Voyages de groupe': { bg: '#ccfbf1', border: '#99f6e4', text: NAVY_TEXT },
+  default: { bg: '#e6f0ff', border: '#c7dbff', text: NAVY_TEXT }
 }
 
 const getCategoryBadgeStyle = (category = '', customColors = {}) => {
@@ -59,7 +56,6 @@ const getCategoryBadgeStyle = (category = '', customColors = {}) => {
   // Fall back to predefined styles
   return CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default
 }
-const getCategoryIndicatorColor = (category = '', customColors = {}) => customColors[category] || CATEGORY_INDICATOR_COLORS_DEFAULT[category] || CATEGORY_INDICATOR_COLORS_DEFAULT.default
 
 // Custom CSS for modern typography and variable highlighting with the EXACT original teal/sage styling
 const customEditorStyles = `
@@ -938,11 +934,21 @@ const interfaceTexts = {
   searchPlaceholder: 'Rechercher un modèle...',
     allCategories: 'Toutes les catégories',
     categories: {
-      'Devis et estimations': 'Devis et estimations',
-      'Gestion de projets': 'Gestion de projets', 
-      'Problèmes techniques': 'Problèmes techniques',
-      'Communications générales': 'Communications générales',
-      'Services spécialisés': 'Services spécialisés'
+      Annulations: 'Annulations',
+      Assurance: 'Assurance',
+      'Avis de voyage': 'Avis de voyage',
+      'Demande générale': 'Demande générale',
+      Devis: 'Devis',
+      'Itinéraire': 'Itinéraire',
+      'Marketing & promotions': 'Marketing & promotions',
+      Paiements: 'Paiements',
+      Plaintes: 'Plaintes',
+      'Réservation': 'Réservation',
+      'Suivi post-voyage': 'Suivi post-voyage',
+      'Urgence': 'Urgence',
+      'Visa & documentation': 'Visa & documentation',
+      "Voyages d'affaires": "Voyages d'affaires",
+      'Voyages de groupe': 'Voyages de groupe'
     },
     templateLanguage: 'Langue du modèle',
     interfaceLanguage: 'Langue de l\'interface',
@@ -979,11 +985,21 @@ const interfaceTexts = {
   searchPlaceholder: 'Search for a template...',
     allCategories: 'All categories',
     categories: {
-      'Devis et estimations': 'Quotes and estimates',
-      'Gestion de projets': 'Project management', 
-      'Problèmes techniques': 'Technical issues',
-      'Communications générales': 'General communications',
-      'Services spécialisés': 'Specialized services'
+      Annulations: 'Cancellations',
+      Assurance: 'Insurance',
+      'Avis de voyage': 'Travel advisories',
+      'Demande générale': 'General inquiries',
+      Devis: 'Quotes',
+      'Itinéraire': 'Itinerary',
+      'Marketing & promotions': 'Marketing & promotions',
+      Paiements: 'Payments',
+      Plaintes: 'Complaints',
+      'Réservation': 'Reservation',
+      'Suivi post-voyage': 'Post-trip follow-up',
+      'Urgence': 'Emergency',
+      'Visa & documentation': 'Visa & documentation',
+      "Voyages d'affaires": 'Business travel',
+      'Voyages de groupe': 'Group travel'
     },
     templateLanguage: 'Template language',
     interfaceLanguage: 'Interface language',
@@ -2206,11 +2222,11 @@ function App() {
         }
       }
       
-      // Ctrl/Cmd + Shift + Enter: Open compose chooser
+      // Ctrl/Cmd + Shift + Enter: Open plain-text compose draft
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Enter') {
         e.preventDefault()
         if (selectedTemplate) {
-          setShowComposeChooser(true)
+          composePlainTextEmailDraft()
         }
       }
   // (Removed stray conditional referencing undefined variables from earlier experimental code)
@@ -3456,7 +3472,6 @@ ${cleanBodyHtml}
 
   // Reset form with confirmation
   const [showResetWarning, setShowResetWarning] = useState(false)
-  const [showComposeChooser, setShowComposeChooser] = useState(false)
   
   const handleResetClick = () => {
     setShowResetWarning(true)
@@ -3486,25 +3501,26 @@ ${cleanBodyHtml}
     setShowResetWarning(false)
   }
 
-  // Compose helpers: Outlook Web (HTML) and Outlook Classic (.eml)
-  const composeOutlookWebHtml = () => {
-    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables)
+  // Compose helper: plain-text mailto fallback
+  const composePlainTextEmailDraft = () => {
+    // Use mailto so we at least open a draft with plain text content
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables) || ''
     const bodyHtmlSource = bodyEditorRef.current?.getHtml?.() ?? finalBody
-    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables)
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables) || ''
     const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText)
 
-    const subject = encodeURIComponent(resolvedSubject || '')
-    const bodyHtml = encodeURIComponent(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${bodyResult.html || ''}</body></html>`)
-    const owaUrl = `https://outlook.office.com/mail/deeplink/compose?subject=${subject}&body=${bodyHtml}&bodyType=HTML`
-    const win = window.open(owaUrl, '_blank')
-    if (!win) {
-      alert(interfaceLanguage === 'fr' ? 'Veuillez autoriser les fenêtres pop-up pour ouvrir Outlook Web.' : 'Please allow pop-ups to open Outlook Web.')
-    }
-  }
+    const plainBody = (bodyResult.text || resolvedBodyText || '')
+      .replace(/\r?\n/g, '\r\n')
 
-  const composeOutlookClassicEml = () => {
-    // Reuse exportAs('eml') for full-fidelity rich text in Outlook (classic)
-    exportAs('eml')
+    const subjectParam = encodeURIComponent(resolvedSubject)
+    const bodyParam = encodeURIComponent(plainBody)
+    const mailtoUrl = `mailto:?subject=${subjectParam}&body=${bodyParam}`
+
+    try {
+      window.location.href = mailtoUrl
+    } catch (error) {
+      window.open(mailtoUrl, '_self')
+    }
   }
 
   return (
@@ -3614,6 +3630,40 @@ ${cleanBodyHtml}
         </div>
       </header>
 
+  {/* Template submission button */}
+  <Button
+    onClick={() => {
+      try {
+        const url = new URL(window.location.href)
+        url.searchParams.set('helpOnly', '1')
+        url.searchParams.set('lang', interfaceLanguage)
+        url.searchParams.set('category', 'template')
+        const w = Math.min(900, (window.screen?.availWidth || window.innerWidth) - 80)
+        const h = Math.min(700, (window.screen?.availHeight || window.innerHeight) - 120)
+        const left = Math.max(0, Math.floor(((window.screen?.availWidth || window.innerWidth) - w) / 2))
+        const top = Math.max(0, Math.floor(((window.screen?.availHeight || window.innerHeight) - h) / 3))
+        const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1,noopener=1`
+        const win = window.open(url.toString(), '_blank', features)
+        if (win && win.focus) win.focus()
+      } catch {}
+    }}
+    variant="outline"
+    className="fixed bottom-4 right-[120px] z-40 inline-flex items-center gap-2 rounded-lg border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all"
+    style={{ borderColor: 'rgba(44, 61, 80, 0.5)', color: '#2c3d50' }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.backgroundColor = 'rgba(44, 61, 80, 0.9)';
+      e.currentTarget.style.color = 'white';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.backgroundColor = 'white';
+      e.currentTarget.style.color = '#2c3d50';
+    }}
+    title={interfaceLanguage === 'fr' ? 'Soumettre un modèle' : 'Submit a template'}
+  >
+    <FileText className="h-5 w-5" />
+    <span>{interfaceLanguage === 'fr' ? 'Soumettre un modèle' : 'Submit a template'}</span>
+  </Button>
+
   {/* Fixed Help button - bottom-right corner */}
   <Button
     onClick={() => {
@@ -3631,7 +3681,7 @@ ${cleanBodyHtml}
       } catch {}
     }}
     variant="outline"
-    className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all"
+    className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-lg border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all"
     style={{ borderColor: 'rgba(44, 61, 80, 0.5)', color: '#2c3d50' }}
     onMouseEnter={(e) => {
       e.currentTarget.style.backgroundColor = 'rgba(44, 61, 80, 0.9)';
@@ -3815,7 +3865,6 @@ ${cleanBodyHtml}
                   <div className="space-y-3">
                     {filteredTemplates.slice(start, end).map((template) => {
                       const badgeStyle = getCategoryBadgeStyle(template.category, templatesData?.metadata?.categoryColors || {})
-                      const indicatorColor = getCategoryIndicatorColor(template.category, templatesData?.metadata?.categoryColors || {})
                       const badgeLabel = t.categories?.[template.category] || template.category
                       return (
                         <div
@@ -3847,10 +3896,6 @@ ${cleanBodyHtml}
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span
-                                  className="h-2.5 w-2.5 rounded-full shadow-sm"
-                                  style={{ backgroundColor: indicatorColor, border: '1px solid rgba(0,0,0,0.08)' }}
-                                />
                                 <h3 className="font-bold text-gray-900 text-[13px]" title={template.title[templateLanguage]}>
                                   {renderHighlighted(
                                     template.title[templateLanguage],
@@ -4325,14 +4370,14 @@ ${cleanBodyHtml}
                       {copySuccess === 'all' ? t.copied : (t.copyAll || 'All')}
                     </Button>
 
-                    {/* Compose button with chooser */}
+                    {/* Compose button (plain-text mailto) */}
                     <Button 
-                      onClick={() => setShowComposeChooser(true)}
+                      onClick={() => composePlainTextEmailDraft()}
                       className="font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3"
                       style={{ background: '#2c3d50', borderRadius: '12px' }}
                       onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-                      title={interfaceLanguage === 'fr' ? 'Ouvrir un nouveau courriel' : 'Open a new email'}
+                      title={interfaceLanguage === 'fr' ? 'Ouvrir un brouillon en texte brut dans votre client de courriel' : 'Open a plain-text draft in your email client'}
                     >
                       <Send className="h-5 w-5 mr-2" />
                       {interfaceLanguage === 'fr' ? 'Ouvrir dans un courriel' : 'Open in an email'}
@@ -4393,45 +4438,7 @@ ${cleanBodyHtml}
         </div>
       )}
 
-      {/* Compose chooser dialog */}
-      {showComposeChooser && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                {interfaceLanguage === 'fr' ? 'Ouvrir un nouveau courriel' : 'Open a new email'}
-              </h2>
-              <p className="text-sm text-gray-600">
-                {interfaceLanguage === 'fr'
-                  ? 'Choisissez où composer. Le format riche (gras, surlignage, styles) est pleinement conservé via Outlook classique (.eml).'
-                  : 'Choose where to compose. Rich formatting (bold, highlights, styles) is fully preserved via Outlook Classic (.eml).'}
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Button
-                onClick={() => { composeOutlookClassicEml(); setShowComposeChooser(false) }}
-                variant="outline"
-                className="w-full border-2"
-                style={{ borderColor: '#2c3d50', color: '#2c3d50' }}
-              >
-                {interfaceLanguage === 'fr' ? 'Outlook (classique) – format riche' : 'Outlook (Classic) – rich format'}
-              </Button>
-              <Button
-                onClick={() => { composeOutlookWebHtml(); setShowComposeChooser(false) }}
-                className="w-full text-white"
-                style={{ background: '#2c3d50' }}
-              >
-                {interfaceLanguage === 'fr' ? 'Outlook Web (HTML)' : 'Outlook Web (HTML)'}
-              </Button>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Button variant="ghost" onClick={() => setShowComposeChooser(false)}>
-                {interfaceLanguage === 'fr' ? 'Annuler' : 'Cancel'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Variables minimized pill */}
   {showVariablePopup && varsMinimized && !varsOnlyMode && createPortal(
