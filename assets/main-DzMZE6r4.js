@@ -7090,6 +7090,14 @@ const varKeysMatch = (a, b) => {
   if (!a || !b) return false;
   return normalizeVarKey(a) === normalizeVarKey(b);
 };
+const metadata = { "version": "1.0", "totalTemplates": 100, "languages": ["fr", "en"], "categories": ["Annulations", "Assurance", "Avis de voyage", "Demande générale", "Devis", "Itinéraire", "Marketing & promotions", "Paiements", "Plaintes", "Réservation", "Suivi post-voyage", "Urgence", "Visa & documentation", "Voyages d'affaires", "Voyages de groupe"], "updatedAt": "2025-11-14T10:25:09.100Z" };
+const variables = /* @__PURE__ */ JSON.parse(`{"booking_reference":{"description":{"fr":"Numéro de référence de réservation","en":"Booking reference number"},"format":"text","example":{"fr":"MT-43827-Hawk","en":"MT-43827-Hawk"}},"client_name":{"description":{"fr":"Nom complet du client","en":"Client full name"},"format":"text","example":{"fr":"Sophie Gendron","en":"Sophie Gendron"}},"destination":{"description":{"fr":"Destination de voyage","en":"Travel destination"},"format":"text","example":{"fr":"Banff, Alberta","en":"Banff, Alberta"}},"total_cost":{"description":{"fr":"Coût total avec devise","en":"Total cost with currency"},"format":"text","example":{"fr":"3 425,50 $","en":"3,425.50 $"}},"travel_dates":{"description":{"fr":"Dates de voyage","en":"Travel dates"},"format":"date","example":{"fr":"10-17 juin 2025","en":"June 10-17, 2025"}},"agent_name":{"description":{"fr":"Nom du conseiller en voyages","en":"Travel consultant name"},"format":"text","example":{"fr":"Emily Roy","en":"Emily Roy"}},"quote_reference":{"description":{"fr":"Numéro de référence du devis","en":"Quote reference number"},"format":"text","example":{"fr":"MT-92841-Hawk","en":"MT-92841-Hawk"}},"amount_due":{"description":{"fr":"Montant dû avec devise","en":"Amount due with currency"},"format":"text","example":{"fr":"1 250,00 $","en":"1,250.00 $"}},"due_date":{"description":{"fr":"Date d'échéance du paiement","en":"Payment due date"},"format":"date","example":{"fr":"15 décembre 2025","en":"December 15, 2025"}},"refund_amount":{"description":{"fr":"Montant du remboursement avec devise","en":"Refund amount with currency"},"format":"text","example":{"fr":"2 100,00 $","en":"2,100.00 $"}},"refund_timeline":{"description":{"fr":"Délai de traitement du remboursement","en":"Refund processing time"},"format":"text","example":{"fr":"5 à 10 jours ouvrables","en":"5-10 business days"}},"departure_date":{"description":{"fr":"Date de départ","en":"Departure date"},"format":"date","example":{"fr":"15 juillet 2025","en":"July 15, 2025"}},"itinerary_link":{"description":{"fr":"Lien du document d'itinéraire","en":"Itinerary document link"},"format":"text","example":{"fr":"https://marlinhawkesbury.ca/itinerary/MT-43827","en":"https://marlinhawkesbury.ca/itinerary/MT-43827"}},"feedback_link":{"description":{"fr":"Lien du sondage de rétroaction","en":"Feedback survey link"},"format":"text","example":{"fr":"https://marlinhawkesbury.ca/feedback","en":"https://marlinhawkesbury.ca/feedback"}},"advisory_details":{"description":{"fr":"Détails de l'avis de voyage","en":"Travel advisory details"},"format":"text","example":{"fr":"Alerte météo - Saison des ouragans","en":"Weather alert - Hurricane season"}},"country_name":{"description":{"fr":"Nom du pays","en":"Country name"},"format":"text","example":{"fr":"Cuba","en":"Cuba"}},"group_size":{"description":{"fr":"Nombre de voyageurs","en":"Number of travelers"},"format":"text","example":{"fr":"12 voyageurs","en":"12 travelers"}},"account_manager":{"description":{"fr":"Nom du gestionnaire de compte","en":"Account manager name"},"format":"text","example":{"fr":"André Gagnon","en":"André Gagnon"}},"company_name":{"description":{"fr":"Nom de l'entreprise","en":"Company name"},"format":"text","example":{"fr":"Corporation Acme","en":"Acme Corporation"}},"contact_name":{"description":{"fr":"Nom du contact principal","en":"Primary contact name"},"format":"text","example":{"fr":"Jean Tremblay","en":"Jean Tremblay"}},"insurance_link":{"description":{"fr":"Lien d'information sur l'assurance voyage","en":"Travel insurance information link"},"format":"text","example":{"fr":"https://marlinhawkesbury.ca/insurance","en":"https://marlinhawkesbury.ca/insurance"}},"passport_country":{"description":{"fr":"Pays du passeport","en":"Passport country"},"format":"text","example":{"fr":"Canada","en":"Canada"}},"visa_link":{"description":{"fr":"Lien d'information sur les visas","en":"Visa information link"},"format":"text","example":{"fr":"https://voyage.gc.ca/destinations","en":"https://travel.gc.ca/destinations"}},"case_number":{"description":{"fr":"Numéro de dossier de plainte","en":"Complaint case number"},"format":"text","example":{"fr":"CASE-2025-0142","en":"CASE-2025-0142"}},"resolution_timeline":{"description":{"fr":"Délai de résolution","en":"Resolution timeframe"},"format":"text","example":{"fr":"3 à 5 jours ouvrables","en":"3-5 business days"}},"promotion_link":{"description":{"fr":"Lien de la page des promotions","en":"Promotions page link"},"format":"text","example":{"fr":"https://marlinhawkesbury.ca/deals","en":"https://marlinhawkesbury.ca/deals"}},"unsubscribe_link":{"description":{"fr":"Lien de désabonnement","en":"Unsubscribe link"},"format":"text","example":{"fr":"https://marlinhawkesbury.ca/unsubscribe","en":"https://marlinhawkesbury.ca/unsubscribe"}},"after_hours_email":{"description":{"fr":"Courriel du client","en":"Client email"},"format":"text","example":{"fr":"sophie.gendron@email.com","en":"sophie.gendron@email.com"}},"emergency_number":{"description":{"fr":"Information pour emergency_number","en":"Information for emergency_number"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"inquiry_topic":{"description":{"fr":"Information pour inquiry_topic","en":"Information for inquiry_topic"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"e_ticket_link":{"description":{"fr":"Information pour e_ticket_link","en":"Information for e_ticket_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"check_in_link":{"description":{"fr":"Information pour check_in_link","en":"Information for check_in_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"flight_number":{"description":{"fr":"Numéro de vol","en":"Flight number"},"format":"text","example":{"fr":"AC872 – Air Canada","en":"AC872 – Air Canada"}},"check_in_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-10","en":"2025-06-10"}},"confirmation_number":{"description":{"fr":"Information pour confirmation_number","en":"Information for confirmation_number"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"hotel_name":{"description":{"fr":"Hôtel réservé","en":"Hotel booked"},"format":"text","example":{"fr":"Altis Grand Hotel","en":"Altis Grand Hotel"}},"pickup_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-24","en":"2025-06-24"}},"rental_company":{"description":{"fr":"Information pour rental_company","en":"Information for rental_company"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"reservation_number":{"description":{"fr":"Information pour reservation_number","en":"Information for reservation_number"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"activity_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-07-15","en":"2025-07-15"}},"activity_name":{"description":{"fr":"Information pour activity_name","en":"Information for activity_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"item_name":{"description":{"fr":"Information pour item_name","en":"Information for item_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"waitlist_position":{"description":{"fr":"Information pour waitlist_position","en":"Information for waitlist_position"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"seat_selection_link":{"description":{"fr":"Information pour seat_selection_link","en":"Information for seat_selection_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"airline_name":{"description":{"fr":"Information pour airline_name","en":"Information for airline_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"baggage_details_link":{"description":{"fr":"Information pour baggage_details_link","en":"Information for baggage_details_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"request_details":{"description":{"fr":"Information pour request_details","en":"Information for request_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"quote_expiry_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-10","en":"2025-06-10"}},"quote_link":{"description":{"fr":"Information pour quote_link","en":"Information for quote_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"alternative_options_link":{"description":{"fr":"Information pour alternative_options_link","en":"Information for alternative_options_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"new_price":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"2 890,00 $","en":"$3,425.50"}},"old_price":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"4 120,75 $","en":"$4,120.75"}},"required_details":{"description":{"fr":"Information pour required_details","en":"Information for required_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"payment_link":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"3 425,50 $","en":"$2,890.00"}},"reason":{"description":{"fr":"Information pour reason","en":"Information for reason"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"final_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"2 890,00 $","en":"$4,120.75"}},"amount_paid":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"4 120,75 $","en":"$4,120.75"}},"payment_date":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"date","example":{"fr":"4 120,75 $","en":"$2,890.00"}},"timeline":{"description":{"fr":"Information pour timeline","en":"Information for timeline"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"monthly_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"4 120,75 $","en":"$3,425.50"}},"next_due_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-24","en":"2025-06-24"}},"cancellation_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-10","en":"2025-06-10"}},"invoice_link":{"description":{"fr":"Information pour invoice_link","en":"Information for invoice_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"invoice_number":{"description":{"fr":"Information pour invoice_number","en":"Information for invoice_number"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"deposit_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"3 425,50 $","en":"$3,425.50"}},"dispute_details":{"description":{"fr":"Information pour dispute_details","en":"Information for dispute_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"policy_details":{"description":{"fr":"Numéro de police d’assurance","en":"Insurance policy number"},"format":"text","example":{"fr":"CV-HAWK-65122","en":"CV-HAWK-65122"}},"net_refund":{"description":{"fr":"Information pour net_refund","en":"Information for net_refund"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"penalty_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"2 890,00 $","en":"$3,425.50"}},"options":{"description":{"fr":"Information pour options","en":"Information for options"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"credit_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"3 425,50 $","en":"$4,120.75"}},"expiry_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-07-02","en":"2025-07-02"}},"missed_payment_date":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"date","example":{"fr":"4 120,75 $","en":"$4,120.75"}},"new_reference":{"description":{"fr":"Numéro de dossier","en":"Booking reference"},"format":"text","example":{"fr":"MT-67155-Hawk","en":"MT-67155-Hawk"}},"original_reference":{"description":{"fr":"Numéro de dossier","en":"Booking reference"},"format":"text","example":{"fr":"MT-67155-Hawk","en":"MT-67155-Hawk"}},"partial_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"4 120,75 $","en":"$3,425.50"}},"full_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"4 120,75 $","en":"$3,425.50"}},"change_details":{"description":{"fr":"Information pour change_details","en":"Information for change_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"new_itinerary_link":{"description":{"fr":"Information pour new_itinerary_link","en":"Information for new_itinerary_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"new_time":{"description":{"fr":"Information pour new_time","en":"Information for new_time"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"old_time":{"description":{"fr":"Information pour old_time","en":"Information for old_time"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"tips_link":{"description":{"fr":"Information pour tips_link","en":"Information for tips_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"connecting_city":{"description":{"fr":"Information pour connecting_city","en":"Information for connecting_city"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"gate_info":{"description":{"fr":"Information pour gate_info","en":"Information for gate_info"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"layover_duration":{"description":{"fr":"Information pour layover_duration","en":"Information for layover_duration"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"new_room_type":{"description":{"fr":"Information pour new_room_type","en":"Information for new_room_type"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"meeting_point":{"description":{"fr":"Information pour meeting_point","en":"Information for meeting_point"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"start_time":{"description":{"fr":"Information pour start_time","en":"Information for start_time"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"tour_name":{"description":{"fr":"Information pour tour_name","en":"Information for tour_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"document_type":{"description":{"fr":"Information pour document_type","en":"Information for document_type"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"boarding_pass_link":{"description":{"fr":"Information pour boarding_pass_link","en":"Information for boarding_pass_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"forecast_link":{"description":{"fr":"Information pour forecast_link","en":"Information for forecast_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"currency_guide_link":{"description":{"fr":"Information pour currency_guide_link","en":"Information for currency_guide_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"loyalty_link":{"description":{"fr":"Information pour loyalty_link","en":"Information for loyalty_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"welcome_bonus":{"description":{"fr":"Information pour welcome_bonus","en":"Information for welcome_bonus"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"review_link":{"description":{"fr":"Information pour review_link","en":"Information for review_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"supplier_name":{"description":{"fr":"Information pour supplier_name","en":"Information for supplier_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"planning_link":{"description":{"fr":"Information pour planning_link","en":"Information for planning_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"hashtag":{"description":{"fr":"Information pour hashtag","en":"Information for hashtag"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"photo_upload_link":{"description":{"fr":"Information pour photo_upload_link","en":"Information for photo_upload_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"item_description":{"description":{"fr":"Information pour item_description","en":"Information for item_description"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"status":{"description":{"fr":"Information pour status","en":"Information for status"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"referral_link":{"description":{"fr":"Information pour referral_link","en":"Information for referral_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"reward_amount":{"description":{"fr":"Montant total dû","en":"Total amount due"},"format":"text","example":{"fr":"2 890,00 $","en":"$4,120.75"}},"passport_expiry_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-07-15","en":"2025-07-15"}},"issue_details":{"description":{"fr":"Information pour issue_details","en":"Information for issue_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"resolution_plan":{"description":{"fr":"Information pour resolution_plan","en":"Information for resolution_plan"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"link":{"description":{"fr":"Information pour link","en":"Information for link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"suggested_destination":{"description":{"fr":"destination","en":"destination"},"format":"text","example":{"fr":"Venise, Italie","en":"Banff, Alberta"}},"weather_details":{"description":{"fr":"Information pour weather_details","en":"Information for weather_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"alert_details":{"description":{"fr":"Information pour alert_details","en":"Information for alert_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"cdc_link":{"description":{"fr":"Information pour cdc_link","en":"Information for cdc_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"disruption_details":{"description":{"fr":"Information pour disruption_details","en":"Information for disruption_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"government_link":{"description":{"fr":"Information pour government_link","en":"Information for government_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"unrest_details":{"description":{"fr":"Information pour unrest_details","en":"Information for unrest_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"airport_code":{"description":{"fr":"Information pour airport_code","en":"Information for airport_code"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"delay_reason":{"description":{"fr":"Information pour delay_reason","en":"Information for delay_reason"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"disaster_type":{"description":{"fr":"Information pour disaster_type","en":"Information for disaster_type"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"safety_link":{"description":{"fr":"Information pour safety_link","en":"Information for safety_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"change_percentage":{"description":{"fr":"Information pour change_percentage","en":"Information for change_percentage"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"currency_code":{"description":{"fr":"Information pour currency_code","en":"Information for currency_code"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"impact_details":{"description":{"fr":"Information pour impact_details","en":"Information for impact_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"effective_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-24","en":"2025-06-24"}},"rule_change":{"description":{"fr":"Information pour rule_change","en":"Information for rule_change"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"new_hotel":{"description":{"fr":"Hôtel réservé","en":"Hotel booked"},"format":"text","example":{"fr":"Resort Playa Azul","en":"Resort Playa Azul"}},"original_hotel":{"description":{"fr":"Hôtel réservé","en":"Hotel booked"},"format":"text","example":{"fr":"Hotel Belle Époque","en":"Hotel Belle Époque"}},"dates":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-10","en":"2025-06-10"}},"event_name":{"description":{"fr":"Information pour event_name","en":"Information for event_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"group_leader_name":{"description":{"fr":"Taille du groupe","en":"Group size"},"format":"text","example":{"fr":"12 voyageurs","en":"12 travelers"}},"group_name":{"description":{"fr":"Taille du groupe","en":"Group size"},"format":"text","example":{"fr":"8 voyageurs","en":"8 travelers"}},"deadline":{"description":{"fr":"Information pour deadline","en":"Information for deadline"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"registration_link":{"description":{"fr":"Information pour registration_link","en":"Information for registration_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"traveler_name":{"description":{"fr":"Information pour traveler_name","en":"Information for traveler_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"policy_detail":{"description":{"fr":"Numéro de police d’assurance","en":"Insurance policy number"},"format":"text","example":{"fr":"CV-HAWK-65122","en":"CV-HAWK-65122"}},"month":{"description":{"fr":"Information pour month","en":"Information for month"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"report_link":{"description":{"fr":"Information pour report_link","en":"Information for report_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"approver_name":{"description":{"fr":"Information pour approver_name","en":"Information for approver_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"cost":{"description":{"fr":"Information pour cost","en":"Information for cost"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"profile_link":{"description":{"fr":"Information pour profile_link","en":"Information for profile_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"end_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-07-02","en":"2025-07-02"}},"holiday_name":{"description":{"fr":"Information pour holiday_name","en":"Information for holiday_name"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"start_date":{"description":{"fr":"Date","en":"Date"},"format":"date","example":{"fr":"2025-06-24","en":"2025-06-24"}},"resolution_details":{"description":{"fr":"Information pour resolution_details","en":"Information for resolution_details"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"claim_link":{"description":{"fr":"Information pour claim_link","en":"Information for claim_link"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}},"policy_number":{"description":{"fr":"Numéro de police d’assurance","en":"Insurance policy number"},"format":"text","example":{"fr":"MARLIN-98274","en":"MARLIN-98274"}},"resolution_offer":{"description":{"fr":"Information pour resolution_offer","en":"Information for resolution_offer"},"format":"text","example":{"fr":"Valeur à définir","en":"Value to be defined"}}}`);
+const templates = /* @__PURE__ */ JSON.parse(`[{"id":"b001_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Confirmation de réservation","en":"Booking Confirmation"},"description":{"fr":"Confirmation d'une nouvelle réservation avec les détails essentiels","en":"Confirmation of a new booking with essential details"},"subject":{"fr":"Confirmation de réservation","en":"Booking Confirmation"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nNous sommes ravis de confirmer votre réservation avec le numéro de référence <<booking_reference_FR>> pour votre voyage à <<destination_FR>> du <<travel_dates_FR>>. Le coût total est de <<total_cost_FR>>.\\r\\n\\r\\nVotre itinéraire détaillé suivra sous peu. Merci d'avoir choisi Voyages Marlin Hawkesbury!","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe are thrilled to confirm your booking with reference number <<booking_reference_EN>> for your trip to <<destination_EN>> from <<travel_dates_EN>>. The total cost is <<total_cost_EN>>.\\r\\n\\r\\nYour detailed itinerary will follow shortly. Thank you for choosing Marlin Travel Hawkesbury!"},"variables":["booking_reference","client_name","destination","total_cost","travel_dates"]},{"id":"q002_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Suivi de devis (72 heures)","en":"Quote Follow-up (72 Hours)"},"description":{"fr":"Courriel de suivi pour un devis envoyé il y a 72 heures","en":"Follow-up email for a quote sent 72 hours ago"},"subject":{"fr":"Suivi de devis (72 heures)","en":"Quote Follow-up (72 Hours)"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nJ'espère que ce courriel vous trouve bien. Je fais suite au devis que nous vous avons envoyé pour votre voyage à <<destination_FR>> (Réf : <<quote_reference_FR>>).\\r\\n\\r\\nAvez-vous des questions ou souhaitez-vous procéder à la réservation ? Veuillez me répondre ou m'appeler, <<agent_name_FR>>, dès que possible","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nI hope this email finds you well. I'm following up on the quote we sent you for your trip to <<destination_EN>> (Ref: <<quote_reference_EN>>).\\r\\n\\r\\nDo you have any questions or would you like to proceed with the booking? Please reply or call me, <<agent_name_EN>>, at your earliest convenience"},"variables":["agent_name","client_name","destination","quote_reference"]},{"id":"p003_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Rappel de paiement (échéance proche)","en":"Payment Reminder (Due Soon)"},"description":{"fr":"Rappel pour un paiement dû dans les 7 prochains jours","en":"Reminder for a payment due in the next 7 days"},"subject":{"fr":"Rappel de paiement (échéance proche)","en":"Payment Reminder (Due Soon)"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nCeci est un rappel amical qu'un paiement de <<amount_due_FR>> pour votre réservation <<booking_reference_FR>> est dû le <<due_date_FR>>.\\r\\n\\r\\nVeuillez vous assurer que le paiement est effectué à temps pour éviter l'annulation. Vous pouvez payer en ligne ou en nous appelant","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is a friendly reminder that a payment of <<amount_due_EN>> for your booking <<booking_reference_EN>> is due on <<due_date_EN>>.\\r\\n\\r\\nPlease ensure the payment is made on time to avoid cancellation. You can pay online or by calling us"},"variables":["amount_due","booking_reference","client_name","due_date"]},{"id":"c004_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Confirmation d'annulation","en":"Cancellation Confirmation"},"description":{"fr":"Confirmation qu'une réservation a été annulée avec succès","en":"Confirmation that a booking has been successfully cancelled"},"subject":{"fr":"Confirmation d'annulation","en":"Cancellation Confirmation"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nCeci confirme l'annulation de votre réservation <<booking_reference_FR>>. Un remboursement de <<refund_amount_FR>> a été traité et devrait apparaître sur votre compte dans un délai de <<refund_timeline_FR>>.\\r\\n\\r\\nNous espérons vous aider avec vos projets de voyage à l'avenir","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis confirms the cancellation of your booking <<booking_reference_EN>>. A refund of <<refund_amount_EN>> has been processed and should reflect in your account within <<refund_timeline_EN>>.\\r\\n\\r\\nWe hope to assist you with your travel plans in the future"},"variables":["booking_reference","client_name","refund_amount","refund_timeline"]},{"id":"i005_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Votre itinéraire de voyage final","en":"Your Final Travel Itinerary"},"description":{"fr":"Courriel contenant l'itinéraire de voyage final et les documents","en":"Email containing the final travel itinerary and documents"},"subject":{"fr":"Votre itinéraire de voyage final","en":"Your Final Travel Itinerary"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nVotre itinéraire de voyage final pour votre voyage à <<destination_FR>> au départ du <<departure_date_FR>> est prêt ! Vous pouvez consulter et télécharger tous vos documents ici : <<itinerary_link_FR>>.\\r\\n\\r\\nBon voyage de la part de l'équipe de Voyages Marlin Hawkesbury!","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour final travel itinerary for your trip to <<destination_EN>> departing on <<departure_date_EN>> is now ready! You can view and download all your documents here: <<itinerary_link_EN>>.\\r\\n\\r\\nSafe travels from the team at Marlin Travel Hawkesbury!"},"variables":["client_name","departure_date","destination","itinerary_link"]},{"id":"p006_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Bienvenue à la maison & demande de commentaires","en":"Welcome Home & Feedback Request"},"description":{"fr":"Courriel de suivi après le retour du client de son voyage","en":"Follow-up email after the client has returned from their trip"},"subject":{"fr":"Bienvenue à la maison & demande de commentaires","en":"Welcome Home & Feedback Request"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nBienvenue de retour ! Nous espérons que vous avez passé un voyage fantastique à <<destination_FR>>. Vos commentaires nous sont précieux. Veuillez prendre un moment pour partager votre expérience ici : <<feedback_link_FR>>.\\r\\n\\r\\nNous sommes impatients de planifier votre prochaine aventure!","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWelcome back! We hope you had a fantastic trip to <<destination_EN>>. Your feedback is invaluable to us. Please take a moment to share your experience here: <<feedback_link_EN>>.\\r\\n\\r\\nWe look forward to planning your next adventure!"},"variables":["client_name","destination","feedback_link"]},{"id":"t007_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Avis de voyage important : <<country_name>>","en":"Important Travel Advisory: <<country_name>>"},"description":{"fr":"Alerter les clients sur un avis de voyage général pour leur destination","en":"Alerting clients about a general travel advisory for their destination"},"subject":{"fr":"Avis de voyage important : <<country_name>>","en":"Important Travel Advisory: <<country_name>>"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nNous surveillons un avis de voyage important pour <<country_name_FR>> qui pourrait affecter votre voyage du <<travel_dates_FR>>. Détails : <<advisory_details_FR>>.\\r\\n\\r\\nVeuillez nous contacter immédiatement pour discuter de vos options","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe are monitoring an important travel advisory for <<country_name_EN>> that may affect your trip on <<travel_dates_EN>>. Details: <<advisory_details_EN>>.\\r\\n\\r\\nPlease contact us immediately to discuss your options"},"variables":["advisory_details","client_name","country_name","travel_dates"]},{"id":"g008_1","category":"Voyages de groupe","category_fr":"Voyages de groupe","category_en":"Group Travel","title":{"fr":"Demande de voyage de groupe reçue","en":"Group Travel Inquiry Received"},"description":{"fr":"Accuser réception d'une nouvelle demande de voyage de groupe et fixer les attentes","en":"Acknowledging a new group travel inquiry and setting expectations"},"subject":{"fr":"Demande de voyage de groupe reçue","en":"Group Travel Inquiry Received"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nMerci de votre intérêt à planifier un voyage de groupe pour <<group_size_FR>> personnes à <<destination_FR>> ! Votre demande a été attribuée à <<agent_name_FR>> , qui vous contactera dans les 24 heures pour discuter des détails","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for your interest in planning a group trip for <<group_size_EN>> people to <<destination_EN>> ! Your request has been assigned to <<agent_name_EN>> , who will contact you within 24 hours to discuss the details"},"variables":["agent_name","client_name","destination","group_size"]},{"id":"c009_1","category":"Voyages d'affaires","category_fr":"Voyages d'affaires","category_en":"Corporate Travel","title":{"fr":"Bienvenue à notre programme de voyages d'affaires","en":"Welcome to Our Corporate Travel Program"},"description":{"fr":"Courriel de bienvenue pour un nouveau client corporatif","en":"Welcome email for a new corporate client"},"subject":{"fr":"Bienvenue à notre programme de voyages d'affaires","en":"Welcome to Our Corporate Travel Program"},"body":{"fr":"Cher/Chère <<contact_name_FR>>,\\r\\n\\r\\nBienvenue au Programme de Voyages d'Affaires de Voyages Marlin Hawkesbury ! Nous sommes ravis de nous associer à <<company_name_FR>>. Votre gestionnaire de compte dédié, <<account_manager_FR>> , vous contactera sous peu pour configurer votre profil et discuter de votre politique de voyage","en":"Dear <<contact_name_EN>>,\\r\\n\\r\\nWelcome to the Marlin Travel Hawkesbury Corporate Travel Program! We are excited to partner with <<company_name_EN>>. Your dedicated Account Manager, <<account_manager_EN>> , will be in touch shortly to set up your profile and discuss your travel policy"},"variables":["account_manager","company_name","contact_name"]},{"id":"i010_1","category":"Assurance","category_fr":"Assurance","category_en":"Insurance","title":{"fr":"N'oubliez pas l'assurance voyage !","en":"Don't Forget Travel Insurance!"},"description":{"fr":"Rappel d'acheter une assurance voyage pour un voyage à venir","en":"Reminder to purchase travel insurance for an upcoming trip"},"subject":{"fr":"N'oubliez pas l'assurance voyage !","en":"Don't Forget Travel Insurance!"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nÀ l'approche de votre voyage à <<destination_FR>> du <<travel_dates_FR>> , nous vous recommandons fortement de souscrire une assurance voyage. Protégez votre investissement contre les événements imprévus ! Vous pouvez consulter nos options ici : <<insurance_link_FR>>","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nAs your trip to <<destination_EN>> from <<travel_dates_EN>> approaches, we strongly recommend securing travel insurance. Protect your investment against unforeseen events! You can review our options here: <<insurance_link_EN>>"},"variables":["client_name","destination","insurance_link","travel_dates"]},{"id":"v011_1","category":"Visa & documentation","category_fr":"Visa & documentation","category_en":"Visa & Documentation","title":{"fr":"Action requise : visa pour <<country_name>>","en":"Action Required: Visa for <<country_name>>"},"description":{"fr":"Alerter le client sur les exigences de visa pour sa destination","en":"Alerting client about visa requirements for their destination"},"subject":{"fr":"Action requise : visa pour <<country_name>>","en":"Action Required: Visa for <<country_name>>"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nEn tant que détenteur d'un passeport <<passport_country_FR>> , vous devez obtenir un visa pour votre voyage à <<country_name_FR>>. Veuillez consulter les exigences et le processus de demande ici : <<visa_link_FR>>","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nAs a holder of a <<passport_country_EN>> passport, you are required to obtain a visa for your trip to <<country_name_EN>>. Please review the requirements and application process here: <<visa_link_EN>>"},"variables":["client_name","country_name","passport_country","visa_link"]},{"id":"c012_1","category":"Plaintes","category_fr":"Plaintes","category_en":"Complaints","title":{"fr":"Accusé de réception de plainte (réf : <<case_number>>)","en":"Complaint Acknowledgment (Ref: <<case_number>>)"},"description":{"fr":"Accuser réception d'une plainte client et fournir un calendrier","en":"Acknowledging receipt of a client complaint and providing a timeline"},"subject":{"fr":"Accusé de réception de plainte (réf : <<case_number>>)","en":"Complaint Acknowledgment (Ref: <<case_number>>)"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nMerci de nous avoir fait part de vos préoccupations. Nous avons enregistré votre plainte sous le numéro de dossier <<case_number_FR>>. Notre équipe, dirigée par <<agent_name_FR>> , enquêtera et vous fournira une réponse complète dans un délai de <<resolution_timeline_FR>>","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for bringing your concerns to our attention. We have logged your complaint under case number <<case_number_EN>>. Our team, led by <<agent_name_EN>> , will investigate and provide a full response within <<resolution_timeline_EN>>"},"variables":["agent_name","case_number","client_name","resolution_timeline"]},{"id":"m013_1","category":"Marketing & promotions","category_fr":"Marketing & promotions","category_en":"Marketing & Promotions","title":{"fr":"Destinations de rêve : nos 3 meilleures offres ce mois-ci !","en":"Dream Destinations: Our Top 3 Deals This Month!"},"description":{"fr":"Courriel mensuel promouvant les meilleures offres de voyage","en":"Monthly email promoting the top travel deals"},"subject":{"fr":"Destinations de rêve : nos 3 meilleures offres ce mois-ci !","en":"Dream Destinations: Our Top 3 Deals This Month!"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nPrêt(e) pour votre prochaine aventure ? Ce mois-ci, nous vous proposons des offres incroyables pour les Caraïbes, l'Europe et les Rocheuses ! Consultez toutes les promotions ici : <<promotion_link_FR>>.\\r\\n\\r\\n(Pour vous désabonner, cliquez ici : <<unsubscribe_link_FR>>)","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nReady for your next adventure? This month, we're featuring incredible deals to the Caribbean, Europe, and the Rockies! View all promotions here: <<promotion_link_EN>>.\\r\\n\\r\\n(To unsubscribe, click here: <<unsubscribe_link_EN>>)"},"variables":["client_name","promotion_link","unsubscribe_link"]},{"id":"e014_1","category":"Urgence","category_fr":"Urgence","category_en":"Emergency","title":{"fr":"Informations de contact d'urgence en voyage","en":"Emergency Contact Information While Travelling"},"description":{"fr":"Fournir les coordonnées d'urgence avant le départ","en":"Providing emergency contact details before departure"},"subject":{"fr":"Informations de contact d'urgence en voyage","en":"Emergency Contact Information While Travelling"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nPour votre tranquillité d'esprit, voici nos coordonnées d'urgence 24/7 pendant votre voyage :\\r\\n\\r\\n Téléphone : <<emergency_number_FR>> Courriel : <<after_hours_email_FR>> Nous sommes là pour vous, quoi qu'il arrive","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nFor your peace of mind, here are our 24/7 emergency contact details while you are travelling:\\r\\n\\r\\n Phone: <<emergency_number_EN>> Email: <<after_hours_email_EN>> We are here for you, no matter what"},"variables":["after_hours_email","client_name","emergency_number"]},{"id":"g015_1","category":"Demande générale","category_fr":"Demande générale","category_en":"General Inquiry","title":{"fr":"Concernant votre demande - besoin de plus de détails","en":"Regarding Your Inquiry - Need More Details"},"description":{"fr":"Réponse à une demande générale qui nécessite plus d'informations de la part du client","en":"Response to a general inquiry that requires more information from the client"},"subject":{"fr":"Concernant votre demande - besoin de plus de détails","en":"Regarding Your Inquiry - Need More Details"},"body":{"fr":"Cher/Chère <<client_name_FR>>,\\r\\n\\r\\nMerci de nous avoir contactés concernant <<inquiry_topic_FR>>. Afin de vous fournir les informations les plus précises, pourriez-vous nous donner quelques détails supplémentaires sur votre demande ?\\r\\n\\r\\nJe, <<agent_name_FR>>, suis impatient de vous lire bientôt","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for reaching out regarding <<inquiry_topic_EN>>. To provide you with the most accurate information, could you please provide a few more details about your request?\\r\\n\\r\\nI, <<agent_name_EN>>, look forward to hearing from you soon"},"variables":["agent_name","client_name","inquiry_topic"]},{"id":"b016_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Livraison du billet électronique","en":"E-Ticket Delivery"},"description":{"fr":"Envoi des billets électroniques et des documents finaux","en":"Sending e-tickets and final documents"},"subject":{"fr":"Livraison du billet électronique","en":"E-Ticket Delivery"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVoici vos billets électroniques et vos documents de voyage pour votre réservation <<booking_reference_FR>>. Vous pouvez les télécharger ici : <<e_ticket_link_FR>>. N’hésitez pas à me contacter pour toute question.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nHere are your electronic tickets and travel documents for your booking <<booking_reference_EN>>. You can download them here: <<e_ticket_link_EN>>. Please let me know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","e_ticket_link"]},{"id":"b017_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Rappel d'enregistrement avant départ","en":"Pre-Departure Check-in Reminder"},"description":{"fr":"Rappel de s'enregistrer en ligne 24 heures avant le départ","en":"Reminder to check-in online 24 hours before departure"},"subject":{"fr":"Rappel d'enregistrement avant départ","en":"Pre-Departure Check-in Reminder"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nCeci est un rappel pour effectuer votre enregistrement en ligne pour le vol <<flight_number_FR>> du <<departure_date_FR>>. Veuillez vous enregistrer au moins 24 heures avant le départ en utilisant ce lien : <<check_in_link_FR>>.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is a friendly reminder to complete your online check‑in for flight <<flight_number_EN>> departing on <<departure_date_EN>>. Please check in at least 24 hours before departure using this link: <<check_in_link_EN>>.\\r\\n\\r\\nThank you."},"variables":["check_in_link","client_name","departure_date","flight_number"]},{"id":"b018_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Confirmation d'hôtel","en":"Hotel Confirmation"},"description":{"fr":"Confirmation d'une réservation d'hôtel","en":"Confirmation for a hotel booking"},"subject":{"fr":"Confirmation d'hôtel","en":"Hotel Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons le plaisir de confirmer votre réservation à l’hôtel <<hotel_name_FR>>. Votre date d’arrivée est le <<check_in_date_FR>> et votre numéro de confirmation est <<confirmation_number_FR>>. Pour toute modification, veuillez nous contacter.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe are pleased to confirm your hotel booking at <<hotel_name_EN>>. Your check‑in date is <<check_in_date_EN>> and your confirmation number is <<confirmation_number_EN>>. Should you need any changes, please let us know.\\r\\n\\r\\nThank you."},"variables":["check_in_date","client_name","confirmation_number","hotel_name"]},{"id":"b019_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Confirmation de location de voiture","en":"Car Rental Confirmation"},"description":{"fr":"Confirmation d'une réservation de voiture","en":"Confirmation for a car rental booking"},"subject":{"fr":"Confirmation de location de voiture","en":"Car Rental Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous confirmons votre réservation de voiture auprès de <<rental_company_FR>>. Votre date de prise en charge est le <<pickup_date_FR>> et votre numéro de réservation est <<reservation_number_FR>>. N’oubliez pas votre permis de conduire.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis email confirms your car rental with <<rental_company_EN>>. Your pickup date is <<pickup_date_EN>> and your reservation number is <<reservation_number_EN>>. Please remember to bring your driver’s licence.\\r\\n\\r\\nThank you."},"variables":["client_name","pickup_date","rental_company","reservation_number"]},{"id":"b020_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Confirmation d'activité","en":"Activity Booking Confirmation"},"description":{"fr":"Confirmation d'une activité ou d'une excursion réservée","en":"Confirmation for a booked tour or activity"},"subject":{"fr":"Confirmation d'activité","en":"Activity Booking Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre réservation pour l’activité <<activity_name_FR>> le <<activity_date_FR>> est confirmée. Votre numéro de confirmation est <<confirmation_number_FR>>. Nous espérons que vous passerez un bon moment!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour booking for <<activity_name_EN>> on <<activity_date_EN>> is confirmed. Your confirmation number is <<confirmation_number_EN>>. We hope you enjoy the activity!\\r\\n\\r\\nThank you."},"variables":["activity_date","activity_name","client_name","confirmation_number"]},{"id":"b021_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Notification de liste d'attente","en":"Waitlist Notification"},"description":{"fr":"Informant le client qu'il est sur liste d'attente pour un vol/une excursion","en":"Informing client they are on a waitlist for a flight/tour"},"subject":{"fr":"Notification de liste d'attente","en":"Waitlist Notification"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci pour votre intérêt pour <<item_name_FR>>. Vous êtes actuellement sur la liste d’attente en position <<waitlist_position_FR>>. Nous vous informerons dès qu’une place se libère.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for your interest in <<item_name_EN>>. You are currently on the waitlist in position <<waitlist_position_EN>>. We will notify you as soon as a spot becomes available.\\r\\n\\r\\nThank you."},"variables":["client_name","item_name","waitlist_position"]},{"id":"b022_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Succès de la liste d'attente","en":"Waitlist Success"},"description":{"fr":"Informant le client qu'une place sur liste d'attente s'est libérée","en":"Informing client a waitlist spot has opened up"},"subject":{"fr":"Succès de la liste d'attente","en":"Waitlist Success"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nBonne nouvelle! Une place s’est libérée pour <<item_name_FR>> dans votre dossier <<booking_reference_FR>>. Merci de nous confirmer si vous souhaitez poursuivre.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nGood news! A spot has opened up for <<item_name_EN>> under your booking <<booking_reference_EN>>. Please confirm if you would like to proceed.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","item_name"]},{"id":"b023_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Suivi de sélection de sièges","en":"Seat Selection Follow-up"},"description":{"fr":"Rappel de sélectionner les sièges pour leur vol","en":"Reminder to select seats for their flight"},"subject":{"fr":"Suivi de sélection de sièges","en":"Seat Selection Follow-up"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nCeci est un rappel pour sélectionner vos sièges pour le vol <<flight_number_FR>>. Veuillez utiliser ce lien pour choisir vos sièges : <<seat_selection_link_FR>>.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is a reminder to select your seats for flight <<flight_number_EN>>. Please use this link to choose your seats: <<seat_selection_link_EN>>.\\r\\n\\r\\nThank you."},"variables":["client_name","flight_number","seat_selection_link"]},{"id":"b024_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Informations sur la franchise de bagages","en":"Baggage Allowance Information"},"description":{"fr":"Fournissant des détails sur la franchise de bagages pour un vol","en":"Providing details on baggage allowance for a flight"},"subject":{"fr":"Informations sur la franchise de bagages","en":"Baggage Allowance Information"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nAfin de bien préparer votre voyage avec <<airline_name_FR>>, veuillez consulter l’information sur les franchises de bagages ici : <<baggage_details_link_FR>>. Bonne préparation!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nTo help you prepare for your flight with <<airline_name_EN>>, we have included information about baggage allowances. You can find the details here: <<baggage_details_link_EN>>. Please review before you pack.\\r\\n\\r\\nThank you."},"variables":["airline_name","baggage_details_link","client_name"]},{"id":"b025_1","category":"Réservation","category_fr":"Réservation","category_en":"Booking","title":{"fr":"Confirmation de demande spéciale","en":"Special Request Confirmation"},"description":{"fr":"Confirmant qu'une demande spéciale (ex. repas, fauteuil roulant) a été ajoutée","en":"Confirming a special request (e.g., meal, wheelchair) has been added"},"subject":{"fr":"Confirmation de demande spéciale","en":"Special Request Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre demande spéciale (« <<request_details_FR>> ») a été ajoutée à votre dossier <<booking_reference_FR>>. Nous ferons de notre mieux pour y répondre. Faites‑nous savoir si vous avez d’autres besoins.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour special request (<<request_details_EN>>) has been added to booking <<booking_reference_EN>>. We will do our best to accommodate it. Please let us know if there’s anything else you need.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","request_details"]},{"id":"q026_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Livraison d'un nouveau devis","en":"New Quote Delivery"},"description":{"fr":"Envoi d'un nouveau devis de voyage détaillé","en":"Sending a new, detailed travel quote"},"subject":{"fr":"Livraison d'un nouveau devis","en":"New Quote Delivery"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVeuillez trouver votre devis de voyage personnalisé (réf. <<quote_reference_FR>>) valable jusqu’au <<quote_expiry_date_FR>>. Vous pouvez consulter les détails ici : <<quote_link_FR>>. N’hésitez pas à me contacter pour toute question ou pour confirmer.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nPlease find your personalized travel quote (Ref: <<quote_reference_EN>>) valid until <<quote_expiry_date_EN>>. You can view all the details here: <<quote_link_EN>>. Let me know if you have any questions or are ready to proceed.\\r\\n\\r\\nThank you."},"variables":["client_name","quote_expiry_date","quote_link","quote_reference"]},{"id":"q027_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Avertissement d'expiration de devis (24 heures)","en":"Quote Expiration Warning (24 Hours)"},"description":{"fr":"Avertissement qu'un devis expirera dans 24 heures","en":"Warning that a quote will expire in 24 hours"},"subject":{"fr":"Avertissement d'expiration de devis (24 heures)","en":"Quote Expiration Warning (24 Hours)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nCe message est pour vous rappeler que votre devis (réf. <<quote_reference_FR>>) expire le <<quote_expiry_date_FR>>. Si vous souhaitez en profiter, veuillez me le faire savoir avant cette date.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is a reminder that your quote (Ref: <<quote_reference_EN>>) expires on <<quote_expiry_date_EN>>. If you wish to secure the current pricing, please let me know before then.\\r\\n\\r\\nThank you."},"variables":["client_name","quote_expiry_date","quote_reference"]},{"id":"q028_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Options de devis alternatives","en":"Alternative Quote Options"},"description":{"fr":"Envoi d'options alternatives après le retour initial sur le devis","en":"Sending alternative options after initial quote feedback"},"subject":{"fr":"Options de devis alternatives","en":"Alternative Quote Options"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci pour vos commentaires concernant votre devis pour <<destination_FR>>. Sur cette base, j’ai préparé des options alternatives que vous pouvez consulter ici : <<alternative_options_link_FR>>. J’espère qu’elles répondront mieux à vos attentes.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for your feedback on your quote for <<destination_EN>>. Based on your comments, I have prepared some alternative options for you, which you can review here: <<alternative_options_link_EN>>. I hope these meet your preferences.\\r\\n\\r\\nThank you."},"variables":["alternative_options_link","client_name","destination"]},{"id":"q029_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Notification de changement de prix (augmentation)","en":"Price Change Notification (Increase)"},"description":{"fr":"Informant le client que le prix du devis a augmenté","en":"Informing client that the quoted price has increased"},"subject":{"fr":"Notification de changement de prix (augmentation)","en":"Price Change Notification (Increase)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nJe souhaite vous informer que le prix de votre devis (réf. <<quote_reference_FR>>) est passé de <<old_price_FR>> à <<new_price_FR>> en raison de changements tarifaires. Faites‑moi savoir si vous souhaitez toujours procéder ou explorer d’autres options.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nI wanted to let you know that the price for your quote (Ref: <<quote_reference_EN>>) has increased from <<old_price_EN>> to <<new_price_EN>> due to changes in supplier rates. Please let me know if you’d still like to proceed or explore alternatives.\\r\\n\\r\\nThank you."},"variables":["client_name","new_price","old_price","quote_reference"]},{"id":"q030_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Notification de changement de prix (diminution)","en":"Price Change Notification (Decrease)"},"description":{"fr":"Informant le client que le prix du devis a diminué","en":"Informing client that the quoted price has decreased"},"subject":{"fr":"Notification de changement de prix (diminution)","en":"Price Change Notification (Decrease)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nBonne nouvelle! Le prix de votre devis (réf. <<quote_reference_FR>>) est passé de <<old_price_FR>> à <<new_price_FR>>. Si vous souhaitez profiter de ce tarif mis à jour, veuillez me le faire savoir.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nGreat news! The price for your quote (Ref: <<quote_reference_EN>>) has decreased from <<old_price_EN>> to <<new_price_EN>>. Let me know if you’d like to take advantage of this updated rate.\\r\\n\\r\\nThank you."},"variables":["client_name","new_price","old_price","quote_reference"]},{"id":"q031_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Suivi de devis (long terme)","en":"Quote Follow-up (Long-Term)"},"description":{"fr":"Suivi pour un devis envoyé il y a plus de 2 semaines","en":"Follow-up for a quote sent over 2 weeks ago"},"subject":{"fr":"Suivi de devis (long terme)","en":"Quote Follow-up (Long-Term)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nJ’espère que vous allez bien. Cela fait maintenant quelques semaines que je vous ai envoyé votre devis pour <<destination_FR>>. Si vous avez des questions ou êtes prêt à procéder, je suis là pour vous aider.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nI hope you are well. It’s been a couple of weeks since I sent your quote for <<destination_EN>>. If you have any questions or if you’re ready to proceed, please let me know. I’m here to help.\\r\\n\\r\\nThank you."},"variables":["client_name","destination"]},{"id":"q032_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Demande de détails pour le devis","en":"Request for Quote Details"},"description":{"fr":"Demandant plus de détails pour créer un devis précis","en":"Asking for more details to create an accurate quote"},"subject":{"fr":"Demande de détails pour le devis","en":"Request for Quote Details"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nAfin de vous fournir un devis précis, j’aurais besoin des informations suivantes : <<required_details_FR>>. Pourriez‑vous me les transmettre dès que possible? Merci d’avance!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nTo provide you with an accurate quote, I need some additional information: <<required_details_EN>>. Could you please provide these details at your earliest convenience? I look forward to assisting you.\\r\\n\\r\\nThank you."},"variables":["client_name","required_details"]},{"id":"q033_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Devis accepté - prochaines étapes","en":"Quote Accepted - Next Steps"},"description":{"fr":"Décrivant les prochaines étapes après qu'un client accepte un devis","en":"Outlining the next steps after a client accepts a quote"},"subject":{"fr":"Devis accepté - prochaines étapes","en":"Quote Accepted - Next Steps"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci d’avoir accepté le devis. Votre dossier est ouvert sous la référence <<booking_reference_FR>>. Pour confirmer votre réservation, veuillez effectuer le paiement via ce lien : <<payment_link_FR>>. N’hésitez pas à me contacter pour toute question.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for accepting the quote. Your booking has been created under reference <<booking_reference_EN>>. To secure your booking, please complete the payment using this link: <<payment_link_EN>>. Feel free to contact me if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","payment_link"]},{"id":"q034_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Devis refusé - demande de commentaires","en":"Quote Declined - Feedback Request"},"description":{"fr":"Demandant des commentaires après qu'un client refuse un devis","en":"Asking for feedback after a client declines a quote"},"subject":{"fr":"Devis refusé - demande de commentaires","en":"Quote Declined - Feedback Request"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nJe suis désolé d’apprendre que vous avez décliné le devis (réf. <<quote_reference_FR>>). Votre avis nous est précieux. Merci de partager vos commentaires ici : <<feedback_link_FR>> afin que nous puissions nous améliorer.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nI’m sorry to hear you declined the quote (Ref: <<quote_reference_EN>>). Your feedback is valuable to us. Please let us know how we can improve by sharing your thoughts here: <<feedback_link_EN>>.\\r\\n\\r\\nThank you."},"variables":["client_name","feedback_link","quote_reference"]},{"id":"q035_1","category":"Devis","category_fr":"Devis","category_en":"Quotes","title":{"fr":"Devis indisponible","en":"Quote Unavailable"},"description":{"fr":"Informant le client que le devis demandé n'est plus disponible","en":"Informing client that the requested quote is no longer available"},"subject":{"fr":"Devis indisponible","en":"Quote Unavailable"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMalheureusement, le devis pour <<destination_FR>> n’est plus disponible en raison de <<reason_FR>>. Souhaitez‑vous que je recherche des alternatives?\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nUnfortunately, the quote for <<destination_EN>> is no longer available due to <<reason_EN>>. Please let me know if you would like me to look for alternative options.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","reason"]},{"id":"p036_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Rappel de paiement final","en":"Final Payment Reminder"},"description":{"fr":"Rappel de la date d'échéance du paiement final","en":"Reminder for the final payment due date"},"subject":{"fr":"Rappel de paiement final","en":"Final Payment Reminder"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nCeci est un rappel : votre paiement final de <<final_amount_FR>> pour le dossier <<booking_reference_FR>> est dû le <<due_date_FR>>. Merci d’effectuer le paiement avant la date d’échéance.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is a reminder that your final payment of <<final_amount_EN>> for booking <<booking_reference_EN>> is due on <<due_date_EN>>. Please make the payment by the due date to avoid cancellation.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","due_date","final_amount"]},{"id":"p037_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Confirmation de paiement reçu","en":"Payment Received Confirmation"},"description":{"fr":"Confirmation qu'un paiement a été traité avec succès","en":"Confirmation that a payment has been successfully processed"},"subject":{"fr":"Confirmation de paiement reçu","en":"Payment Received Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous confirmons la réception de votre paiement de <<amount_paid_FR>> pour le dossier <<booking_reference_FR>> en date du <<payment_date_FR>>. Merci pour votre rapidité.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is to confirm that we have received your payment of <<amount_paid_EN>> for booking <<booking_reference_EN>> on <<payment_date_EN>>. Thank you for your prompt payment.\\r\\n\\r\\nThank you."},"variables":["amount_paid","booking_reference","client_name","payment_date"]},{"id":"p038_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Notification d'échec de paiement","en":"Payment Failed Notification"},"description":{"fr":"Informant le client qu'une tentative de paiement a échoué","en":"Informing client that a payment attempt failed"},"subject":{"fr":"Notification d'échec de paiement","en":"Payment Failed Notification"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre dernière tentative de paiement pour le dossier <<booking_reference_FR>> n’a pas abouti en raison de <<reason_FR>>. Veuillez réessayer via <<payment_link_FR>> ou nous contacter pour assistance.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nUnfortunately, your recent payment attempt for booking <<booking_reference_EN>> could not be processed due to <<reason_EN>>. Please retry the payment via <<payment_link_EN>> or contact us for assistance.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","payment_link","reason"]},{"id":"p039_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Notification de remboursement traité","en":"Refund Processed Notification"},"description":{"fr":"Informant le client qu'un remboursement a été traité","en":"Informing client that a refund has been processed"},"subject":{"fr":"Notification de remboursement traité","en":"Refund Processed Notification"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons procédé au remboursement de <<refund_amount_FR>> pour le dossier <<booking_reference_FR>>. Vous devriez le recevoir d’ici <<timeline_FR>>. N’hésitez pas à nous contacter si vous avez des questions.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe have processed your refund of <<refund_amount_EN>> for booking <<booking_reference_EN>>. You should receive it within <<timeline_EN>>. Please let us know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","refund_amount","timeline"]},{"id":"p040_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Confirmation de mise en place d'un plan de paiement","en":"Payment Plan Setup Confirmation"},"description":{"fr":"Confirmant les détails d'un nouveau plan de paiement","en":"Confirming the details of a new payment plan"},"subject":{"fr":"Confirmation de mise en place d'un plan de paiement","en":"Payment Plan Setup Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre nouveau plan de paiement pour le dossier <<booking_reference_FR>> est confirmé. Le montant mensuel sera de <<monthly_amount_FR>> avec prochaine échéance le <<next_due_date_FR>>. Contactez‑nous pour toute précision.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour new payment plan for booking <<booking_reference_EN>> is confirmed. Your monthly payment will be <<monthly_amount_EN>>, with the next payment due on <<next_due_date_EN>>. Please contact us if you need further assistance.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","monthly_amount","next_due_date"]},{"id":"p041_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Avertissement de paiement en retard (48 heures)","en":"Overdue Payment Warning (48 Hours)"},"description":{"fr":"Avertissement final avant annulation pour paiement en retard","en":"Final warning before cancellation due to overdue payment"},"subject":{"fr":"Avertissement de paiement en retard (48 heures)","en":"Overdue Payment Warning (48 Hours)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nCeci est un dernier avis : un paiement de <<amount_due_FR>> pour le dossier <<booking_reference_FR>> est en retard. Si nous ne recevons pas votre paiement d’ici le <<cancellation_date_FR>>, votre réservation sera annulée. Veuillez agir rapidement.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThis is a final notice that a payment of <<amount_due_EN>> for booking <<booking_reference_EN>> is overdue. If we do not receive payment by <<cancellation_date_EN>>, your booking will be cancelled. Please address this matter urgently.\\r\\n\\r\\nThank you."},"variables":["amount_due","booking_reference","cancellation_date","client_name"]},{"id":"p042_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Livraison de facture","en":"Invoice Delivery"},"description":{"fr":"Envoi d'une nouvelle facture pour les services","en":"Sending a new invoice for services"},"subject":{"fr":"Livraison de facture","en":"Invoice Delivery"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVeuillez trouver votre facture (no <<invoice_number_FR>>) d’un montant de <<amount_due_FR>>. Vous pouvez la consulter et la régler ici : <<invoice_link_FR>>. Merci.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nPlease find attached your invoice (No. <<invoice_number_EN>>) for <<amount_due_EN>>. You can view and pay your invoice here: <<invoice_link_EN>>. Thank you.\\r\\n\\r\\nThank you."},"variables":["amount_due","client_name","invoice_link","invoice_number"]},{"id":"p043_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Demande d'acompte","en":"Deposit Request"},"description":{"fr":"Demandant l'acompte initial pour garantir une réservation","en":"Requesting the initial deposit to secure a booking"},"subject":{"fr":"Demande d'acompte","en":"Deposit Request"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nPour sécuriser votre réservation, un dépôt initial de <<deposit_amount_FR>> est requis au plus tard le <<due_date_FR>>. Vous pouvez effectuer votre dépôt ici : <<payment_link_FR>>. Merci.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nTo secure your booking, we require an initial deposit of <<deposit_amount_EN>> by <<due_date_EN>>. You can make your deposit here: <<payment_link_EN>>. Thank you.\\r\\n\\r\\nThank you."},"variables":["client_name","deposit_amount","due_date","payment_link"]},{"id":"p044_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Demande de mise à jour de carte de crédit","en":"Credit Card Update Request"},"description":{"fr":"Demandant des informations de carte de crédit mises à jour pour un paiement programmé","en":"Requesting updated credit card information for a scheduled payment"},"subject":{"fr":"Demande de mise à jour de carte de crédit","en":"Credit Card Update Request"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons besoin de vos nouvelles informations de carte de crédit pour traiter le paiement prévu pour le dossier <<booking_reference_FR>> le <<due_date_FR>>. Veuillez nous contacter avec vos nouvelles coordonnées.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe need updated credit card information to process the upcoming payment for booking <<booking_reference_EN>> due on <<due_date_EN>>. Please contact us with your new details.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","due_date"]},{"id":"p045_1","category":"Paiements","category_fr":"Paiements","category_en":"Payments","title":{"fr":"Accusé de réception de litige de paiement","en":"Payment Dispute Acknowledgment"},"description":{"fr":"Accusant réception d'un litige de paiement client","en":"Acknowledging a client's payment dispute"},"subject":{"fr":"Accusé de réception de litige de paiement","en":"Payment Dispute Acknowledgment"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous accusons réception de votre contestation de paiement concernant <<dispute_details_FR>>. <<agent_name_FR>> examinera la situation et vous reviendra avec une solution.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe acknowledge receipt of your payment dispute regarding <<dispute_details_EN>>. <<agent_name_EN>> will investigate the issue and get back to you with a resolution.\\r\\n\\r\\nThank you."},"variables":["agent_name","client_name","dispute_details"]},{"id":"c046_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Réponse à une demande de politique d'annulation","en":"Cancellation Policy Inquiry Response"},"description":{"fr":"Fournissant des détails sur la politique d'annulation pour une réservation spécifique","en":"Providing details on the cancellation policy for a specific booking"},"subject":{"fr":"Réponse à une demande de politique d'annulation","en":"Cancellation Policy Inquiry Response"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nConcernant votre dossier <<booking_reference_FR>>, veuillez trouver ci‑dessous la politique d’annulation : <<policy_details_FR>>. Pour toute question, n’hésitez pas à nous contacter.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nRegarding your booking <<booking_reference_EN>>, please find the cancellation policy details here: <<policy_details_EN>>. Please review them and let us know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","policy_details"]},{"id":"c047_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Notification de pénalité d'annulation","en":"Cancellation Penalty Notification"},"description":{"fr":"Informant le client du montant de la pénalité pour une annulation","en":"Informing client of the penalty amount for a cancellation"},"subject":{"fr":"Notification de pénalité d'annulation","en":"Cancellation Penalty Notification"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nSuite à l’annulation de votre dossier <<booking_reference_FR>>, une pénalité de <<penalty_amount_FR>> s’applique. Le remboursement net sera de <<net_refund_FR>>. Contactez‑nous pour plus d’informations.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe have processed your cancellation for booking <<booking_reference_EN>>. The cancellation penalty is <<penalty_amount_EN>>, resulting in a net refund of <<net_refund_EN>>. Please let us know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","net_refund","penalty_amount"]},{"id":"c048_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Notification d'annulation par le fournisseur","en":"Supplier Cancellation Notification"},"description":{"fr":"Informant le client que le fournisseur a annulé son voyage","en":"Informing client that the supplier has cancelled their trip"},"subject":{"fr":"Notification d'annulation par le fournisseur","en":"Supplier Cancellation Notification"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous sommes désolés de vous informer que votre voyage (dossier <<booking_reference_FR>>) a été annulé par le fournisseur en raison de <<reason_FR>>. Voici quelques options alternatives : <<options_FR>>. Merci de nous faire savoir comment vous souhaitez procéder.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe regret to inform you that the supplier has cancelled your trip under booking <<booking_reference_EN>> due to <<reason_EN>>. Here are some alternative options: <<options_EN>>. Please let us know how you wish to proceed.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","options","reason"]},{"id":"c049_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Offre de crédit de voyage futur","en":"Future Travel Credit Offer"},"description":{"fr":"Offrant un crédit de voyage futur au lieu d'un remboursement","en":"Offering a future travel credit instead of a refund"},"subject":{"fr":"Offre de crédit de voyage futur","en":"Future Travel Credit Offer"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nComme discuté, nous pouvons offrir un crédit voyage de <<credit_amount_FR>> valable jusqu’au <<expiry_date_FR>> en lieu et place d’un remboursement. Merci de nous indiquer si cette option vous convient.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nAs discussed, we can offer a travel credit of <<credit_amount_EN>> valid until <<expiry_date_EN>> in lieu of a refund. Please let us know if you accept this option.\\r\\n\\r\\nThank you."},"variables":["client_name","credit_amount","expiry_date"]},{"id":"c050_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Annulation pour non-paiement","en":"Cancellation Due to Non-Payment"},"description":{"fr":"Notification formelle d'annulation pour non-paiement","en":"Formal notification of cancellation due to missed payment"},"subject":{"fr":"Annulation pour non-paiement","en":"Cancellation Due to Non-Payment"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMalheureusement, nous avons dû annuler votre dossier <<booking_reference_FR>> en raison du non‑paiement le <<missed_payment_date_FR>>. Pour toute question, veuillez nous contacter.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nUnfortunately, we have had to cancel booking <<booking_reference_EN>> due to non‑payment on <<missed_payment_date_EN>>. Please contact us if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","missed_payment_date"]},{"id":"c051_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Nouvelle réservation après annulation","en":"Rebooking After Cancellation"},"description":{"fr":"Aider un client à réserver à nouveau après une annulation","en":"Assisting a client with rebooking after a cancellation"},"subject":{"fr":"Nouvelle réservation après annulation","en":"Rebooking After Cancellation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nJe suis à votre disposition pour vous aider à refaire une réservation après l’annulation de votre dossier <<original_reference_FR>>. Un nouveau dossier <<new_reference_FR>> a été créé. <<agent_name_FR>> communiquera avec vous pour discuter des détails.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nI am here to assist you with rebooking after the cancellation of booking <<original_reference_EN>>. We have created a new reservation <<new_reference_EN>>. <<agent_name_EN>> will contact you to discuss the details.\\r\\n\\r\\nThank you."},"variables":["agent_name","client_name","new_reference","original_reference"]},{"id":"c052_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Accusé de réception de demande d'annulation","en":"Cancellation Request Acknowledgment"},"description":{"fr":"Accusant réception d'une demande d'annulation","en":"Acknowledging receipt of a cancellation request"},"subject":{"fr":"Accusé de réception de demande d'annulation","en":"Cancellation Request Acknowledgment"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons bien reçu votre demande d’annulation pour le dossier <<booking_reference_FR>>. Celle‑ci sera traitée sous <<timeline_FR>> et nous vous confirmerons une fois terminée.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe have received your cancellation request for booking <<booking_reference_EN>>. We will process it within <<timeline_EN>> and confirm once completed.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","timeline"]},{"id":"c053_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Annulation - aucun remboursement dû","en":"Cancellation - No Refund Due"},"description":{"fr":"Informant le client qu'aucun remboursement n'est dû après annulation","en":"Informing client that no refund is due after cancellation"},"subject":{"fr":"Annulation - aucun remboursement dû","en":"Cancellation - No Refund Due"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nSuite à votre demande d’annulation du dossier <<booking_reference_FR>>, veuillez noter qu’aucun remboursement n’est dû en raison de <<reason_FR>>. Contactez‑nous si vous avez des questions.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nFollowing your cancellation request for booking <<booking_reference_EN>>, please note that there is no refund due because <<reason_EN>>. If you have any questions, please reach out.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","reason"]},{"id":"c054_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Annulation - remboursement partiel","en":"Cancellation - Partial Refund"},"description":{"fr":"Informant le client d'un montant de remboursement partiel","en":"Informing client of a partial refund amount"},"subject":{"fr":"Annulation - remboursement partiel","en":"Cancellation - Partial Refund"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nSuite à l’annulation du dossier <<booking_reference_FR>>, nous traitons un remboursement partiel de <<partial_amount_FR>> en raison de <<reason_FR>>. Le montant sera crédité sur votre mode de paiement initial.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nFollowing your cancellation of booking <<booking_reference_EN>>, we are processing a partial refund of <<partial_amount_EN>> due to <<reason_EN>>. The refund will be issued to your original payment method.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","partial_amount","reason"]},{"id":"c055_1","category":"Annulations","category_fr":"Annulations","category_en":"Cancellations","title":{"fr":"Annulation - remboursement intégral","en":"Cancellation - Full Refund"},"description":{"fr":"Informant le client d'un montant de remboursement intégral","en":"Informing client of a full refund amount"},"subject":{"fr":"Annulation - remboursement intégral","en":"Cancellation - Full Refund"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nSuite à l’annulation du dossier <<booking_reference_FR>>, un remboursement complet de <<full_amount_FR>> a été émis. Veuillez prévoir quelques jours ouvrables pour que le montant soit visible sur votre compte.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nFollowing your cancellation of booking <<booking_reference_EN>>, we have processed a full refund of <<full_amount_EN>>. Please allow a few business days for the amount to reflect in your account.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","full_amount"]},{"id":"i056_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Notification de changement d'itinéraire","en":"Itinerary Change Notification"},"description":{"fr":"Alertant le client d'un changement mineur dans son itinéraire","en":"Alerting client to a minor change in their itinerary"},"subject":{"fr":"Notification de changement d'itinéraire","en":"Itinerary Change Notification"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nIl y a eu un léger changement à votre itinéraire pour le dossier <<booking_reference_FR>> : <<change_details_FR>>. Vous pouvez consulter votre nouvel itinéraire ici : <<new_itinerary_link_FR>>. Contactez‑nous pour toute question.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThere has been a minor change to your itinerary for booking <<booking_reference_EN>>: <<change_details_EN>>. You can view your updated itinerary here: <<new_itinerary_link_EN>>. Let me know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["booking_reference","change_details","client_name","new_itinerary_link"]},{"id":"i057_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Changement d'horaire de vol (majeur)","en":"Flight Schedule Change (Major)"},"description":{"fr":"Alertant le client d'un changement majeur d'horaire de vol","en":"Alerting client to a major flight schedule change"},"subject":{"fr":"Changement d'horaire de vol (majeur)","en":"Flight Schedule Change (Major)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre vol <<flight_number_FR>> a subi un changement d’horaire important de <<old_time_FR>> à <<new_time_FR>>. Voici vos options : <<options_FR>>. Veuillez nous indiquer comment vous souhaitez procéder.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour flight <<flight_number_EN>> has a significant schedule change from <<old_time_EN>> to <<new_time_EN>>. Here are your options: <<options_EN>>. Please let us know how you’d like to proceed.\\r\\n\\r\\nThank you."},"variables":["client_name","flight_number","new_time","old_time","options"]},{"id":"i058_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Détails finaux avant le voyage","en":"Pre-Trip Final Details"},"description":{"fr":"Envoi des détails finaux et des conseils une semaine avant le départ","en":"Sending final details and tips a week before departure"},"subject":{"fr":"Détails finaux avant le voyage","en":"Pre-Trip Final Details"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre voyage à <<destination_FR>>, dont le départ est prévu le <<departure_date_FR>>, approche! Nous avons regroupé des détails et conseils finaux pour vous ici : <<tips_link_FR>>. Bon voyage!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour trip to <<destination_EN>> departing on <<departure_date_EN>> is coming up soon! We have compiled some final details and helpful tips for you here: <<tips_link_EN>>. Have a wonderful trip.\\r\\n\\r\\nThank you."},"variables":["client_name","departure_date","destination","tips_link"]},{"id":"i059_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Informations sur le vol de correspondance","en":"Connecting Flight Information"},"description":{"fr":"Fournissant des détails sur un vol de correspondance","en":"Providing details on a connecting flight"},"subject":{"fr":"Informations sur le vol de correspondance","en":"Connecting Flight Information"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVotre itinéraire comprend un vol de correspondance à <<connecting_city_FR>>. Vous aurez une escale de <<layover_duration_FR>> et l’information de la porte est <<gate_info_FR>>. Assurez‑vous de prévoir suffisamment de temps pour la correspondance.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nYour itinerary includes a connecting flight in <<connecting_city_EN>>. You will have a layover of <<layover_duration_EN>> and the gate information is <<gate_info_EN>>. Please ensure you allow enough time to transfer.\\r\\n\\r\\nThank you."},"variables":["client_name","connecting_city","gate_info","layover_duration"]},{"id":"i060_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Confirmation de surclassement d'hôtel","en":"Hotel Upgrade Confirmation"},"description":{"fr":"Confirmant un surclassement de chambre d'hôtel réussi","en":"Confirming a successful hotel room upgrade"},"subject":{"fr":"Confirmation de surclassement d'hôtel","en":"Hotel Upgrade Confirmation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons le plaisir de confirmer que votre chambre à <<hotel_name_FR>> a été surclassée en <<new_room_type_FR>>. Profitez de votre séjour!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe are pleased to confirm that your room at <<hotel_name_EN>> has been upgraded to <<new_room_type_EN>>. Enjoy your stay!\\r\\n\\r\\nThank you."},"variables":["client_name","hotel_name","new_room_type"]},{"id":"i061_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Détails de la visite/excursion","en":"Tour/Excursion Details"},"description":{"fr":"Envoi de détails spécifiques pour une excursion réservée","en":"Sending specific details for a booked tour"},"subject":{"fr":"Détails de la visite/excursion","en":"Tour/Excursion Details"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVoici les détails de votre excursion <<tour_name_FR>> : point de rencontre <<meeting_point_FR>> et heure de départ <<start_time_FR>>. Nous espérons que vous passerez un excellent moment!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nHere are the details for your <<tour_name_EN>> tour. Meeting point: <<meeting_point_EN>>. Start time: <<start_time_EN>>. We hope you have a great time!\\r\\n\\r\\nThank you."},"variables":["client_name","meeting_point","start_time","tour_name"]},{"id":"i062_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Avertissement d'expiration de visa/passeport","en":"Visa/Passport Expiry Warning"},"description":{"fr":"Avertissant le client d'une expiration prochaine de visa ou de passeport","en":"Warning client about an upcoming visa or passport expiry"},"subject":{"fr":"Avertissement d'expiration de visa/passeport","en":"Visa/Passport Expiry Warning"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons remarqué que votre <<document_type_FR>> expire le <<expiry_date_FR>>. Veuillez vous assurer de le renouveler avant votre voyage à <<destination_FR>>.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe noticed that your <<document_type_EN>> is set to expire on <<expiry_date_EN>>. Please ensure you renew it in time for your trip to <<destination_EN>>.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","document_type","expiry_date"]},{"id":"i063_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Livraison de la carte d'embarquement numérique","en":"Digital Boarding Pass Delivery"},"description":{"fr":"Envoi d'une carte d'embarquement numérique","en":"Sending a digital boarding pass"},"subject":{"fr":"Livraison de la carte d'embarquement numérique","en":"Digital Boarding Pass Delivery"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nVoici votre carte d’embarquement numérique pour le vol <<flight_number_FR>> : <<boarding_pass_link_FR>>. Merci de la télécharger ou de l’imprimer avant votre départ.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nHere is your digital boarding pass for flight <<flight_number_EN>>: <<boarding_pass_link_EN>>. Please download or print it before you travel.\\r\\n\\r\\nThank you."},"variables":["boarding_pass_link","client_name","flight_number"]},{"id":"i064_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Prévisions météo de la destination","en":"Destination Weather Forecast"},"description":{"fr":"Fournissant des prévisions météorologiques pour la destination du client","en":"Providing a weather forecast for the client's destination"},"subject":{"fr":"Prévisions météo de la destination","en":"Destination Weather Forecast"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nPour vous aider à préparer votre voyage à <<destination_FR>>, voici les prévisions météorologiques : <<forecast_link_FR>>. Bon voyage!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nTo help you prepare for your trip to <<destination_EN>>, here is the weather forecast: <<forecast_link_EN>>. Safe travels.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","forecast_link"]},{"id":"i065_1","category":"Itinéraire","category_fr":"Itinéraire","category_en":"Itinerary","title":{"fr":"Guide de la monnaie locale et des pourboires","en":"Local Currency and Tipping Guide"},"description":{"fr":"Fournissant des informations sur la monnaie locale et les coutumes de pourboire","en":"Providing information on local currency and tipping customs"},"subject":{"fr":"Guide de la monnaie locale et des pourboires","en":"Local Currency and Tipping Guide"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nAvant votre voyage à <<destination_FR>>, vous trouverez utile ce guide sur la monnaie locale et les usages en matière de pourboires : <<currency_guide_link_FR>>. Bon séjour!\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nBefore your trip to <<destination_EN>>, you may find this guide on local currency and tipping customs helpful: <<currency_guide_link_EN>>. Enjoy your travels.\\r\\n\\r\\nThank you."},"variables":["client_name","currency_guide_link","destination"]},{"id":"p066_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Inscription au programme de fidélité","en":"Loyalty Program Enrollment"},"description":{"fr":"Invitant le client à rejoindre le programme de fidélité de l'agence","en":"Inviting client to join the agency's loyalty program"},"subject":{"fr":"Inscription au programme de fidélité","en":"Loyalty Program Enrollment"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous espérons que vous avez passé un excellent voyage! Nous aimerions vous inviter à rejoindre notre programme de fidélité. Inscrivez‑vous ici : <<loyalty_link_FR>> et recevez <<welcome_bonus_FR>> en prime de bienvenue.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe hope you enjoyed your trip! We’d like to invite you to join our loyalty program. Sign up here: <<loyalty_link_EN>> and receive <<welcome_bonus_EN>> as a welcome bonus.\\r\\n\\r\\nThank you."},"variables":["client_name","loyalty_link","welcome_bonus"]},{"id":"p067_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Demande d'avis (fournisseur spécifique)","en":"Review Request (Specific Supplier)"},"description":{"fr":"Demandant un avis sur un hôtel ou un voyagiste spécifique","en":"Asking for a review of a specific hotel or tour operator"},"subject":{"fr":"Demande d'avis (fournisseur spécifique)","en":"Review Request (Specific Supplier)"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous espérons que vous avez apprécié votre expérience avec <<supplier_name_FR>>. Pourriez‑vous laisser un avis? Vos commentaires aident les autres voyageurs. Vous pouvez soumettre votre avis ici : <<review_link_FR>>. Merci.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe hope you had a great experience with <<supplier_name_EN>>. Could you please leave a review? Your feedback helps other travellers. You can submit your review here: <<review_link_EN>>. Thank you.\\r\\n\\r\\nThank you."},"variables":["client_name","review_link","supplier_name"]},{"id":"p068_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Invitation à planifier le prochain voyage","en":"Next Trip Planning Invitation"},"description":{"fr":"Invitant le client à commencer à planifier son prochain voyage","en":"Inviting client to start planning their next trip"},"subject":{"fr":"Invitation à planifier le prochain voyage","en":"Next Trip Planning Invitation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous espérons que votre récent voyage s’est bien déroulé. Si vous rêvez déjà de votre prochaine aventure, <<agent_name_FR>> se ferait un plaisir de vous aider. Commencez ici : <<planning_link_FR>>.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe hope your recent trip was wonderful. If you’re dreaming of your next adventure, <<agent_name_EN>> would love to help. Get started here: <<planning_link_EN>>.\\r\\n\\r\\nThank you."},"variables":["agent_name","client_name","planning_link"]},{"id":"p069_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Invitation à partager des photos","en":"Photo Sharing Invitation"},"description":{"fr":"Invitant le client à partager ses photos de voyage","en":"Inviting client to share their travel photos"},"subject":{"fr":"Invitation à partager des photos","en":"Photo Sharing Invitation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous adorerions voir vos photos de voyage! Partagez‑les avec le mot‑clic <<hashtag_FR>> et téléchargez‑les ici : <<photo_upload_link_FR>>. Merci.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe’d love to see your travel photos! Share them using the hashtag <<hashtag_EN>> and upload them here: <<photo_upload_link_EN>>. Thank you.\\r\\n\\r\\nThank you."},"variables":["client_name","hashtag","photo_upload_link"]},{"id":"p070_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Suivi d'objets perdus","en":"Lost & Found Follow-up"},"description":{"fr":"Suivi d'une demande d'objet perdu","en":"Following up on a lost item inquiry"},"subject":{"fr":"Suivi d'objets perdus","en":"Lost & Found Follow-up"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous faisons suite à votre demande concernant l’objet perdu <<item_description_FR>>. État actuel : <<status_FR>>. Nous vous tiendrons au courant de toute évolution.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe are following up on your lost item inquiry regarding <<item_description_EN>>. Current status: <<status_EN>>. We will keep you updated on any changes.\\r\\n\\r\\nThank you."},"variables":["client_name","item_description","status"]},{"id":"p071_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Invitation au programme de parrainage","en":"Referral Program Invitation"},"description":{"fr":"Invitant le client à parrainer des amis et de la famille","en":"Inviting client to refer friends and family"},"subject":{"fr":"Invitation au programme de parrainage","en":"Referral Program Invitation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci d’avoir voyagé avec nous. Seriez‑vous prêt à recommander nos services à vos proches? Utilisez ce lien : <<referral_link_FR>>. En remerciement, vous recevrez <<reward_amount_FR>> pour chaque référence qui réserve.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for choosing us for your travels. We’d be grateful if you could refer your friends and family. Use this link: <<referral_link_EN>>. As a thank you, you’ll receive <<reward_amount_EN>> for each successful referral.\\r\\n\\r\\nThank you."},"variables":["client_name","referral_link","reward_amount"]},{"id":"p072_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Rappel de renouvellement de passeport","en":"Passport Renewal Reminder"},"description":{"fr":"Rappelant au client de renouveler son passeport en fonction de ses antécédents de voyage","en":"Reminding client to renew their passport based on their travel history"},"subject":{"fr":"Rappel de renouvellement de passeport","en":"Passport Renewal Reminder"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nEn vous basant sur votre historique de voyage, votre passeport expirera le <<passport_expiry_date_FR>>. Veuillez le renouveler rapidement pour éviter tout problème lors de vos futurs voyages.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nBased on your travel history, your passport will expire on <<passport_expiry_date_EN>>. Please renew it soon to avoid any issues with future travel plans.\\r\\n\\r\\nThank you."},"variables":["client_name","passport_expiry_date"]},{"id":"p073_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Suivi de problème non résolu","en":"Unresolved Issue Follow-up"},"description":{"fr":"Suivi d'un problème mineur signalé pendant le voyage","en":"Following up on a minor issue reported during the trip"},"subject":{"fr":"Suivi de problème non résolu","en":"Unresolved Issue Follow-up"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci de nous avoir signalé <<issue_details_FR>>. Nous sommes en train de régler la situation. Voici notre plan de résolution : <<resolution_plan_FR>>. Nous nous excusons pour le désagrément.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for bringing <<issue_details_EN>> to our attention. We are addressing this and here’s our resolution plan: <<resolution_plan_EN>>. We apologize for any inconvenience.\\r\\n\\r\\nThank you."},"variables":["client_name","issue_details","resolution_plan"]},{"id":"p074_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Merci pour vos commentaires","en":"Thank You for Feedback"},"description":{"fr":"Remerciant un client d'avoir fourni des commentaires","en":"Thanking a client for providing feedback"},"subject":{"fr":"Merci pour vos commentaires","en":"Thank You for Feedback"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci d’avoir pris le temps de nous faire part de vos commentaires. Nous apprécions vos observations et les utiliserons pour améliorer nos services. Si vous avez d’autres suggestions, n’hésitez pas à les partager.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for taking the time to provide feedback. We appreciate your insights and will use them to improve our services. If you have any further comments, feel free to share.\\r\\n\\r\\nThank you."},"variables":["client_name"]},{"id":"p075_1","category":"Suivi post-voyage","category_fr":"Suivi post-voyage","category_en":"Post-Travel Follow-up","title":{"fr":"Suggestion de future destination","en":"Future Destination Suggestion"},"description":{"fr":"Suggérant une nouvelle destination basée sur des voyages passés","en":"Suggesting a new destination based on past travel"},"subject":{"fr":"Suggestion de future destination","en":"Future Destination Suggestion"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nEn fonction de votre intérêt pour <<destination_FR>>, nous pensons que <<suggested_destination_FR>> pourrait vous plaire. Découvrez‑la ici : <<link_FR>>. Faites‑moi savoir si vous souhaitez plus d’informations.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nBased on your interest in <<destination_EN>>, we thought you might enjoy <<suggested_destination_EN>>. Explore it here: <<link_EN>>. Let us know if you’d like more information.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","link","suggested_destination"]},{"id":"t076_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Avertissement météo pour la destination","en":"Weather Warning for Destination"},"description":{"fr":"Alertant le client de conditions météorologiques extrêmes à sa destination","en":"Alerting client to severe weather at their destination"},"subject":{"fr":"Avertissement météo pour la destination","en":"Weather Warning for Destination"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous souhaitons vous informer de conditions météorologiques sévères prévues à <<destination_FR>> durant vos dates de voyage <<travel_dates_FR>>. Détails : <<weather_details_FR>>. Prenez les précautions nécessaires et contactez‑nous si vous devez ajuster vos plans.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe want to alert you to severe weather conditions expected in <<destination_EN>> during your travel dates <<travel_dates_EN>>. Details: <<weather_details_EN>>. Please take necessary precautions and feel free to contact us if you need to adjust your plans.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","travel_dates","weather_details"]},{"id":"t077_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Alerte santé et sécurité","en":"Health & Safety Alert"},"description":{"fr":"Alertant le client d'un problème de santé ou de sécurité","en":"Alerting client to a health or safety concern"},"subject":{"fr":"Alerte santé et sécurité","en":"Health & Safety Alert"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nIl y a un avis important de santé/sécurité concernant <<destination_FR>> : <<alert_details_FR>>. Pour plus d’informations, veuillez consulter : <<cdc_link_FR>>. Faites‑nous savoir si vous devez modifier votre voyage.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThere is an important health or safety advisory for <<destination_EN>>: <<alert_details_EN>>. For more information, please consult: <<cdc_link_EN>>. Let us know if you need to modify your trip.\\r\\n\\r\\nThank you."},"variables":["alert_details","cdc_link","client_name","destination"]},{"id":"t078_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Grève/perturbation aérienne","en":"Airline Strike/Disruption"},"description":{"fr":"Informant le client d'une grève aérienne potentielle ou d'une perturbation majeure","en":"Informing client of a potential airline strike or major disruption"},"subject":{"fr":"Grève/perturbation aérienne","en":"Airline Strike/Disruption"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons été informés d’une grève potentielle ou d’une perturbation majeure affectant <<airline_name_FR>> susceptible d’impacter votre voyage. Détails : <<disruption_details_FR>>. Voici vos options : <<options_FR>>. Merci de nous indiquer comment vous souhaitez procéder.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe have been informed of a potential disruption or strike affecting <<airline_name_EN>> that could impact your travel. Details: <<disruption_details_EN>>. Here are your options: <<options_EN>>. Please let us know how you’d like to proceed.\\r\\n\\r\\nThank you."},"variables":["airline_name","client_name","disruption_details","options"]},{"id":"t079_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Avertissement d'agitation politique","en":"Political Unrest Warning"},"description":{"fr":"Avertissant le client d'une agitation politique à sa destination","en":"Warning client about political unrest at their destination"},"subject":{"fr":"Avertissement d'agitation politique","en":"Political Unrest Warning"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nOn signale des troubles politiques à <<destination_FR>> : <<unrest_details_FR>>. Veuillez consulter l’avis ici : <<government_link_FR>>. Contactez‑nous si vous souhaitez discuter de votre itinéraire.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThere are reports of political unrest in <<destination_EN>>: <<unrest_details_EN>>. Please review the advisory here: <<government_link_EN>>. Contact us if you need to discuss your itinerary.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","government_link","unrest_details"]},{"id":"t080_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Fermeture/retard d'aéroport","en":"Airport Closure/Delay"},"description":{"fr":"Informant le client d'une fermeture ou d'un retard majeur d'aéroport","en":"Informing client of an airport closure or major delay"},"subject":{"fr":"Fermeture/retard d'aéroport","en":"Airport Closure/Delay"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons été informés que l’aéroport <<airport_code_FR>> subit une fermeture ou un retard majeur en raison de <<delay_reason_FR>>. Votre nouvel horaire de départ est <<new_time_FR>>. Nous sommes désolés pour cet inconvénient et vous assisterons pour tout changement.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe have been informed that airport <<airport_code_EN>> is experiencing a major delay or closure due to <<delay_reason_EN>>. Your new departure time is <<new_time_EN>>. We apologize for the inconvenience and will assist with any changes.\\r\\n\\r\\nThank you."},"variables":["airport_code","client_name","delay_reason","new_time"]},{"id":"t081_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Alerte de catastrophe naturelle","en":"Natural Disaster Alert"},"description":{"fr":"Alertant le client d'une catastrophe naturelle près de sa destination","en":"Alerting client to a natural disaster near their destination"},"subject":{"fr":"Alerte de catastrophe naturelle","en":"Natural Disaster Alert"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nUn(e) <<disaster_type_FR>> s’est produit(e) près de <<destination_FR>>. Veuillez consulter les informations de sécurité ici : <<safety_link_FR>>. Votre sécurité est notre priorité, contactez‑nous si vous souhaitez modifier vos plans.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nA <<disaster_type_EN>> has occurred near <<destination_EN>>. Please review safety information here: <<safety_link_EN>>. Your safety is our priority, so contact us if you wish to change your travel plans.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","disaster_type","safety_link"]},{"id":"t082_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Alerte de fluctuation monétaire","en":"Currency Fluctuation Alert"},"description":{"fr":"Informant le client d'un changement de devise important","en":"Informing client of a significant currency change"},"subject":{"fr":"Alerte de fluctuation monétaire","en":"Currency Fluctuation Alert"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nLa devise <<currency_code_FR>> a fluctué de <<change_percentage_FR>>. Cela peut affecter votre budget de voyage : <<impact_details_FR>>. Faites‑nous savoir si vous avez besoin d’aide pour ajuster vos plans.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThe currency <<currency_code_EN>> has fluctuated by <<change_percentage_EN>>. This may affect your travel budget: <<impact_details_EN>>. Please let us know if you need assistance adjusting your plans.\\r\\n\\r\\nThank you."},"variables":["change_percentage","client_name","currency_code","impact_details"]},{"id":"t083_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Changement de règles douanières/d'entrée","en":"Customs/Entry Rule Change"},"description":{"fr":"Alertant le client d'un changement de règles douanières ou d'entrée","en":"Alerting client to a change in customs or entry requirements"},"subject":{"fr":"Changement de règles douanières/d'entrée","en":"Customs/Entry Rule Change"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nÀ compter du <<effective_date_FR>>, de nouvelles exigences douanières ou d’entrée s’appliqueront aux voyageurs se rendant à <<destination_FR>> : <<rule_change_FR>>. Veuillez vous assurer d’y répondre.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nStarting <<effective_date_EN>>, new customs or entry requirements apply for travellers to <<destination_EN>>: <<rule_change_EN>>. Please ensure you meet these requirements.\\r\\n\\r\\nThank you."},"variables":["client_name","destination","effective_date","rule_change"]},{"id":"t084_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Fermeture/déménagement d'hôtel","en":"Hotel Closure/Relocation"},"description":{"fr":"Informant le client que son hôtel réservé est fermé ou qu'il a été relogé","en":"Informing client that their booked hotel is closed or they have been relocated"},"subject":{"fr":"Fermeture/déménagement d'hôtel","en":"Hotel Closure/Relocation"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous regrettons de vous informer que votre hôtel initial, <<original_hotel_FR>>, est fermé ou a dû être changé en raison de <<reason_FR>>. Nous vous avons réservé une chambre à <<new_hotel_FR>>. N’hésitez pas à nous contacter pour toute question.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe regret to inform you that your original hotel, <<original_hotel_EN>>, has closed or had to be changed due to <<reason_EN>>. We have arranged accommodation at <<new_hotel_EN>>. Please let us know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["client_name","new_hotel","original_hotel","reason"]},{"id":"t085_1","category":"Avis de voyage","category_fr":"Avis de voyage","category_en":"Travel Advisories","title":{"fr":"Alerte d'événement/festival local","en":"Local Event/Festival Alert"},"description":{"fr":"Informant le client d'un événement local majeur susceptible d'affecter les voyages","en":"Informing client of a major local event that may affect travel"},"subject":{"fr":"Alerte d'événement/festival local","en":"Local Event/Festival Alert"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nPendant vos dates de voyage <<dates_FR>>, un événement majeur <<event_name_FR>> aura lieu à <<destination_FR>>, ce qui peut affecter la circulation et la disponibilité. Veuillez planifier en conséquence.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nDuring your travel dates <<dates_EN>>, a major event <<event_name_EN>> will be taking place in <<destination_EN>>, which may affect traffic and availability. Please plan accordingly.\\r\\n\\r\\nThank you."},"variables":["client_name","dates","destination","event_name"]},{"id":"g086_1","category":"Voyages de groupe","category_fr":"Voyages de groupe","category_en":"Group Travel","title":{"fr":"Demande d'acompte de réservation de groupe","en":"Group Booking Deposit Request"},"description":{"fr":"Demandant l'acompte initial pour une réservation de groupe","en":"Requesting the initial deposit for a group booking"},"subject":{"fr":"Demande d'acompte de réservation de groupe","en":"Group Booking Deposit Request"},"body":{"fr":"Bonjour <<group_leader_name_FR>>,\\r\\n\\r\\nPour confirmer votre réservation de groupe <<group_name_FR>>, un dépôt de <<deposit_amount_FR>> est requis d’ici le <<due_date_FR>>. N’hésitez pas à nous contacter pour toute question.\\r\\n\\r\\nMerci.","en":"Dear <<group_leader_name_EN>>,\\r\\n\\r\\nTo secure your group booking for <<group_name_EN>>, we require an initial deposit of <<deposit_amount_EN>> by <<due_date_EN>>. Please let us know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["deposit_amount","due_date","group_leader_name","group_name"]},{"id":"g087_1","category":"Voyages de groupe","category_fr":"Voyages de groupe","category_en":"Group Travel","title":{"fr":"Lien d'inscription des membres du groupe","en":"Group Member Registration Link"},"description":{"fr":"Envoi du lien pour que les membres du groupe enregistrent leurs détails","en":"Sending the link for group members to register their details"},"subject":{"fr":"Lien d'inscription des membres du groupe","en":"Group Member Registration Link"},"body":{"fr":"Bonjour <<group_leader_name_FR>>,\\r\\n\\r\\nMerci de partager ce lien d’inscription avec votre groupe <<group_name_FR>>. Chaque membre doit enregistrer ses informations avant le <<deadline_FR>> : <<registration_link_FR>>. Nous sommes disponibles en cas de besoin.\\r\\n\\r\\nMerci.","en":"Dear <<group_leader_name_EN>>,\\r\\n\\r\\nPlease share this registration link with your group <<group_name_EN>>. Each member should register their details by <<deadline_EN>>: <<registration_link_EN>>. Let us know if you need assistance.\\r\\n\\r\\nThank you."},"variables":["deadline","group_leader_name","group_name","registration_link"]},{"id":"g088_1","category":"Voyages de groupe","category_fr":"Voyages de groupe","category_en":"Group Travel","title":{"fr":"Finalisation de l'itinéraire de groupe","en":"Group Itinerary Finalization"},"description":{"fr":"Confirmant l'itinéraire et les détails finaux du groupe","en":"Confirming the final group itinerary and details"},"subject":{"fr":"Finalisation de l'itinéraire de groupe","en":"Group Itinerary Finalization"},"body":{"fr":"Bonjour <<group_leader_name_FR>>,\\r\\n\\r\\nVoici l’itinéraire final pour <<group_name_FR>>. Vous pouvez le consulter ici : <<itinerary_link_FR>>. Veuillez en prendre connaissance et le partager avec votre groupe.\\r\\n\\r\\nMerci.","en":"Dear <<group_leader_name_EN>>,\\r\\n\\r\\nWe are pleased to provide the final itinerary for <<group_name_EN>>. You can view it here: <<itinerary_link_EN>>. Please review the details and share with your group.\\r\\n\\r\\nThank you."},"variables":["group_leader_name","group_name","itinerary_link"]},{"id":"c089_1","category":"Voyages d'affaires","category_fr":"Voyages d'affaires","category_en":"Corporate Travel","title":{"fr":"Accusé de réception de nouvelle demande de voyage d'affaires","en":"New Business Trip Request Acknowledgment"},"description":{"fr":"Accusant réception d'une nouvelle demande de voyage d'affaires","en":"Acknowledging a new corporate travel request"},"subject":{"fr":"Accusé de réception de nouvelle demande de voyage d'affaires","en":"New Business Trip Request Acknowledgment"},"body":{"fr":"Bonjour <<contact_name_FR>>,\\r\\n\\r\\nNous avons reçu une nouvelle demande de voyage pour <<traveler_name_FR>> à destination de <<destination_FR>>. Nous traiterons cette demande dans les meilleurs délais (<<timeline_FR>>) et vous proposerons des options prochainement.\\r\\n\\r\\nMerci.","en":"Dear <<contact_name_EN>>,\\r\\n\\r\\nWe have received a new travel request for <<traveler_name_EN>> to <<destination_EN>>. We will process this request within <<timeline_EN>> and provide options shortly.\\r\\n\\r\\nThank you."},"variables":["contact_name","destination","timeline","traveler_name"]},{"id":"c090_1","category":"Voyages d'affaires","category_fr":"Voyages d'affaires","category_en":"Corporate Travel","title":{"fr":"Alerte de violation de la politique de voyage","en":"Travel Policy Violation Alert"},"description":{"fr":"Alertant un contact corporatif d'une violation de politique dans une demande de réservation","en":"Alerting a corporate contact about a policy violation in a booking request"},"subject":{"fr":"Alerte de violation de la politique de voyage","en":"Travel Policy Violation Alert"},"body":{"fr":"Bonjour <<contact_name_FR>>,\\r\\n\\r\\nNous avons identifié une infraction à la politique pour la demande de voyage de <<traveler_name_FR>> : <<reason_FR>>. Détail de la politique : <<policy_detail_FR>>. Veuillez nous indiquer la marche à suivre.\\r\\n\\r\\nMerci.","en":"Dear <<contact_name_EN>>,\\r\\n\\r\\nWe have identified a policy violation in <<traveler_name_EN>>’s booking request: <<reason_EN>>. Detail of the policy: <<policy_detail_EN>>. Please advise on how to proceed.\\r\\n\\r\\nThank you."},"variables":["contact_name","policy_detail","reason","traveler_name"]},{"id":"c091_1","category":"Voyages d'affaires","category_fr":"Voyages d'affaires","category_en":"Corporate Travel","title":{"fr":"Rapport mensuel des dépenses de voyage","en":"Monthly Travel Spend Report"},"description":{"fr":"Envoi du rapport mensuel des dépenses de voyage au contact corporatif","en":"Sending the monthly travel expense report to the corporate contact"},"subject":{"fr":"Rapport mensuel des dépenses de voyage","en":"Monthly Travel Spend Report"},"body":{"fr":"Bonjour <<contact_name_FR>>,\\r\\n\\r\\nVeuillez trouver le rapport des dépenses de voyages pour le mois de <<month_FR>> ici : <<report_link_FR>>. N’hésitez pas à nous contacter pour toute question.\\r\\n\\r\\nMerci.","en":"Dear <<contact_name_EN>>,\\r\\n\\r\\nPlease find the travel expense report for <<month_EN>> here: <<report_link_EN>>. Let us know if you have any questions.\\r\\n\\r\\nThank you."},"variables":["contact_name","month","report_link"]},{"id":"c092_1","category":"Voyages d'affaires","category_fr":"Voyages d'affaires","category_en":"Corporate Travel","title":{"fr":"Demande d'approbation de voyage urgent","en":"Urgent Trip Approval Request"},"description":{"fr":"Demandant une approbation urgente pour un voyage d'affaires de dernière minute","en":"Requesting urgent approval for a last-minute corporate trip"},"subject":{"fr":"Demande d'approbation de voyage urgent","en":"Urgent Trip Approval Request"},"body":{"fr":"Bonjour <<approver_name_FR>>,\\r\\n\\r\\nNous avons besoin de votre approbation urgente pour le voyage de dernière minute de <<traveler_name_FR>>. Coût total : <<cost_FR>>. Veuillez répondre avant le <<deadline_FR>> pour procéder.\\r\\n\\r\\nMerci.","en":"Dear <<approver_name_EN>>,\\r\\n\\r\\nWe require your urgent approval for <<traveler_name_EN>>’s last‑minute trip. Total cost: <<cost_EN>>. Please respond by <<deadline_EN>> to proceed.\\r\\n\\r\\nThank you."},"variables":["approver_name","cost","deadline","traveler_name"]},{"id":"g093_1","category":"Voyages de groupe","category_fr":"Voyages de groupe","category_en":"Group Travel","title":{"fr":"Rappel de paiement final de groupe","en":"Final Group Payment Reminder"},"description":{"fr":"Rappel du paiement final pour une réservation de groupe","en":"Reminder for the final payment for a group booking"},"subject":{"fr":"Rappel de paiement final de groupe","en":"Final Group Payment Reminder"},"body":{"fr":"Bonjour <<group_leader_name_FR>>,\\r\\n\\r\\nCeci est un rappel pour le paiement final de la réservation de groupe <<group_name_FR>>. Le montant de <<final_amount_FR>> est dû le <<due_date_FR>>. Merci d’effectuer ce paiement.\\r\\n\\r\\nMerci.","en":"Dear <<group_leader_name_EN>>,\\r\\n\\r\\nThis is a reminder for the final payment for your group booking <<group_name_EN>>. The amount of <<final_amount_EN>> is due on <<due_date_EN>>. Please make this payment.\\r\\n\\r\\nThank you."},"variables":["due_date","final_amount","group_leader_name","group_name"]},{"id":"c094_1","category":"Voyages d'affaires","category_fr":"Voyages d'affaires","category_en":"Corporate Travel","title":{"fr":"Demande de mise à jour du profil du voyageur","en":"Traveler Profile Update Request"},"description":{"fr":"Demandant à un voyageur de mettre à jour les informations de son profil","en":"Requesting a traveler to update their profile information"},"subject":{"fr":"Demande de mise à jour du profil du voyageur","en":"Traveler Profile Update Request"},"body":{"fr":"Bonjour <<traveler_name_FR>>,\\r\\n\\r\\nDans le cadre de notre programme corporatif avec <<company_name_FR>>, merci de mettre à jour votre profil de voyageur ici : <<profile_link_FR>>. Cela permet de garantir des réservations exactes.\\r\\n\\r\\nMerci.","en":"Dear <<traveler_name_EN>>,\\r\\n\\r\\nAs part of our corporate program with <<company_name_EN>>, please update your traveller profile here: <<profile_link_EN>>. This ensures accurate bookings.\\r\\n\\r\\nThank you."},"variables":["company_name","profile_link","traveler_name"]},{"id":"g095_1","category":"Voyages de groupe","category_fr":"Voyages de groupe","category_en":"Group Travel","title":{"fr":"Demande de liste de répartition des chambres de groupe","en":"Group Rooming List Request"},"description":{"fr":"Demandant la liste de répartition des chambres finale au chef de groupe","en":"Requesting the final rooming list from the group leader"},"subject":{"fr":"Demande de liste de répartition des chambres de groupe","en":"Group Rooming List Request"},"body":{"fr":"Bonjour <<group_leader_name_FR>>,\\r\\n\\r\\nVeuillez fournir la liste finale des chambres pour <<group_name_FR>> avant le <<deadline_FR>>. Merci.\\r\\n\\r\\nMerci.","en":"Dear <<group_leader_name_EN>>,\\r\\n\\r\\nPlease provide the final rooming list for <<group_name_EN>> by <<deadline_EN>>. Thank you.\\r\\n\\r\\nThank you."},"variables":["deadline","group_leader_name","group_name"]},{"id":"g096_1","category":"Demande générale","category_fr":"Demande générale","category_en":"General Inquiry","title":{"fr":"Notification des heures de vacances du bureau","en":"Office Holiday Hours Notification"},"description":{"fr":"Informant les clients des heures réduites pendant un jour férié","en":"Informing clients of reduced hours during a holiday"},"subject":{"fr":"Notification des heures de vacances du bureau","en":"Office Holiday Hours Notification"},"body":{"fr":"Bonjour,\\r\\n\\r\\nVeuillez noter que nos heures d’ouverture seront réduites durant <<holiday_name_FR>> du <<start_date_FR>> au <<end_date_FR>>. Pour toute urgence, contactez le <<emergency_number_FR>>. Merci de votre compréhension.\\r\\n\\r\\nMerci.","en":"Dear valued client,\\r\\n\\r\\nPlease note that our office hours will be reduced during <<holiday_name_EN>> from <<start_date_EN>> to <<end_date_EN>>. For urgent matters, call <<emergency_number_EN>>. Thank you for your understanding.\\r\\n\\r\\nThank you."},"variables":["emergency_number","end_date","holiday_name","start_date"]},{"id":"g097_1","category":"Demande générale","category_fr":"Demande générale","category_en":"General Inquiry","title":{"fr":"Merci de votre patience","en":"Thank You for Your Patience"},"description":{"fr":"Courriel général remerciant un client pour sa patience pendant une période de pointe","en":"General email thanking a client for their patience during a busy period"},"subject":{"fr":"Merci de votre patience","en":"Thank You for Your Patience"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci de votre patience durant <<reason_FR>>. <<agent_name_FR>> et notre équipe apprécient votre compréhension et seront heureux de vous assister dès que possible.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for your patience during <<reason_EN>>. <<agent_name_EN>> and the team appreciate your understanding and will be happy to assist you as soon as possible.\\r\\n\\r\\nThank you."},"variables":["agent_name","client_name","reason"]},{"id":"e098_1","category":"Urgence","category_fr":"Urgence","category_en":"Emergency","title":{"fr":"Urgent : résolution de problème d'enregistrement","en":"Urgent: Check-in Issue Resolution"},"description":{"fr":"Résolvant un problème urgent d'enregistrement pour un client","en":"Resolving an urgent check-in issue for a client"},"subject":{"fr":"Urgent : résolution de problème d'enregistrement","en":"Urgent: Check-in Issue Resolution"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nNous avons résolu le problème d’enregistrement urgent pour votre dossier <<booking_reference_FR>>. <<resolution_details_FR>>. N’hésitez pas à nous dire si vous avez besoin d’autre chose.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nWe have resolved the urgent check‑in issue for your booking <<booking_reference_EN>>. <<resolution_details_EN>>. Please let us know if anything else is needed.\\r\\n\\r\\nThank you."},"variables":["booking_reference","client_name","resolution_details"]},{"id":"i099_1","category":"Assurance","category_fr":"Assurance","category_en":"Insurance","title":{"fr":"Guide du processus de réclamation d'assurance","en":"Insurance Claim Process Guide"},"description":{"fr":"Fournissant un guide sur la façon de déposer une réclamation d'assurance","en":"Providing a guide on how to file an insurance claim"},"subject":{"fr":"Guide du processus de réclamation d'assurance","en":"Insurance Claim Process Guide"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nSi vous devez faire une réclamation d’assurance pour la police <<policy_number_FR>>, veuillez suivre les étapes décrites ici : <<claim_link_FR>>. Si vous avez besoin d’aide, contactez‑nous.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nIf you need to file an insurance claim for policy <<policy_number_EN>>, please follow the steps outlined here: <<claim_link_EN>>. If you require assistance, feel free to contact us.\\r\\n\\r\\nThank you."},"variables":["claim_link","client_name","policy_number"]},{"id":"c100_1","category":"Plaintes","category_fr":"Plaintes","category_en":"Complaints","title":{"fr":"Offre de résolution de plainte","en":"Complaint Resolution Offer"},"description":{"fr":"Proposant une résolution à la plainte d'un client","en":"Proposing a resolution to a client's complaint"},"subject":{"fr":"Offre de résolution de plainte","en":"Complaint Resolution Offer"},"body":{"fr":"Bonjour <<client_name_FR>>,\\r\\n\\r\\nMerci de nous avoir fait part de vos préoccupations (dossier <<case_number_FR>>). <<agent_name_FR>> propose la solution suivante : <<resolution_offer_FR>>. Veuillez nous dire si cette proposition vous convient.\\r\\n\\r\\nMerci.","en":"Dear <<client_name_EN>>,\\r\\n\\r\\nThank you for bringing your concerns to our attention (<<case_number_EN>>). <<agent_name_EN>> has proposed the following resolution: <<resolution_offer_EN>>. Please let us know if this meets your expectations.\\r\\n\\r\\nThank you."},"variables":["agent_name","case_number","client_name","resolution_offer"]}]`);
+const canonicalTemplatesRaw = {
+  metadata,
+  variables,
+  templates
+};
 var reactDomExports = requireReactDom();
 const ReactDOM = /* @__PURE__ */ getDefaultExportFromCjs(reactDomExports);
 function isArray(value) {
@@ -9484,20 +9492,25 @@ const selectEntirePill$1 = (pill) => {
   selection.removeAllRanges();
   selection.addRange(range);
 };
-const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = "default", templateLanguage = "fr" }) => {
+const SimplePillEditor = ({ value, onChange, variables: variables2, placeholder, onVariablesChange, focusedVarName, onFocusedVarChange, variant = "default", templateLanguage = "fr" }) => {
   const editorRef = reactExports.useRef(null);
   const [isFocused, setIsFocused] = reactExports.useState(false);
   const lastSelectionVarRef = reactExports.useRef(null);
   const autoSelectTrackerRef = reactExports.useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = reactExports.useRef(0);
   const clickSelectTimerRef = reactExports.useRef(null);
-  const getVarValue = reactExports.useCallback((name) => {
+  const getVarValue = reactExports.useCallback((name = "") => {
+    var _a, _b;
     const lang = (templateLanguage || "fr").toLowerCase();
-    if (lang === "en") {
-      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
+    const suffix = (_b = (_a = name.match(/_(fr|en)$/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.toLowerCase();
+    if (suffix) {
+      return (variables2 == null ? void 0 : variables2[name]) ?? "";
     }
-    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
-  }, [variables, templateLanguage]);
+    if (lang === "en") {
+      return (variables2 == null ? void 0 : variables2[`${name}_EN`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+    }
+    return (variables2 == null ? void 0 : variables2[`${name}_FR`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+  }, [variables2, templateLanguage]);
   const renderContent = (text) => {
     if (!text) return "";
     const regex = /<<([^>]+)>>/g;
@@ -9570,10 +9583,10 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
     if (editorRef.current.innerHTML !== rendered) {
       editorRef.current.innerHTML = rendered;
     }
-  }, [value, variables, isFocused, getVarValue, templateLanguage]);
+  }, [value, variables2, isFocused, getVarValue, templateLanguage]);
   reactExports.useEffect(() => {
     applyFocusedPill(focusedVarName);
-  }, [focusedVarName, variables, applyFocusedPill]);
+  }, [focusedVarName, variables2, applyFocusedPill]);
   const extractText = () => {
     if (!editorRef.current) return "";
     let result = "";
@@ -9649,7 +9662,7 @@ const SimplePillEditor = ({ value, onChange, variables, placeholder, onVariables
           pill.classList.remove("empty");
         }
         pill.setAttribute("data-display", newValue);
-        if (((variables == null ? void 0 : variables[varName]) || "") !== newValue) {
+        if (((variables2 == null ? void 0 : variables2[varName]) || "") !== newValue) {
           hasChanges = true;
         }
         updates[varName] = newValue;
@@ -10601,7 +10614,7 @@ const RichTextPillEditor = React.forwardRef(({
   onFocus,
   onBlur,
   onVariablesChange,
-  variables = {},
+  variables: variables2 = {},
   placeholder = "",
   className = "",
   style = {},
@@ -10618,18 +10631,23 @@ const RichTextPillEditor = React.forwardRef(({
   const [isFocused, setIsFocused] = reactExports.useState(false);
   const lastSelectionVarRef = reactExports.useRef(null);
   const prevValueRef = reactExports.useRef(value);
-  const prevVariablesRef = reactExports.useRef(variables);
+  const prevVariablesRef = reactExports.useRef(variables2);
   const hasMountedRef = reactExports.useRef(false);
   const autoSelectTrackerRef = reactExports.useRef({ varName: null, timestamp: 0 });
   const autoSelectSuppressedUntilRef = reactExports.useRef(0);
   const clickSelectTimerRef = reactExports.useRef(null);
-  const getVarValue = reactExports.useCallback((name) => {
+  const getVarValue = reactExports.useCallback((name = "") => {
+    var _a, _b;
     const lang = (templateLanguage || "fr").toLowerCase();
-    if (lang === "en") {
-      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
+    const suffix = (_b = (_a = name.match(/_(fr|en)$/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.toLowerCase();
+    if (suffix) {
+      return (variables2 == null ? void 0 : variables2[name]) ?? "";
     }
-    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
-  }, [variables, templateLanguage]);
+    if (lang === "en") {
+      return (variables2 == null ? void 0 : variables2[`${name}_EN`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+    }
+    return (variables2 == null ? void 0 : variables2[`${name}_FR`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+  }, [variables2, templateLanguage]);
   const renderContent = (text) => {
     if (!text) return "";
     const regex = /<<([^>]+)>>/g;
@@ -10772,7 +10790,7 @@ const RichTextPillEditor = React.forwardRef(({
           pill.classList.remove("empty");
         }
         pill.setAttribute("data-display", newValue);
-        if (((variables == null ? void 0 : variables[varName]) || "") !== newValue) {
+        if (((variables2 == null ? void 0 : variables2[varName]) || "") !== newValue) {
           hasChanges = true;
         }
         updates[varName] = newValue;
@@ -10951,19 +10969,19 @@ const RichTextPillEditor = React.forwardRef(({
     const firstRun = !hasMountedRef.current;
     if (!editor) {
       prevValueRef.current = value;
-      prevVariablesRef.current = variables;
+      prevVariablesRef.current = variables2;
       return;
     }
     if (isFocused) {
       prevValueRef.current = value;
-      prevVariablesRef.current = variables;
+      prevVariablesRef.current = variables2;
       hasMountedRef.current = true;
       return;
     }
     const prevValue = prevValueRef.current;
     const prevVars = prevVariablesRef.current;
     const textChanged = value !== prevValue;
-    const varsChanged = haveVariablesChanged(prevVars || {}, variables || {});
+    const varsChanged = haveVariablesChanged(prevVars || {}, variables2 || {});
     if (firstRun) {
       const rendered = renderContent(value);
       if (editor.innerHTML !== rendered) {
@@ -10979,7 +10997,7 @@ const RichTextPillEditor = React.forwardRef(({
       pills.forEach((pill) => {
         const varName = pill.getAttribute("data-var");
         if (!varName) return;
-        const rawValue = variables == null ? void 0 : variables[varName];
+        const rawValue = variables2 == null ? void 0 : variables2[varName];
         const stringValue = rawValue == null ? "" : String(rawValue);
         const trimmed = stringValue.trim();
         const placeholder2 = `<<${varName}>>`;
@@ -10999,14 +11017,14 @@ const RichTextPillEditor = React.forwardRef(({
     }
     hasMountedRef.current = true;
     prevValueRef.current = value;
-    prevVariablesRef.current = variables;
+    prevVariablesRef.current = variables2;
     if (firstRun || textChanged) {
       refreshAllPillTemplates(editor);
     }
-  }, [value, variables, isFocused, getVarValue, templateLanguage]);
+  }, [value, variables2, isFocused, getVarValue, templateLanguage]);
   reactExports.useEffect(() => {
     applyFocusedPill(focusedVarName);
-  }, [focusedVarName, variables, applyFocusedPill]);
+  }, [focusedVarName, variables2, applyFocusedPill]);
   reactExports.useEffect(() => {
     if (!isFocused || !editorRef.current) return;
     const handleSelectionChange = () => {
@@ -11157,7 +11175,7 @@ const callOpenAI = async ({ prompt, system = "You are a helpful assistant.", sig
   const data = await response.json();
   return ((_b = (_a = data.choices[0]) == null ? void 0 : _a.message) == null ? void 0 : _b.content) || "";
 };
-const AISidebar = ({ emailText, onResult, variables }) => {
+const AISidebar = ({ emailText, onResult, variables: variables2 }) => {
   const [isProcessing, setIsProcessing] = reactExports.useState(false);
   const [showApiKeyInput, setShowApiKeyInput] = reactExports.useState(false);
   const [tempApiKey, setTempApiKey] = reactExports.useState("");
@@ -18463,16 +18481,16 @@ const extractVariablesFromPills = (htmlText = "") => {
   if (!htmlText) return {};
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = htmlText;
-  const variables = {};
+  const variables2 = {};
   const pills = tempDiv.querySelectorAll("[data-var]");
   pills.forEach((pill) => {
     const varName = pill.getAttribute("data-var");
     const varValue = pill.getAttribute("data-value") || pill.textContent || "";
     if (varName) {
-      variables[varName] = varValue;
+      variables2[varName] = varValue;
     }
   });
-  return variables;
+  return variables2;
 };
 const parseTemplateStructure = (tpl) => {
   if (!tpl) return [];
@@ -18560,9 +18578,16 @@ const guessSampleValue$1 = (templatesData, name = "") => {
   const suffix = suffixMatch ? suffixMatch[1].toUpperCase() : null;
   const rawExample = (() => {
     var _a, _b, _c, _d;
-    if (suffix === "EN") return ((_a = info == null ? void 0 : info.examples) == null ? void 0 : _a.en) ?? (info == null ? void 0 : info.example) ?? "";
-    if (suffix === "FR") return ((_b = info == null ? void 0 : info.examples) == null ? void 0 : _b.fr) ?? (info == null ? void 0 : info.example) ?? "";
-    return (info == null ? void 0 : info.example) ?? ((_c = info == null ? void 0 : info.examples) == null ? void 0 : _c.fr) ?? ((_d = info == null ? void 0 : info.examples) == null ? void 0 : _d.en) ?? "";
+    const exObj = (info == null ? void 0 : info.example) && typeof info.example === "object" && (info.example.fr || info.example.en) ? info.example : null;
+    const getFromExampleObject = (lang) => {
+      if (!exObj) return null;
+      if (lang === "EN") return exObj.en ?? exObj.fr ?? "";
+      if (lang === "FR") return exObj.fr ?? exObj.en ?? "";
+      return exObj.fr ?? exObj.en ?? "";
+    };
+    if (suffix === "EN") return ((_a = info == null ? void 0 : info.examples) == null ? void 0 : _a.en) ?? getFromExampleObject("EN") ?? (typeof (info == null ? void 0 : info.example) === "string" ? info.example : "") ?? "";
+    if (suffix === "FR") return ((_b = info == null ? void 0 : info.examples) == null ? void 0 : _b.fr) ?? getFromExampleObject("FR") ?? (typeof (info == null ? void 0 : info.example) === "string" ? info.example : "") ?? "";
+    return ((_c = info == null ? void 0 : info.examples) == null ? void 0 : _c.fr) ?? ((_d = info == null ? void 0 : info.examples) == null ? void 0 : _d.en) ?? getFromExampleObject("FR") ?? (typeof (info == null ? void 0 : info.example) === "string" ? info.example : "") ?? "";
   })();
   const normalized = (name || "").toLowerCase();
   const kind = (() => {
@@ -18603,10 +18628,10 @@ const guessSampleValue$1 = (templatesData, name = "") => {
       return "$1,250.00";
     }
     if (k === "date") {
-      return "2025-07-15";
+      return val;
     }
     if (k === "time") return "09:00";
-    return mapped;
+    return val;
   };
   const toFrSample = (example, k) => {
     const val = String(example || "").trim();
@@ -18639,19 +18664,116 @@ const guessSampleValue$1 = (templatesData, name = "") => {
       return "…";
   }
 };
-const buildInitialVariables = (template, templatesData) => {
+const hasText = (value) => typeof value === "string" && value.trim().length > 0;
+const normalizeVariableEntry = (entry = {}) => {
+  const textValue = (value) => typeof value === "string" ? value : "";
+  const normalized = { ...entry };
+  const desc = (entry == null ? void 0 : entry.description) || {};
+  normalized.description = {
+    fr: textValue(desc.fr),
+    en: textValue(desc.en)
+  };
+  const example = entry == null ? void 0 : entry.example;
+  if (example && typeof example === "object") {
+    normalized.example = {
+      fr: textValue(example.fr),
+      en: textValue(example.en)
+    };
+  } else if (typeof example === "string") {
+    normalized.example = { fr: example, en: example };
+  } else {
+    normalized.example = { fr: "", en: "" };
+  }
+  normalized.format = (entry == null ? void 0 : entry.format) || "text";
+  if (entry == null ? void 0 : entry.examples) {
+    normalized.examples = entry.examples;
+  }
+  return normalized;
+};
+const normalizeVariableLibrary = (library = {}) => {
+  const normalized = {};
+  Object.entries(library || {}).forEach(([key, value]) => {
+    normalized[key] = normalizeVariableEntry(value || {});
+  });
+  return normalized;
+};
+const mergeVariableLibraries = (primaryVars = {}, fallbackVars = {}) => {
+  const merged = {};
+  const keys = /* @__PURE__ */ new Set([
+    ...Object.keys(fallbackVars || {}),
+    ...Object.keys(primaryVars || {})
+  ]);
+  keys.forEach((key) => {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    const primaryEntry = primaryVars[key];
+    const fallbackEntry = fallbackVars[key];
+    if (!primaryEntry && !fallbackEntry) return;
+    const combined = {
+      format: (primaryEntry == null ? void 0 : primaryEntry.format) || (fallbackEntry == null ? void 0 : fallbackEntry.format) || "text",
+      description: {
+        fr: hasText((_a = primaryEntry == null ? void 0 : primaryEntry.description) == null ? void 0 : _a.fr) ? primaryEntry.description.fr : ((_b = fallbackEntry == null ? void 0 : fallbackEntry.description) == null ? void 0 : _b.fr) || "",
+        en: hasText((_c = primaryEntry == null ? void 0 : primaryEntry.description) == null ? void 0 : _c.en) ? primaryEntry.description.en : ((_d = fallbackEntry == null ? void 0 : fallbackEntry.description) == null ? void 0 : _d.en) || ""
+      },
+      example: {
+        fr: hasText((_e = primaryEntry == null ? void 0 : primaryEntry.example) == null ? void 0 : _e.fr) ? primaryEntry.example.fr : ((_f = fallbackEntry == null ? void 0 : fallbackEntry.example) == null ? void 0 : _f.fr) || "",
+        en: hasText((_g = primaryEntry == null ? void 0 : primaryEntry.example) == null ? void 0 : _g.en) ? primaryEntry.example.en : ((_h = fallbackEntry == null ? void 0 : fallbackEntry.example) == null ? void 0 : _h.en) || ""
+      }
+    };
+    const examples = (primaryEntry == null ? void 0 : primaryEntry.examples) || (fallbackEntry == null ? void 0 : fallbackEntry.examples);
+    if (examples) combined.examples = examples;
+    merged[key] = combined;
+  });
+  return merged;
+};
+const mergeTemplateDatasets = (primary = {}, fallback = null) => {
+  const normalizedPrimaryVars = normalizeVariableLibrary((primary == null ? void 0 : primary.variables) || {});
+  if (!fallback) {
+    return {
+      ...primary,
+      variables: normalizedPrimaryVars
+    };
+  }
+  const normalizedFallbackVars = normalizeVariableLibrary((fallback == null ? void 0 : fallback.variables) || {});
+  const merged = {
+    ...fallback || {},
+    ...primary || {}
+  };
+  merged.metadata = {
+    ...(fallback == null ? void 0 : fallback.metadata) || {},
+    ...(primary == null ? void 0 : primary.metadata) || {}
+  };
+  merged.templates = Array.isArray(primary == null ? void 0 : primary.templates) && primary.templates.length ? primary.templates : (fallback == null ? void 0 : fallback.templates) || [];
+  merged.variables = mergeVariableLibraries(normalizedPrimaryVars, normalizedFallbackVars);
+  return merged;
+};
+const CANONICAL_TEMPLATES = mergeTemplateDatasets(canonicalTemplatesRaw, null);
+const buildInitialVariables = (template, templatesData, langOverride) => {
   const seed = {};
   if (!(template == null ? void 0 : template.variables) || !Array.isArray(template.variables)) return seed;
   template.variables.forEach((baseName) => {
     const variants = /* @__PURE__ */ new Set([baseName]);
     LANGUAGE_SUFFIXES$1.forEach((suffix) => variants.add(`${baseName}_${suffix}`));
     variants.forEach((key) => {
+      if (key === baseName) {
+        const info = resolveVariableInfo$1(templatesData, baseName);
+        if (info) {
+          const lang = (langOverride || "fr").toLowerCase();
+          if (info.example && typeof info.example === "object") {
+            seed[key] = info.example[lang] ?? info.example.fr ?? info.example.en ?? "";
+            return;
+          }
+          if (info.examples && info.examples[lang]) {
+            seed[key] = info.examples[lang];
+            return;
+          }
+        }
+      }
       seed[key] = guessSampleValue$1(templatesData, key);
     });
   });
   return seed;
 };
-const expandVariableAssignment$1 = (varName, value) => {
+const expandVariableAssignment$1 = (varName, value, preferredLanguage = null) => {
   const assignments = {};
   if (!varName) return assignments;
   assignments[varName] = value;
@@ -18660,9 +18782,14 @@ const expandVariableAssignment$1 = (varName, value) => {
     const base = match[1];
     assignments[base] = value;
   } else {
-    LANGUAGE_SUFFIXES$1.forEach((suffix) => {
-      assignments[`${varName}_${suffix}`] = value;
-    });
+    const targetLang = preferredLanguage && LANGUAGE_SUFFIXES$1.includes(preferredLanguage.toUpperCase()) ? preferredLanguage.toUpperCase() : null;
+    if (targetLang) {
+      assignments[`${varName}_${targetLang}`] = value;
+    } else {
+      LANGUAGE_SUFFIXES$1.forEach((suffix) => {
+        assignments[`${varName}_${suffix}`] = value;
+      });
+    }
   }
   return assignments;
 };
@@ -18881,11 +19008,12 @@ function App() {
   const [interfaceLanguage, setInterfaceLanguage] = reactExports.useState(savedState.interfaceLanguage || "fr");
   const [templateLanguage, setTemplateLanguage] = reactExports.useState(savedState.templateLanguage || "fr");
   const [selectedTemplate, setSelectedTemplate] = reactExports.useState(null);
+  const [selectedTemplateId, setSelectedTemplateId] = reactExports.useState(savedState.selectedTemplateId || null);
   const [searchQuery, setSearchQuery] = reactExports.useState(savedState.searchQuery || "");
   const [selectedCategory, setSelectedCategory] = reactExports.useState(savedState.selectedCategory || "all");
   const [finalSubject, setFinalSubject] = reactExports.useState("");
   const [finalBody, setFinalBody] = reactExports.useState("");
-  const [variables, setVariables] = reactExports.useState(savedState.variables || {});
+  const [variables2, setVariables] = reactExports.useState(savedState.variables || {});
   const [strictClassic, setStrictClassic] = reactExports.useState(() => {
     if (typeof savedState.strictClassic !== "undefined") return !!savedState.strictClassic;
     try {
@@ -18894,7 +19022,7 @@ function App() {
       return false;
     }
   });
-  const variablesRef = reactExports.useRef(variables);
+  const variablesRef = reactExports.useRef(variables2);
   const finalSubjectRef = reactExports.useRef(finalSubject);
   const finalBodyRef = reactExports.useRef(finalBody);
   const bodyEditorRef = reactExports.useRef(null);
@@ -18903,8 +19031,8 @@ function App() {
   const syncFromTextRef = reactExports.useRef(null);
   const focusFromPopoutRef = reactExports.useRef(false);
   reactExports.useEffect(() => {
-    variablesRef.current = variables;
-  }, [variables]);
+    variablesRef.current = variables2;
+  }, [variables2]);
   reactExports.useEffect(() => {
     finalSubjectRef.current = finalSubject;
   }, [finalSubject]);
@@ -18999,7 +19127,6 @@ function App() {
   const manualEditRef = reactExports.useRef({ subject: false, body: false });
   const pendingTemplateIdRef = reactExports.useRef(null);
   const canUseBC = typeof window !== "undefined" && "BroadcastChannel" in window;
-  const selectedTemplateId = selectedTemplate == null ? void 0 : selectedTemplate.id;
   const updateFocusHighlight = reactExports.useCallback((varName) => {
     try {
       const normalized = normalizeVarKey(varName);
@@ -19147,7 +19274,7 @@ function App() {
   reactExports.useEffect(() => {
     if (!focusedVar) return;
     requestAnimationFrame(() => updateFocusHighlight(focusedVar));
-  }, [variables, showHighlights, focusedVar, updateFocusHighlight]);
+  }, [variables2, showHighlights, focusedVar, updateFocusHighlight]);
   reactExports.useEffect(() => {
     updateFocusHighlight(null);
   }, [selectedTemplateId, templateLanguage, updateFocusHighlight]);
@@ -19213,13 +19340,14 @@ function App() {
         templateLanguage,
         searchQuery,
         selectedCategory,
-        variables,
+        selectedTemplateId,
+        variables: variables2,
         favorites,
         favoritesOnly
       });
     }, 300);
     return () => clearTimeout(timeoutId);
-  }, [interfaceLanguage, templateLanguage, searchQuery, selectedCategory, variables, favorites, favoritesOnly]);
+  }, [interfaceLanguage, templateLanguage, searchQuery, selectedCategory, selectedTemplateId, variables2, favorites, favoritesOnly]);
   reactExports.useEffect(() => {
     try {
       localStorage.setItem("ea_left_width", String(leftWidth));
@@ -19346,7 +19474,7 @@ function App() {
           }
           applyTemplateMeta(msg);
         } else if (msg.type === "request_state") {
-          ch.postMessage({ type: "state", variables, templateId: (selectedTemplate == null ? void 0 : selectedTemplate.id) || null, templateLanguage, focusedVar, sender: varsSenderIdRef.current });
+          ch.postMessage({ type: "state", variables: variables2, templateId: (selectedTemplate == null ? void 0 : selectedTemplate.id) || null, templateLanguage, focusedVar, sender: varsSenderIdRef.current });
         } else if (msg.type === "state") {
           if (msg.variables) {
             varsRemoteUpdateRef.current = true;
@@ -19539,7 +19667,7 @@ function App() {
       varsRemoteUpdateRef.current = false;
       return;
     }
-    const snapshot = { ...variables };
+    const snapshot = { ...variables2 };
     const timeoutId = setTimeout(() => {
       const ch = varsChannelRef.current;
       if (!ch) return;
@@ -19549,12 +19677,14 @@ function App() {
       }
     }, 90);
     return () => clearTimeout(timeoutId);
-  }, [variables]);
+  }, [variables2]);
   reactExports.useEffect(() => {
+    var _a2;
     if (!canUseBC) return;
+    const activeTemplateId = ((_a2 = selectedTemplateRef.current) == null ? void 0 : _a2.id) || selectedTemplateId || null;
     const ch = varsChannelRef.current;
     if (!ch) return;
-    const payload = { type: "update", templateId: selectedTemplateId || null, templateLanguage, sender: varsSenderIdRef.current };
+    const payload = { type: "update", templateId: activeTemplateId, templateLanguage, sender: varsSenderIdRef.current };
     try {
       ch.postMessage(payload);
     } catch {
@@ -19562,17 +19692,19 @@ function App() {
     const popCh = popoutChannelRef.current;
     if (popCh) {
       try {
-        popCh.postMessage({ type: "variablesUpdated", variables: { ...variablesRef.current }, templateId: selectedTemplateId || null, templateLanguage, sender: popoutSenderIdRef.current });
+        popCh.postMessage({ type: "variablesUpdated", variables: { ...variablesRef.current }, templateId: activeTemplateId, templateLanguage, sender: popoutSenderIdRef.current });
       } catch {
       }
     }
   }, [selectedTemplateId, templateLanguage]);
   reactExports.useEffect(() => {
+    var _a2;
     if (!canUseBC) return;
     const channel = popoutChannelRef.current;
     if (!channel) return;
+    const activeTemplateId = ((_a2 = selectedTemplateRef.current) == null ? void 0 : _a2.id) || selectedTemplateId || null;
     const skipMeta = skipPopoutBroadcastRef.current;
-    if ((skipMeta == null ? void 0 : skipMeta.pending) && skipMeta.templateId === (selectedTemplateId || null) && skipMeta.templateLanguage === (templateLanguage || null)) {
+    if ((skipMeta == null ? void 0 : skipMeta.pending) && skipMeta.templateId === activeTemplateId && skipMeta.templateLanguage === (templateLanguage || null)) {
       skipPopoutBroadcastRef.current = { pending: false, templateId: null, templateLanguage: null };
       return;
     }
@@ -19580,16 +19712,16 @@ function App() {
     try {
       channel.postMessage({
         type: "variablesUpdated",
-        variables: { ...variables },
+        variables: { ...variables2 },
         // send fresh shallow copy to avoid mutation references
-        templateId: selectedTemplateId || null,
+        templateId: activeTemplateId,
         templateLanguage,
         sender: popoutSenderIdRef.current
       });
     } catch (e) {
       console.error("Failed to broadcast variables to popout:", e);
     }
-  }, [variables, selectedTemplateId, templateLanguage]);
+  }, [variables2, selectedTemplateId, templateLanguage]);
   reactExports.useEffect(() => {
     if (focusFromPopoutRef.current) {
       focusFromPopoutRef.current = false;
@@ -19681,7 +19813,7 @@ function App() {
       var _a2;
       try {
         if (!selectedTemplate || !selectedTemplate.variables || selectedTemplate.variables.length === 0) return;
-        const firstEmpty = selectedTemplate.variables.find((vn) => !(variables[vn] || "").trim()) || selectedTemplate.variables[0];
+        const firstEmpty = selectedTemplate.variables.find((vn) => !(variables2[vn] || "").trim()) || selectedTemplate.variables[0];
         const el = varInputRefs.current[firstEmpty];
         if (el && typeof el.focus === "function") {
           el.focus();
@@ -19777,35 +19909,73 @@ function App() {
     }
   }, [interfaceLanguage]);
   reactExports.useEffect(() => {
-    const loadTemplatesData = async () => {
-      var _a2;
+    const tryLoadAdminDataset = () => {
       try {
-        if (debug) console.log("[EA][Debug] Fetching templates (prefer raw main data)...");
-        const REPO_RAW_URL = (__vite_import_meta_env__ == null ? void 0 : __vite_import_meta_env__.VITE_TEMPLATES_URL) || "https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json";
-        const LOCAL_URL = "./complete_email_templates.json";
-        const BASE_URL = typeof import.meta !== "undefined" && __vite_import_meta_env__ && "/echo-v1.0.0/" ? "/echo-v1.0.0/" : "/";
-        const ABSOLUTE_URL = (BASE_URL.endsWith("/") ? BASE_URL : BASE_URL + "/") + "complete_email_templates.json";
-        const ts = Date.now();
-        const withBust = (u) => u + (u.includes("?") ? "&" : "?") + "cb=" + ts;
-        const candidates = [withBust(REPO_RAW_URL), withBust(ABSOLUTE_URL), withBust(LOCAL_URL)];
-        let loaded = null;
-        let lastErr = null;
-        for (const url of candidates) {
-          try {
-            if (debug) console.log("[EA][Debug] Try fetch", url);
-            const resp = await fetch(url, { cache: "no-cache" });
-            if (!resp.ok) throw new Error("HTTP " + resp.status);
-            const j = await resp.json();
-            loaded = j;
-            break;
-          } catch (e) {
-            lastErr = e;
-            if (debug) console.warn("[EA][Debug] fetch candidate failed", url, (e == null ? void 0 : e.message) || e);
+        const adminLocal = localStorage.getItem("ea_admin_templates_data");
+        if (adminLocal) {
+          const parsed = JSON.parse(adminLocal);
+          if (parsed && typeof parsed === "object" && Array.isArray(parsed.templates) && parsed.templates.length) {
+            if (debug) console.log("[EA][Debug] Using locally published admin templates dataset");
+            return parsed;
           }
         }
-        if (!loaded) throw lastErr || new Error("No template source reachable");
-        setTemplatesData(loaded);
-        if (debug) console.log("[EA][Debug] Templates loaded:", (_a2 = loaded.templates) == null ? void 0 : _a2.length);
+      } catch (e) {
+        if (debug) console.warn("[EA][Debug] local admin dataset parse failed", e);
+      }
+      return null;
+    };
+    const fetchTemplatesFromSources = async () => {
+      if (debug) console.log("[EA][Debug] Fetching templates (prefer raw main data)...");
+      const REPO_RAW_URL = (__vite_import_meta_env__ == null ? void 0 : __vite_import_meta_env__.VITE_TEMPLATES_URL) || "https://raw.githubusercontent.com/snarky1980/echo-v1.0.0/main/complete_email_templates.json";
+      const LOCAL_URL = "./complete_email_templates.json";
+      const BASE_URL = typeof import.meta !== "undefined" && __vite_import_meta_env__ && "/echo-v1.0.0/" ? "/echo-v1.0.0/" : "/";
+      const ABSOLUTE_URL = (BASE_URL.endsWith("/") ? BASE_URL : BASE_URL + "/") + "complete_email_templates.json";
+      const ts = Date.now();
+      const withBust = (u) => u + (u.includes("?") ? "&" : "?") + "cb=" + ts;
+      const candidates = [withBust(REPO_RAW_URL), withBust(ABSOLUTE_URL), withBust(LOCAL_URL)];
+      let loaded = null;
+      let lastErr = null;
+      for (const url of candidates) {
+        try {
+          if (debug) console.log("[EA][Debug] Try fetch", url);
+          const resp = await fetch(url, { cache: "no-cache" });
+          if (!resp.ok) throw new Error("HTTP " + resp.status);
+          const j = await resp.json();
+          loaded = j;
+          break;
+        } catch (e) {
+          lastErr = e;
+          if (debug) console.warn("[EA][Debug] fetch candidate failed", url, (e == null ? void 0 : e.message) || e);
+        }
+      }
+      if (!loaded) throw lastErr || new Error("No template source reachable");
+      return loaded;
+    };
+    const loadTemplatesData = async () => {
+      var _a2;
+      const canonicalDataset = CANONICAL_TEMPLATES;
+      const adminDataset = tryLoadAdminDataset();
+      if (adminDataset) {
+        setTemplatesData(mergeTemplateDatasets(adminDataset, canonicalDataset));
+        setLoading(false);
+        try {
+          const fallbackDataset = await fetchTemplatesFromSources();
+          if (fallbackDataset) {
+            setTemplatesData((prev) => mergeTemplateDatasets(prev || canonicalDataset, fallbackDataset));
+            if (debug) console.log("[EA][Debug] Admin dataset merged with fallback metadata");
+          }
+        } catch (fallbackError) {
+          if (debug) console.warn("[EA][Debug] Fallback template fetch failed", fallbackError);
+        }
+        return;
+      }
+      setTemplatesData(canonicalDataset);
+      try {
+        const remoteData = await fetchTemplatesFromSources();
+        if (remoteData) {
+          setTemplatesData(mergeTemplateDatasets(remoteData, canonicalDataset));
+          if (debug) console.log("[EA][Debug] Templates loaded:", (_a2 = remoteData == null ? void 0 : remoteData.templates) == null ? void 0 : _a2.length);
+        }
       } catch (error) {
         console.error("Error loading templates data:", error);
       } finally {
@@ -19813,14 +19983,20 @@ function App() {
       }
     };
     loadTemplatesData();
-  }, []);
+  }, [debug]);
   reactExports.useEffect(() => {
     if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates) && templatesData.templates.length > 0) {
-      const first = templatesData.templates[0];
-      setSelectedTemplate(first);
-      if (debug) console.log("[EA][Debug] Auto-selected first template:", first.id);
+      let templateToSelect = null;
+      if (selectedTemplateId) {
+        templateToSelect = templatesData.templates.find((t2) => t2.id === selectedTemplateId);
+      }
+      if (!templateToSelect) {
+        templateToSelect = templatesData.templates[0];
+      }
+      setSelectedTemplate(templateToSelect);
+      if (debug) console.log("[EA][Debug] Auto-selected template:", templateToSelect.id);
     }
-  }, [loading, templatesData, selectedTemplate, debug]);
+  }, [loading, templatesData, selectedTemplate, selectedTemplateId, debug]);
   reactExports.useEffect(() => {
     if (!templatesData) return;
     const params2 = new URLSearchParams(window.location.search);
@@ -19837,6 +20013,15 @@ function App() {
       }
     }
   }, [templatesData]);
+  const lastRebuiltTemplateId = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    if (!selectedTemplate || !templatesData) return;
+    if (lastRebuiltTemplateId.current === selectedTemplate.id) return;
+    lastRebuiltTemplateId.current = selectedTemplate.id;
+    const newVariables = buildInitialVariables(selectedTemplate, templatesData, templateLanguage);
+    setVariables(newVariables);
+    if (debug) console.log("[EA][Debug] Rebuilt variables for template:", selectedTemplate.id, "vars:", Object.keys(newVariables).slice(0, 5));
+  }, [selectedTemplate, templatesData, templateLanguage, debug]);
   reactExports.useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "Enter") {
@@ -19876,7 +20061,7 @@ function App() {
         if ((e.ctrlKey || e.metaKey) && e.key === "r") {
           e.preventDefault();
           if (templatesData) {
-            const initialVars = buildInitialVariables(selectedTemplate, templatesData);
+            const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage);
             setVariables((prev) => applyAssignments$1(prev, initialVars));
           }
         }
@@ -19889,7 +20074,7 @@ function App() {
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [selectedTemplate, showVariablePopup, templatesData, variables, handleVarsSmartPaste]);
+  }, [selectedTemplate, showVariablePopup, templatesData, variables2, handleVarsSmartPaste]);
   const { filteredTemplates, searchMatchMap } = reactExports.useMemo(() => {
     var _a2, _b, _c, _d;
     const empty = { filteredTemplates: [], searchMatchMap: {} };
@@ -20285,11 +20470,11 @@ function App() {
       templateLanguage,
       finalSubject: (finalSubject == null ? void 0 : finalSubject.substring(0, 100)) + "...",
       finalBody: (finalBody == null ? void 0 : finalBody.substring(0, 100)) + "...",
-      currentVariables: variables
+      currentVariables: variables2
     });
     if (!selectedTemplate || !templatesData) {
       console.log("🔄 No template selected or templates data unavailable");
-      return { success: false, updated: false, variables: { ...variables } };
+      return { success: false, updated: false, variables: { ...variables2 } };
     }
     const extracted = {};
     const pillValuesFromSubject = extractVariablesFromPills(finalSubject);
@@ -20332,8 +20517,8 @@ function App() {
     Object.entries(extracted).forEach(([name, value]) => {
       Object.assign(normalizedExtracted, expandVariableAssignment$1(name, value));
     });
-    const nextVariables = applyAssignments$1(variables, normalizedExtracted);
-    const hasUpdates = nextVariables !== variables;
+    const nextVariables = applyAssignments$1(variables2, normalizedExtracted);
+    const hasUpdates = nextVariables !== variables2;
     if (hasUpdates) {
       console.log("🔄 Variables updated successfully, returning:", nextVariables);
       variablesRef.current = nextVariables;
@@ -20343,13 +20528,13 @@ function App() {
       variablesRef.current = nextVariables;
     }
     return { success: true, updated: hasUpdates, variables: nextVariables };
-  }, [selectedTemplate, templatesData, templateLanguage, finalSubject, finalBody, variables]);
+  }, [selectedTemplate, templatesData, templateLanguage, finalSubject, finalBody, variables2]);
   reactExports.useEffect(() => {
     syncFromTextRef.current = syncFromText;
   }, [syncFromText]);
   reactExports.useEffect(() => {
     if (selectedTemplate) {
-      const initialVars = buildInitialVariables(selectedTemplate, templatesData);
+      const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage);
       console.log("🔄 Template loaded, initializing variables (with samples if empty):", initialVars);
       const subjectTemplate = selectedTemplate.subject[templateLanguage] || "";
       const bodyTemplate = selectedTemplate.body[templateLanguage] || "";
@@ -20416,10 +20601,10 @@ function App() {
     var _a2, _b;
     let htmlContent = "";
     let textContent = "";
-    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables);
-    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables);
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables2);
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables2);
     const bodyHtmlSource = ((_b = (_a2 = bodyEditorRef.current) == null ? void 0 : _a2.getHtml) == null ? void 0 : _b.call(_a2)) ?? finalBody;
-    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText);
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables2, resolvedBodyText);
     const toSimpleHtml = (plain = "") => String(plain ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/\r\n|\r/g, "\n").replace(/\n/g, "<br>");
     switch (type) {
       case "subject":
@@ -20540,10 +20725,10 @@ ${bodyResult.text}`;
   };
   const exportAs = async (mode) => {
     var _a2, _b;
-    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables);
-    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables);
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables2);
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables2);
     const bodyHtmlSource = ((_b = (_a2 = bodyEditorRef.current) == null ? void 0 : _a2.getHtml) == null ? void 0 : _b.call(_a2)) ?? finalBody;
-    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables, resolvedBodyText);
+    const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables2, resolvedBodyText);
     if (mode === "eml") {
       const boundary = "----=_NextPart_000_0000_01DA1234.56789ABC";
       const cleanBodyHtml = bodyResult.html || "";
@@ -20921,7 +21106,7 @@ ${cleanBodyHtml}
       setShowResetWarning(false);
       return;
     }
-    const initialVars = buildInitialVariables(selectedTemplate, templatesData);
+    const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage);
     variablesRef.current = initialVars;
     setVariables(initialVars);
     const subjectTemplate = ((_a2 = selectedTemplate.subject) == null ? void 0 : _a2[templateLanguage]) || "";
@@ -20936,8 +21121,8 @@ ${cleanBodyHtml}
   };
   const openEmail = () => {
     if (debug) console.log("[mailto] composing with subject:", finalSubject);
-    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables);
-    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables);
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables2);
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables2);
     if (!resolvedSubject && !resolvedBodyText) {
       alert(templateLanguage === "fr" ? "Sélectionnez un modèle avant l'envoi." : "Select a template before sending.");
       return;
@@ -20982,7 +21167,7 @@ ${cleanBodyHtml}
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         "vars: ",
-        Object.keys(variables || {}).length
+        Object.keys(variables2 || {}).length
       ] })
     ] }),
     loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
@@ -21238,7 +21423,10 @@ ${cleanBodyHtml}
                           ref: (el) => {
                             if (el) itemRefs.current[template.id] = el;
                           },
-                          onClick: () => setSelectedTemplate(template),
+                          onClick: () => {
+                            setSelectedTemplate(template);
+                            setSelectedTemplateId(template.id);
+                          },
                           onMouseDown: () => setPressedCardId(template.id),
                           onMouseUp: () => setPressedCardId(null),
                           onMouseLeave: () => setPressedCardId(null),
@@ -21555,7 +21743,7 @@ ${cleanBodyHtml}
                         setFinalSubject(e.target.value);
                         manualEditRef.current.subject = true;
                       },
-                      variables,
+                      variables: variables2,
                       templateLanguage,
                       placeholder: getPlaceholderText(),
                       onVariablesChange: handleInlineVariableChange,
@@ -21578,7 +21766,7 @@ ${cleanBodyHtml}
                       },
                       variant: "compact"
                     },
-                    `subject-${selectedTemplate == null ? void 0 : selectedTemplate.id}-${Object.keys(variables).length}`
+                    `subject-${selectedTemplate == null ? void 0 : selectedTemplate.id}-${Object.keys(variables2).length}`
                   )
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
@@ -21595,7 +21783,7 @@ ${cleanBodyHtml}
                         manualEditRef.current.body = true;
                       },
                       ref: bodyEditorRef,
-                      variables,
+                      variables: variables2,
                       templateLanguage,
                       placeholder: getPlaceholderText(),
                       onVariablesChange: handleInlineVariableChange,
@@ -21619,7 +21807,7 @@ ${cleanBodyHtml}
                       minHeight: "150px",
                       showRichTextToolbar: true
                     },
-                    `body-${selectedTemplate == null ? void 0 : selectedTemplate.id}-${Object.keys(variables).length}`
+                    `body-${selectedTemplate == null ? void 0 : selectedTemplate.id}-${Object.keys(variables2).length}`
                   )
                 ] })
               ] })
@@ -21993,7 +22181,7 @@ Shift+click to toggle preference`,
                       {
                         onClick: () => {
                           if (!selectedTemplate || !templatesData) return;
-                          const initialVars = buildInitialVariables(selectedTemplate, templatesData);
+                          const initialVars = buildInitialVariables(selectedTemplate, templatesData, templateLanguage);
                           setVariables((prev) => applyAssignments$1(prev, initialVars));
                         },
                         variant: "outline",
@@ -22078,25 +22266,35 @@ Shift+click to toggle preference`,
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto", style: { padding: varsOnlyMode ? "12px" : "16px" }, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: selectedTemplate.variables.map((varName) => {
-                var _a2, _b;
+                var _a2, _b, _c, _d;
                 const varInfo = (_a2 = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a2[varName];
                 if (!varInfo) return null;
-                const getVarValue = (name) => {
+                const getVarValue = (name = "") => {
+                  var _a3, _b2;
                   const lang = (templateLanguage || "fr").toLowerCase();
-                  if (lang === "en") {
-                    return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
+                  const suffix = (_b2 = (_a3 = name.match(/_(fr|en)$/i)) == null ? void 0 : _a3[1]) == null ? void 0 : _b2.toLowerCase();
+                  if (suffix) {
+                    return (variables2 == null ? void 0 : variables2[name]) ?? "";
                   }
-                  return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
+                  if (lang === "en") {
+                    return (variables2 == null ? void 0 : variables2[`${name}_EN`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+                  }
+                  return (variables2 == null ? void 0 : variables2[`${name}_FR`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
                 };
                 const currentValue = getVarValue(varName);
                 const sanitizedVarId = `var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
+                const langForDisplay = (templateLanguage || interfaceLanguage || "fr").toLowerCase();
+                const targetVarForLanguage = (name) => {
+                  if (/_(FR|EN)$/i.test(name)) return name;
+                  return `${name}_${(templateLanguage || "fr").toUpperCase()}`;
+                };
                 return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "rounded-[10px] p-3 transition-all duration-200", style: {
                   background: focusedVar === varName ? "rgba(59, 130, 246, 0.15)" : "rgba(200, 215, 150, 0.4)",
                   border: focusedVar === varName ? "2px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(190, 210, 140, 0.6)",
                   boxShadow: focusedVar === varName ? "0 0 0 3px rgba(59, 130, 246, 0.1)" : "none"
                 }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-[8px] p-4 border", style: { border: "1px solid rgba(190, 210, 140, 0.4)" }, children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2 flex items-start justify-between gap-3", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: sanitizedVarId, className: "text-[14px] font-semibold text-gray-900 flex-1 leading-tight", children: ((_b = varInfo == null ? void 0 : varInfo.description) == null ? void 0 : _b[interfaceLanguage]) || varName }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: sanitizedVarId, className: "text-[14px] font-semibold text-gray-900 flex-1 leading-tight", children: ((_b = varInfo == null ? void 0 : varInfo.description) == null ? void 0 : _b[langForDisplay]) || ((_c = varInfo == null ? void 0 : varInfo.description) == null ? void 0 : _c.fr) || ((_d = varInfo == null ? void 0 : varInfo.description) == null ? void 0 : _d.en) || varName }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
                         "button",
@@ -22104,8 +22302,8 @@ Shift+click to toggle preference`,
                           className: "text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#aca868] hover:bg-[#f0fbfb]",
                           title: interfaceLanguage === "fr" ? "Remettre l’exemple" : "Reset to example",
                           onClick: () => {
-                            const exampleValue = guessSampleValue$1(templatesData, varName);
-                            const assignments = expandVariableAssignment$1(varName, exampleValue);
+                            const exampleValue = guessSampleValue$1(templatesData, targetVarForLanguage(varName));
+                            const assignments = expandVariableAssignment$1(varName, exampleValue, (templateLanguage || "fr").toUpperCase());
                             setVariables((prev) => applyAssignments$1(prev, assignments));
                           },
                           children: "Ex."
@@ -22117,7 +22315,7 @@ Shift+click to toggle preference`,
                           className: "text-[11px] px-2 py-0.5 rounded border border-[#e6eef5] text-[#7f1d1d] hover:bg-[#fee2e2]",
                           title: interfaceLanguage === "fr" ? "Effacer ce champ" : "Clear this field",
                           onClick: () => {
-                            const assignments = expandVariableAssignment$1(varName, "");
+                            const assignments = expandVariableAssignment$1(varName, "", (templateLanguage || "fr").toUpperCase());
                             setVariables((prev) => applyAssignments$1(prev, assignments));
                           },
                           children: "X"
@@ -22137,7 +22335,7 @@ Shift+click to toggle preference`,
                       onChange: (e) => {
                         const newValue = e.target.value;
                         if (newValue !== currentValue) {
-                          const assignments = expandVariableAssignment$1(varName, newValue);
+                          const assignments = expandVariableAssignment$1(varName, newValue, (templateLanguage || "fr").toUpperCase());
                           setVariables((prev) => applyAssignments$1(prev, assignments));
                         }
                         const lines = (newValue.match(/\n/g) || []).length + 1;
@@ -22174,7 +22372,14 @@ Shift+click to toggle preference`,
                         }
                       },
                       onBlur: () => setFocusedVar((prev) => prev === varName ? null : prev),
-                      placeholder: (varInfo == null ? void 0 : varInfo.example) || "",
+                      placeholder: (() => {
+                        if (varInfo.examples && varInfo.examples[langForDisplay]) return varInfo.examples[langForDisplay];
+                        const ex = varInfo == null ? void 0 : varInfo.example;
+                        if (ex && typeof ex === "object") {
+                          return langForDisplay === "en" ? ex.en || ex.fr || "" : ex.fr || ex.en || "";
+                        }
+                        return ex || "";
+                      })(),
                       className: "w-full min-h-[32px] border-2 input-rounded border-[#e6eef5] resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 flex items-center",
                       style: {
                         height: (() => {
@@ -22288,13 +22493,13 @@ Shift+click to toggle preference`,
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-semibold text-gray-700", children: "Assistant IA" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "text-gray-500 hover:text-gray-700", onClick: () => setShowAIPanel(false), children: "✕" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AISidebar, { emailText: finalBody, onResult: setFinalBody, variables }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AISidebar, { emailText: finalBody, onResult: setFinalBody, variables: variables2 }) })
       ] })
     ] })
   ] });
 }
 const LANGUAGE_SUFFIXES = ["FR", "EN"];
-const expandVariableAssignment = (varName, value) => {
+const expandVariableAssignment = (varName, value, preferredLanguage = null) => {
   const assignments = {};
   if (!varName) return assignments;
   assignments[varName] = value;
@@ -22303,9 +22508,14 @@ const expandVariableAssignment = (varName, value) => {
     const base = match[1];
     assignments[base] = value;
   } else {
-    LANGUAGE_SUFFIXES.forEach((suffix) => {
-      assignments[`${varName}_${suffix}`] = value;
-    });
+    const targetLang = preferredLanguage && LANGUAGE_SUFFIXES.includes(preferredLanguage.toUpperCase()) ? preferredLanguage.toUpperCase() : null;
+    if (targetLang) {
+      assignments[`${varName}_${targetLang}`] = value;
+    } else {
+      LANGUAGE_SUFFIXES.forEach((suffix) => {
+        assignments[`${varName}_${suffix}`] = value;
+      });
+    }
   }
   return assignments;
 };
@@ -22335,6 +22545,11 @@ const guessSampleValue = (templatesData, name = "") => {
   const suffix = (_b = (_a = (name || "").match(/_(FR|EN)$/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.toLowerCase();
   if (suffix === "en" && ((_c = info == null ? void 0 : info.examples) == null ? void 0 : _c.en)) return info.examples.en;
   if (suffix === "fr" && ((_d = info == null ? void 0 : info.examples) == null ? void 0 : _d.fr)) return info.examples.fr;
+  if ((info == null ? void 0 : info.example) && typeof info.example === "object") {
+    if (suffix === "en") return info.example.en ?? info.example.fr ?? "";
+    if (suffix === "fr") return info.example.fr ?? info.example.en ?? "";
+    return info.example.fr ?? info.example.en ?? "";
+  }
   if (info == null ? void 0 : info.example) return info.example;
   const normalized = (name || "").toLowerCase();
   const format2 = (info == null ? void 0 : info.format) || (/date|jour|day/.test(normalized) ? "date" : /heure|time/.test(normalized) ? "time" : /montant|total|nombre|count|amount|num|quant/.test(normalized) ? "number" : "text");
@@ -22353,15 +22568,17 @@ function VariablesPopout({
   selectedTemplate,
   templatesData,
   initialVariables,
-  interfaceLanguage
+  interfaceLanguage,
+  templateLanguage = "fr"
 }) {
   console.log("🔍 VariablesPopout props:", {
     selectedTemplate: selectedTemplate == null ? void 0 : selectedTemplate.id,
     templatesData: !!templatesData,
     initialVariables,
-    interfaceLanguage
+    interfaceLanguage,
+    templateLanguage
   });
-  const [variables, setVariables] = reactExports.useState(initialVariables || {});
+  const [variables2, setVariables] = reactExports.useState(initialVariables || {});
   const lastInitialVarsRef = reactExports.useRef(initialVariables);
   reactExports.useEffect(() => {
     if (lastInitialVarsRef.current !== initialVariables) {
@@ -22373,13 +22590,23 @@ function VariablesPopout({
       }
     }
   }, [initialVariables]);
-  const getVarValue = reactExports.useCallback((name) => {
-    const lang = (interfaceLanguage || "fr").toLowerCase();
-    if (lang === "en") {
-      return (variables == null ? void 0 : variables[`${name}_EN`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
+  const activeLanguageCode = reactExports.useMemo(() => (templateLanguage || "fr").toUpperCase(), [templateLanguage]);
+  const targetVarForLanguage = reactExports.useCallback((name = "") => {
+    if (/_(FR|EN)$/i.test(name)) return name;
+    return `${name}_${activeLanguageCode}`;
+  }, [activeLanguageCode]);
+  const getVarValue = reactExports.useCallback((name = "") => {
+    var _a, _b;
+    const lang = (templateLanguage || "fr").toLowerCase();
+    const suffix = (_b = (_a = name.match(/_(fr|en)$/i)) == null ? void 0 : _a[1]) == null ? void 0 : _b.toLowerCase();
+    if (suffix) {
+      return (variables2 == null ? void 0 : variables2[name]) ?? "";
     }
-    return (variables == null ? void 0 : variables[`${name}_FR`]) ?? (variables == null ? void 0 : variables[name]) ?? "";
-  }, [variables, interfaceLanguage]);
+    if (lang === "en") {
+      return (variables2 == null ? void 0 : variables2[`${name}_EN`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+    }
+    return (variables2 == null ? void 0 : variables2[`${name}_FR`]) ?? (variables2 == null ? void 0 : variables2[name]) ?? "";
+  }, [variables2, templateLanguage]);
   const [isPinned, setIsPinned] = reactExports.useState(() => {
     try {
       return localStorage.getItem("ea_popout_pinned") === "true";
@@ -22387,7 +22614,7 @@ function VariablesPopout({
       return false;
     }
   });
-  console.log("🔍 VariablesPopout initialized with variables:", variables);
+  console.log("🔍 VariablesPopout initialized with variables:", variables2);
   const [focusedVar, setFocusedVar] = reactExports.useState(null);
   const channelRef = reactExports.useRef(null);
   const senderIdRef = reactExports.useRef(Math.random().toString(36).slice(2));
@@ -22614,7 +22841,7 @@ function VariablesPopout({
   };
   const updateVariable = (varName, value) => {
     let pending = null;
-    const assignments = expandVariableAssignment(varName, value);
+    const assignments = expandVariableAssignment(varName, value, activeLanguageCode);
     setVariables((prev) => {
       const next = applyAssignments(prev, assignments);
       if (next !== prev) {
@@ -22622,12 +22849,12 @@ function VariablesPopout({
       }
       return next;
     });
-    const snapshot = pending || variables;
+    const snapshot = pending || variables2;
     enqueueVariableUpdate(varName, value, snapshot);
   };
   const removeVariable = (varName) => {
     let pending = null;
-    const assignments = expandVariableAssignment(varName, "");
+    const assignments = expandVariableAssignment(varName, "", activeLanguageCode);
     setVariables((prev) => {
       const next = applyAssignments(prev, assignments);
       if (next !== prev) {
@@ -22635,7 +22862,7 @@ function VariablesPopout({
       }
       return next;
     });
-    const snapshot = pending || variables;
+    const snapshot = pending || variables2;
     enqueueVariableUpdate(varName, "", snapshot);
     if (!channelRef.current) return;
     try {
@@ -22650,9 +22877,10 @@ function VariablesPopout({
     }
   };
   const reinitializeVariable = (varName) => {
-    const exampleValue = guessSampleValue(templatesData, varName);
+    const targetName = targetVarForLanguage(varName);
+    const exampleValue = guessSampleValue(templatesData, targetName);
     let pending = null;
-    const assignments = expandVariableAssignment(varName, exampleValue);
+    const assignments = expandVariableAssignment(varName, exampleValue, activeLanguageCode);
     setVariables((prev) => {
       const next = applyAssignments(prev, assignments);
       if (next !== prev) {
@@ -22660,7 +22888,7 @@ function VariablesPopout({
       }
       return next;
     });
-    const snapshot = pending || variables;
+    const snapshot = pending || variables2;
     enqueueVariableUpdate(varName, exampleValue, snapshot);
     if (!channelRef.current) return;
     try {
@@ -22755,7 +22983,7 @@ function VariablesPopout({
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto", children: ((selectedTemplate == null ? void 0 : selectedTemplate.variables) || []).map((varName) => {
-      var _a, _b;
+      var _a, _b, _c, _d;
       const varInfo = (_a = templatesData == null ? void 0 : templatesData.variables) == null ? void 0 : _a[varName];
       if (!varInfo) {
         console.warn("🔍 Variable info not found for:", varName);
@@ -22764,6 +22992,7 @@ function VariablesPopout({
       const currentValue = getVarValue(varName);
       const isFocused = varKeysMatch(focusedVar, varName);
       const sanitizedVarId = `popout-var-${varName.replace(/[^a-z0-9_-]/gi, "-")}`;
+      const langForDisplay = (templateLanguage || interfaceLanguage || "fr").toLowerCase();
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -22779,7 +23008,7 @@ function VariablesPopout({
           onMouseLeave: () => notifyHoverChange(null),
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "ea-popout-card-inner rounded-lg p-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2 flex items-start justify-between gap-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: sanitizedVarId, className: "text-sm font-semibold text-gray-900 flex-1 leading-tight", children: ((_b = varInfo.description) == null ? void 0 : _b[interfaceLanguage]) || varName }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: sanitizedVarId, className: "text-sm font-semibold text-gray-900 flex-1 leading-tight", children: ((_b = varInfo.description) == null ? void 0 : _b[langForDisplay]) || ((_c = varInfo.description) == null ? void 0 : _c.fr) || ((_d = varInfo.description) == null ? void 0 : _d.en) || varName }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "shrink-0 flex items-center gap-1 opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "button",
@@ -22844,7 +23073,14 @@ function VariablesPopout({
                     }
                   }
                 },
-                placeholder: varInfo.examples && (varInfo.examples[interfaceLanguage] || "") || varInfo.example || "",
+                placeholder: (() => {
+                  if (varInfo.examples && varInfo.examples[langForDisplay]) return varInfo.examples[langForDisplay];
+                  const ex = varInfo.example;
+                  if (ex && typeof ex === "object") {
+                    return langForDisplay === "en" ? ex.en || ex.fr || "" : ex.fr || ex.en || "";
+                  }
+                  return ex || "";
+                })(),
                 className: `w-full min-h-[32px] border-2 border-gray-200 rounded-md resize-none transition-all duration-200 text-sm px-2 py-1 leading-5 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 ${isFocused ? "ea-popout-input-focused" : ""}`,
                 style: {
                   height: (() => {
@@ -22870,7 +23106,7 @@ function VariablesPage() {
   const initialLang = paramsRef.current.get("lang") || "fr";
   const [templatesData, setTemplatesData] = reactExports.useState(null);
   const [selectedTemplate, setSelectedTemplate] = reactExports.useState(null);
-  const [variables, setVariables] = reactExports.useState({});
+  const [variables2, setVariables] = reactExports.useState({});
   const [interfaceLanguage, setInterfaceLanguage] = reactExports.useState(initialLang);
   const [pendingTemplateId, setPendingTemplateId] = reactExports.useState(initialTemplateId || null);
   const [pendingTemplateLanguage, setPendingTemplateLanguage] = reactExports.useState(initialLang);
@@ -22939,12 +23175,23 @@ function VariablesPage() {
         if (Array.isArray(template.variables)) {
           template.variables.forEach((varName) => {
             const info = catalog[varName];
-            const example = (info == null ? void 0 : info.example) || "";
+            const example = (() => {
+              const ex = info == null ? void 0 : info.example;
+              if (ex && typeof ex === "object") return ex.fr || ex.en || "";
+              return ex || "";
+            })();
             fallback[varName] = example;
             allowedKeys.add(varName);
             suffixes.forEach((suffix) => {
               const composite = `${varName}_${suffix}`;
-              fallback[composite] = example;
+              const ex = info == null ? void 0 : info.example;
+              if (ex && typeof ex === "object") {
+                if (/_(FR)$/i.test(composite)) fallback[composite] = ex.fr || ex.en || "";
+                else if (/_(EN)$/i.test(composite)) fallback[composite] = ex.en || ex.fr || "";
+                else fallback[composite] = ex.fr || ex.en || "";
+              } else {
+                fallback[composite] = example;
+              }
               allowedKeys.add(composite);
             });
           });
@@ -23164,7 +23411,7 @@ function VariablesPage() {
   }
   console.log("🔍 VariablesPage rendering with:", {
     selectedTemplate: selectedTemplate == null ? void 0 : selectedTemplate.id,
-    variables,
+    variables: variables2,
     interfaceLanguage
   });
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -23172,8 +23419,9 @@ function VariablesPage() {
     {
       selectedTemplate,
       templatesData,
-      initialVariables: variables,
-      interfaceLanguage
+      initialVariables: variables2,
+      interfaceLanguage,
+      templateLanguage: pendingTemplateLanguage || interfaceLanguage
     }
   );
 }
@@ -23231,4 +23479,4 @@ const isVarsOnly = params.get("varsOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-BmXJeGEp.js.map
+//# sourceMappingURL=main-DzMZE6r4.js.map
