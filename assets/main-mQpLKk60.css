@@ -607,6 +607,10 @@
     right: calc(var(--spacing) * 4);
   }
 
+  .right-\[120px\] {
+    right: 120px;
+  }
+
   .bottom-0 {
     bottom: calc(var(--spacing) * 0);
   }

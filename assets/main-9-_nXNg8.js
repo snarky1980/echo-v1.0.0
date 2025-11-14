@@ -12533,12 +12533,12 @@ const translations = {
         ]
       },
       copying: {
-        heading: "Copier & Outlook",
+        heading: "Copier & Envoyer",
         points: [
-          "Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles.",
-          "Deux options Outlook: « Ouvrir dans Outlook classique » (application de bureau) et « Ouvrir dans Outlook Web » (navigateur).",
-          "« Ouvrir dans Outlook classique » tente d'utiliser l'application de bureau via les protocoles outlook:// et ms-outlook:. Si votre organisation bloque ces liens, utilisez Copier tout ou le bouton Web.",
-          "Le lien direct (icône de lien) inclut l'identifiant et la langue dans l'URL."
+          "Les boutons Copier Objet / Copier Corps / Copier Tout incluent vos valeurs actuelles et le formatage riche (gras, surlignage, etc.).",
+          "Le bouton « Ouvrir dans un courriel » génère un lien mailto qui ouvre votre client de messagerie par défaut (Outlook, Gmail, etc.) et insère automatiquement l'objet et le corps en texte brut.",
+          "Important : Le formatage riche est perdu avec le bouton mailto. Pour conserver le gras, les couleurs et le surlignage, utilisez « Copier Tout » puis collez dans votre client préféré.",
+          "Le lien direct (icône de lien) inclut l'identifiant et la langue dans l'URL pour partager le modèle avec des collègues."
         ]
       },
       favorites: {
@@ -12555,7 +12555,7 @@ const translations = {
           ["Ctrl/Cmd + Entrée", "Copier tout"],
           ["Ctrl/Cmd + B", "Copier le corps"],
           ["Ctrl/Cmd + J", "Copier l'objet"],
-          ["Ctrl/Cmd + Shift + Entrée", "Ouvrir dans Outlook"],
+          ["Ctrl/Cmd + Shift + Entrée", "Ouvrir dans un courriel"],
           ["Ctrl/Cmd + /", "Focus sur la recherche"],
           ["Ctrl/Cmd + R (Variables)", "Réinitialiser aux exemples"],
           ["Ctrl/Cmd + Shift + V (Variables)", "Collage intelligent var: valeur"]
@@ -12607,11 +12607,11 @@ const translations = {
           ]
         },
         {
-          title: "Le bouton “Ouvrir dans Outlook” ne fait rien",
+          title: "Le bouton “Ouvrir dans un courriel” ne fait rien",
           steps: [
             "Confirmez qu'un modèle est sélectionné. Le bouton s'active uniquement quand un contenu final est disponible.",
-            "Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez Copier tout puis collez manuellement dans Outlook.",
-            "Si cela ouvre Outlook (nouveau) ou le web, définissez « Outlook (classique) » comme application Courriel par défaut dans Windows et comme gestionnaire pour les protocoles outlook et ms-outlook."
+            "Certaines organisations bloquent les liens `mailto:`. Dans ce cas, utilisez « Copier Tout » puis collez manuellement dans votre client de messagerie.",
+            "Si rien ne se produit, vérifiez que vous avez un client de messagerie par défaut configuré dans Windows (Paramètres > Applications > Applications par défaut > E-mail)."
           ]
         }
       ]
@@ -12711,12 +12711,12 @@ const translations = {
         ]
       },
       copying: {
-        heading: "Copying & Outlook",
+        heading: "Copying & Sending",
         points: [
-          "Copy Subject / Copy Body / Copy All buttons include your current values.",
-          "Two Outlook options: “Open in Outlook Classic” (desktop app) and “Open in Outlook Web” (browser).",
-          "“Open in Outlook Classic” tries desktop via outlook:// and ms-outlook: protocols. If your org blocks these, use Copy All or the Web button.",
-          "The direct-link icon includes id & language in the URL."
+          "Copy Subject / Copy Body / Copy All buttons include your current values and preserve rich formatting (bold, highlights, etc.).",
+          'The "Open in an email" button generates a mailto link that opens your default email client (Outlook, Gmail, etc.) and pre-fills the subject and body with plain text.',
+          'Important: Rich formatting is lost when using the mailto button. To preserve bold, colors, and highlights, use "Copy All" and paste into your preferred client.',
+          "The direct-link icon includes id & language in the URL to share the template with colleagues."
         ]
       },
       favorites: {
@@ -12733,7 +12733,7 @@ const translations = {
           ["Ctrl/Cmd + Enter", "Copy all"],
           ["Ctrl/Cmd + B", "Copy body"],
           ["Ctrl/Cmd + J", "Copy subject"],
-          ["Ctrl/Cmd + Shift + Enter", "Open in Outlook"],
+          ["Ctrl/Cmd + Shift + Enter", "Open in an email"],
           ["Ctrl/Cmd + /", "Focus search"],
           ["Ctrl/Cmd + R (Variables)", "Reset to examples"],
           ["Ctrl/Cmd + Shift + V (Variables)", "Smart paste var: value"]
@@ -12785,11 +12785,11 @@ const translations = {
           ]
         },
         {
-          title: "“Open in Outlook” button does nothing",
+          title: '"Open in an email" button does nothing',
           steps: [
             "Confirm that a template is selected. The button is enabled only when final content is available.",
-            "Some organizations block `mailto:` links. If that's the case, use Copy all and paste into Outlook manually.",
-            "If this opens New Outlook or the web, set “Outlook (Classic)” as the default Email app on Windows and as the handler for outlook and ms-outlook protocols."
+            'Some organizations block `mailto:` links. If that\'s the case, use "Copy All" and paste into your email client manually.',
+            "If nothing happens, check that you have a default email client configured in Windows (Settings > Apps > Default apps > Email)."
           ]
         }
       ]
@@ -12874,17 +12874,27 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
   const strings = reactExports.useMemo(() => translations[language] || translations.fr, [language]);
   const contactOptions = ((_a = strings.contact) == null ? void 0 : _a.options) || [];
   const closeBtnRef = reactExports.useRef(null);
+  const contactFormRef = reactExports.useRef(null);
   const [query, setQuery] = reactExports.useState("");
-  const [formData, setFormData] = reactExports.useState(() => {
+  const initialCategory = reactExports.useMemo(() => {
     var _a2;
-    return {
-      category: ((_a2 = contactOptions[0]) == null ? void 0 : _a2.value) || "support",
-      name: "",
-      email: "",
-      message: "",
-      extra: ""
-    };
-  });
+    try {
+      const params2 = new URLSearchParams(window.location.search);
+      const cat = params2.get("category");
+      if (cat && contactOptions.some((opt) => opt.value === cat)) {
+        return cat;
+      }
+    } catch {
+    }
+    return ((_a2 = contactOptions[0]) == null ? void 0 : _a2.value) || "support";
+  }, [contactOptions]);
+  const [formData, setFormData] = reactExports.useState(() => ({
+    category: initialCategory,
+    name: "",
+    email: "",
+    message: "",
+    extra: ""
+  }));
   const [templateDetails, setTemplateDetails] = reactExports.useState({
     templateType: "new",
     // 'new' | 'modify'
@@ -12922,13 +12932,20 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
     document.body.style.overflow = "hidden";
     requestAnimationFrame(() => {
       var _a2;
-      (_a2 = closeBtnRef.current) == null ? void 0 : _a2.focus();
+      if (initialCategory === "template" && contactFormRef.current) {
+        setTimeout(() => {
+          var _a3;
+          (_a3 = contactFormRef.current) == null ? void 0 : _a3.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 300);
+      } else {
+        (_a2 = closeBtnRef.current) == null ? void 0 : _a2.focus();
+      }
     });
     return () => {
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = prevOverflow;
     };
-  }, [onClose]);
+  }, [onClose, initialCategory]);
   const handleCategorySelect = (value) => {
     setFormData((prev) => ({ ...prev, category: value }));
     if (status !== "idle") {
@@ -13211,7 +13228,7 @@ function HelpCenter({ language = "fr", onClose, supportEmail = "jskennedy80@gmai
               ) }, link.href)) })
             ] }) : null }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(Separator$1, { className: "bg-[#e6eef5]" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "rounded-2xl border border-[#bfe7e3] bg-[#f5fffb] p-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { ref: contactFormRef, className: "rounded-2xl border border-[#bfe7e3] bg-[#f5fffb] p-6", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-[#145a64]", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "h-5 w-5", "aria-hidden": "true" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-semibold", children: strings.contact.heading })
@@ -18462,27 +18479,24 @@ const Toast = ({ toast, onRemove }) => {
   );
 };
 const __vite_import_meta_env__ = { "BASE_URL": "/echo-v1.0.0/", "DEV": false, "MODE": "production", "PROD": true, "SSR": false };
+const NAVY_TEXT = "#1c2f4a";
 const CATEGORY_BADGE_STYLES = {
-  "Devis et approbations": { bg: "#d9f5f0", border: "#97dcd0", text: "#0f3d47" },
-  "Devis et approbation": { bg: "#d9f5f0", border: "#97dcd0", text: "#0f3d47" },
-  "Documents et formats": { bg: "#ece8ff", border: "#c7bef5", text: "#372d70" },
-  "Délai et livraison": { bg: "#ffe9db", border: "#ffc9a9", text: "#7a3410" },
-  "Délais et livraison": { bg: "#ffe9db", border: "#ffc9a9", text: "#7a3410" },
-  "Précisions et instructions client": { bg: "#e5f7eb", border: "#b8e9c6", text: "#1f5135" },
-  "Suivi et annulation": { bg: "#ffe6f1", border: "#ffb7d6", text: "#6f2347" },
-  "Sécurité et droits d'auteur": { bg: "#fff4d8", border: "#ffd98f", text: "#6b4600" },
-  default: { bg: "#e6f0ff", border: "#c7dbff", text: "#8a7530" }
-};
-const CATEGORY_INDICATOR_COLORS_DEFAULT = {
-  "Devis et approbations": "#1d5f58",
-  "Devis et approbation": "#1d5f58",
-  "Documents et formats": "#4932a8",
-  "Délai et livraison": "#b35b1f",
-  "Délais et livraison": "#b35b1f",
-  "Précisions et instructions client": "#1f593a",
-  "Suivi et annulation": "#8f1e46",
-  "Sécurité et droits d'auteur": "#7a5717",
-  default: "#5a88b5"
+  Annulations: { bg: "#ffe4e6", border: "#fecdd3", text: NAVY_TEXT },
+  Assurance: { bg: "#e0f2f1", border: "#99e9d3", text: NAVY_TEXT },
+  "Avis de voyage": { bg: "#fef3c7", border: "#fde68a", text: NAVY_TEXT },
+  "Demande générale": { bg: "#f1f5f9", border: "#cbd5f5", text: NAVY_TEXT },
+  Devis: { bg: "#ede9fe", border: "#c4b5fd", text: NAVY_TEXT },
+  "Itinéraire": { bg: "#e0f2fe", border: "#bae6fd", text: NAVY_TEXT },
+  "Marketing & promotions": { bg: "#fae8ff", border: "#f0abfc", text: NAVY_TEXT },
+  Paiements: { bg: "#dcfce7", border: "#bbf7d0", text: NAVY_TEXT },
+  Plaintes: { bg: "#ffedd5", border: "#fdba74", text: NAVY_TEXT },
+  "Réservation": { bg: "#dbeafe", border: "#bfdbfe", text: NAVY_TEXT },
+  "Suivi post-voyage": { bg: "#f7fee7", border: "#d9f99d", text: NAVY_TEXT },
+  "Urgence": { bg: "#fee2e2", border: "#fecaca", text: NAVY_TEXT },
+  "Visa & documentation": { bg: "#cffafe", border: "#a5f3fc", text: NAVY_TEXT },
+  "Voyages d'affaires": { bg: "#e0e7ff", border: "#c7d2fe", text: NAVY_TEXT },
+  "Voyages de groupe": { bg: "#ccfbf1", border: "#99f6e4", text: NAVY_TEXT },
+  default: { bg: "#e6f0ff", border: "#c7dbff", text: NAVY_TEXT }
 };
 const getCategoryBadgeStyle = (category = "", customColors = {}) => {
   if (customColors[category]) {
@@ -18497,7 +18511,6 @@ const getCategoryBadgeStyle = (category = "", customColors = {}) => {
   }
   return CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default;
 };
-const getCategoryIndicatorColor = (category = "", customColors = {}) => customColors[category] || CATEGORY_INDICATOR_COLORS_DEFAULT[category] || CATEGORY_INDICATOR_COLORS_DEFAULT.default;
 const customEditorStyles = `
   /* Translation Bureau Brand Colors - EXACT MATCH from original design */
   :root {
@@ -19164,11 +19177,21 @@ const interfaceTexts = {
     searchPlaceholder: "Rechercher un modèle...",
     allCategories: "Toutes les catégories",
     categories: {
-      "Devis et estimations": "Devis et estimations",
-      "Gestion de projets": "Gestion de projets",
-      "Problèmes techniques": "Problèmes techniques",
-      "Communications générales": "Communications générales",
-      "Services spécialisés": "Services spécialisés"
+      Annulations: "Annulations",
+      Assurance: "Assurance",
+      "Avis de voyage": "Avis de voyage",
+      "Demande générale": "Demande générale",
+      Devis: "Devis",
+      "Itinéraire": "Itinéraire",
+      "Marketing & promotions": "Marketing & promotions",
+      Paiements: "Paiements",
+      Plaintes: "Plaintes",
+      "Réservation": "Réservation",
+      "Suivi post-voyage": "Suivi post-voyage",
+      "Urgence": "Urgence",
+      "Visa & documentation": "Visa & documentation",
+      "Voyages d'affaires": "Voyages d'affaires",
+      "Voyages de groupe": "Voyages de groupe"
     },
     templateLanguage: "Langue du modèle",
     interfaceLanguage: "Langue de l'interface",
@@ -19205,11 +19228,21 @@ const interfaceTexts = {
     searchPlaceholder: "Search for a template...",
     allCategories: "All categories",
     categories: {
-      "Devis et estimations": "Quotes and estimates",
-      "Gestion de projets": "Project management",
-      "Problèmes techniques": "Technical issues",
-      "Communications générales": "General communications",
-      "Services spécialisés": "Specialized services"
+      Annulations: "Cancellations",
+      Assurance: "Insurance",
+      "Avis de voyage": "Travel advisories",
+      "Demande générale": "General inquiries",
+      Devis: "Quotes",
+      "Itinéraire": "Itinerary",
+      "Marketing & promotions": "Marketing & promotions",
+      Paiements: "Payments",
+      Plaintes: "Complaints",
+      "Réservation": "Reservation",
+      "Suivi post-voyage": "Post-trip follow-up",
+      "Urgence": "Emergency",
+      "Visa & documentation": "Visa & documentation",
+      "Voyages d'affaires": "Business travel",
+      "Voyages de groupe": "Group travel"
     },
     templateLanguage: "Template language",
     interfaceLanguage: "Interface language",
@@ -20317,7 +20350,7 @@ function App() {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "Enter") {
         e.preventDefault();
         if (selectedTemplate) {
-          setShowComposeChooser(true);
+          composePlainTextEmailDraft();
         }
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "/") {
@@ -21374,7 +21407,6 @@ ${cleanBodyHtml}
     document.addEventListener("mouseup", onUp);
   };
   const [showResetWarning, setShowResetWarning] = reactExports.useState(false);
-  const [showComposeChooser, setShowComposeChooser] = reactExports.useState(false);
   const handleResetClick = () => {
     setShowResetWarning(true);
   };
@@ -21397,22 +21429,21 @@ ${cleanBodyHtml}
     setFocusedVar(null);
     setShowResetWarning(false);
   };
-  const composeOutlookWebHtml = () => {
+  const composePlainTextEmailDraft = () => {
     var _a2, _b;
-    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables2);
+    const resolvedSubject = replaceVariablesWithValues(finalSubject, variables2) || "";
     const bodyHtmlSource = ((_b = (_a2 = bodyEditorRef.current) == null ? void 0 : _a2.getHtml) == null ? void 0 : _b.call(_a2)) ?? finalBody;
-    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables2);
+    const resolvedBodyText = replaceVariablesWithValues(finalBody, variables2) || "";
     const bodyResult = replaceVariablesInHTML(bodyHtmlSource, variables2, resolvedBodyText);
-    const subject = encodeURIComponent(resolvedSubject || "");
-    const bodyHtml = encodeURIComponent(`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${bodyResult.html || ""}</body></html>`);
-    const owaUrl = `https://outlook.office.com/mail/deeplink/compose?subject=${subject}&body=${bodyHtml}&bodyType=HTML`;
-    const win = window.open(owaUrl, "_blank");
-    if (!win) {
-      alert(interfaceLanguage === "fr" ? "Veuillez autoriser les fenêtres pop-up pour ouvrir Outlook Web." : "Please allow pop-ups to open Outlook Web.");
+    const plainBody = (bodyResult.text || resolvedBodyText || "").replace(/\r?\n/g, "\r\n");
+    const subjectParam = encodeURIComponent(resolvedSubject);
+    const bodyParam = encodeURIComponent(plainBody);
+    const mailtoUrl = `mailto:?subject=${subjectParam}&body=${bodyParam}`;
+    try {
+      window.location.href = mailtoUrl;
+    } catch (error) {
+      window.open(mailtoUrl, "_self");
     }
-  };
-  const composeOutlookClassicEml = () => {
-    exportAs("eml");
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen", style: { background: "linear-gradient(to bottom right, #f8fafc, #fefbe8, #e0f2fe)" }, children: [
     debug && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { position: "fixed", bottom: 8, left: 8, background: "#1e293b", color: "#fff", padding: "8px 12px", borderRadius: 8, fontSize: 12, zIndex: 9999, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }, children: [
@@ -21498,6 +21529,7 @@ ${cleanBodyHtml}
               const url = new URL(window.location.href);
               url.searchParams.set("helpOnly", "1");
               url.searchParams.set("lang", interfaceLanguage);
+              url.searchParams.set("category", "template");
               const w = Math.min(900, (((_a2 = window.screen) == null ? void 0 : _a2.availWidth) || window.innerWidth) - 80);
               const h = Math.min(700, (((_b = window.screen) == null ? void 0 : _b.availHeight) || window.innerHeight) - 120);
               const left = Math.max(0, Math.floor(((((_c = window.screen) == null ? void 0 : _c.availWidth) || window.innerWidth) - w) / 2));
@@ -21509,7 +21541,44 @@ ${cleanBodyHtml}
             }
           },
           variant: "outline",
-          className: "fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all",
+          className: "fixed bottom-4 right-[120px] z-40 inline-flex items-center gap-2 rounded-lg border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all",
+          style: { borderColor: "rgba(44, 61, 80, 0.5)", color: "#2c3d50" },
+          onMouseEnter: (e) => {
+            e.currentTarget.style.backgroundColor = "rgba(44, 61, 80, 0.9)";
+            e.currentTarget.style.color = "white";
+          },
+          onMouseLeave: (e) => {
+            e.currentTarget.style.backgroundColor = "white";
+            e.currentTarget.style.color = "#2c3d50";
+          },
+          title: interfaceLanguage === "fr" ? "Soumettre un modèle" : "Submit a template",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "h-5 w-5" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: interfaceLanguage === "fr" ? "Soumettre un modèle" : "Submit a template" })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        Button,
+        {
+          onClick: () => {
+            var _a2, _b, _c, _d;
+            try {
+              const url = new URL(window.location.href);
+              url.searchParams.set("helpOnly", "1");
+              url.searchParams.set("lang", interfaceLanguage);
+              const w = Math.min(900, (((_a2 = window.screen) == null ? void 0 : _a2.availWidth) || window.innerWidth) - 80);
+              const h = Math.min(700, (((_b = window.screen) == null ? void 0 : _b.availHeight) || window.innerHeight) - 120);
+              const left = Math.max(0, Math.floor(((((_c = window.screen) == null ? void 0 : _c.availWidth) || window.innerWidth) - w) / 2));
+              const top = Math.max(0, Math.floor(((((_d = window.screen) == null ? void 0 : _d.availHeight) || window.innerHeight) - h) / 3));
+              const features = `popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${left},top=${top},toolbar=0,location=0,menubar=0,status=0,scrollbars=1,resizable=1,noopener=1`;
+              const win = window.open(url.toString(), "_blank", features);
+              if (win && win.focus) win.focus();
+            } catch {
+            }
+          },
+          variant: "outline",
+          className: "fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-lg border-2 bg-white px-4 py-3 text-sm font-semibold tracking-wide shadow-lg transition-all",
           style: { borderColor: "rgba(44, 61, 80, 0.5)", color: "#2c3d50" },
           onMouseEnter: (e) => {
             e.currentTarget.style.backgroundColor = "rgba(44, 61, 80, 0.9)";
@@ -21693,10 +21762,9 @@ ${cleanBodyHtml}
                   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white", style: { minHeight: (count2 + 1) * ITEM_H }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: topPad } }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: filteredTemplates.slice(start, end).map((template) => {
-                      var _a2, _b, _c;
+                      var _a2, _b;
                       const badgeStyle = getCategoryBadgeStyle(template.category, ((_a2 = templatesData == null ? void 0 : templatesData.metadata) == null ? void 0 : _a2.categoryColors) || {});
-                      const indicatorColor = getCategoryIndicatorColor(template.category, ((_b = templatesData == null ? void 0 : templatesData.metadata) == null ? void 0 : _b.categoryColors) || {});
-                      const badgeLabel = ((_c = t.categories) == null ? void 0 : _c[template.category]) || template.category;
+                      const badgeLabel = ((_b = t.categories) == null ? void 0 : _b[template.category]) || template.category;
                       return /* @__PURE__ */ jsxRuntimeExports.jsx(
                         "div",
                         {
@@ -21719,19 +21787,10 @@ ${cleanBodyHtml}
                           } : { borderRadius: "14px", transform: pressedCardId === template.id ? "scale(0.995)" : void 0, boxShadow: pressedCardId === template.id ? "inset 0 0 0 1px rgba(0,0,0,0.05)" : void 0, scrollMarginTop: 220 },
                           children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between", children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
-                                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                                  "span",
-                                  {
-                                    className: "h-2.5 w-2.5 rounded-full shadow-sm",
-                                    style: { backgroundColor: indicatorColor, border: "1px solid rgba(0,0,0,0.08)" }
-                                  }
-                                ),
-                                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-gray-900 text-[13px]", title: template.title[templateLanguage], children: renderHighlighted(
-                                  template.title[templateLanguage],
-                                  getMatchRanges(template.id, `title.${templateLanguage}`)
-                                ) })
-                              ] }),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mb-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-gray-900 text-[13px]", title: template.title[templateLanguage], children: renderHighlighted(
+                                template.title[templateLanguage],
+                                getMatchRanges(template.id, `title.${templateLanguage}`)
+                              ) }) }),
                               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2", title: template.description[templateLanguage], children: renderHighlighted(
                                 template.description[templateLanguage],
                                 getMatchRanges(template.id, `description.${templateLanguage}`)
@@ -22238,7 +22297,7 @@ ${cleanBodyHtml}
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     Button,
                     {
-                      onClick: () => setShowComposeChooser(true),
+                      onClick: () => composePlainTextEmailDraft(),
                       className: "font-bold transition-all duration-200 shadow-soft text-white btn-pill flex items-center py-3",
                       style: { background: "#2c3d50", borderRadius: "12px" },
                       onMouseEnter: (e) => {
@@ -22247,7 +22306,7 @@ ${cleanBodyHtml}
                       onMouseLeave: (e) => {
                         e.currentTarget.style.transform = "translateY(0)";
                       },
-                      title: interfaceLanguage === "fr" ? "Ouvrir un nouveau courriel" : "Open a new email",
+                      title: interfaceLanguage === "fr" ? "Ouvrir un brouillon en texte brut dans votre client de courriel" : "Open a plain-text draft in your email client",
                       children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { className: "h-5 w-5 mr-2" }),
                         interfaceLanguage === "fr" ? "Ouvrir dans un courriel" : "Open in an email"
@@ -22294,40 +22353,6 @@ ${cleanBodyHtml}
           }
         )
       ] })
-    ] }) }),
-    showComposeChooser && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full p-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-bold text-gray-900 mb-2", children: interfaceLanguage === "fr" ? "Ouvrir un nouveau courriel" : "Open a new email" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-gray-600", children: interfaceLanguage === "fr" ? "Choisissez où composer. Le format riche (gras, surlignage, styles) est pleinement conservé via Outlook classique (.eml)." : "Choose where to compose. Rich formatting (bold, highlights, styles) is fully preserved via Outlook Classic (.eml)." })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid gap-3 sm:grid-cols-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
-          {
-            onClick: () => {
-              composeOutlookClassicEml();
-              setShowComposeChooser(false);
-            },
-            variant: "outline",
-            className: "w-full border-2",
-            style: { borderColor: "#2c3d50", color: "#2c3d50" },
-            children: interfaceLanguage === "fr" ? "Outlook (classique) – format riche" : "Outlook (Classic) – rich format"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button,
-          {
-            onClick: () => {
-              composeOutlookWebHtml();
-              setShowComposeChooser(false);
-            },
-            className: "w-full text-white",
-            style: { background: "#2c3d50" },
-            children: interfaceLanguage === "fr" ? "Outlook Web (HTML)" : "Outlook Web (HTML)"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: () => setShowComposeChooser(false), children: interfaceLanguage === "fr" ? "Annuler" : "Cancel" }) })
     ] }) }),
     showVariablePopup && varsMinimized && !varsOnlyMode && reactDomExports.createPortal(
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -23821,4 +23846,4 @@ const isHelpOnly = params.get("helpOnly") === "1";
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ErrorBoundary, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ToastProvider, { children: isVarsOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(VariablesPage, {}) : isHelpOnly ? /* @__PURE__ */ jsxRuntimeExports.jsx(HelpPopout, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) })
 );
-//# sourceMappingURL=main-DRCemYf4.js.map
+//# sourceMappingURL=main-9-_nXNg8.js.map
