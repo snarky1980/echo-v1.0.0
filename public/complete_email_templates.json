@@ -23,7 +23,7 @@
       "Voyages d'affaires",
       "Voyages de groupe"
     ],
-    "updatedAt": "2025-11-12T22:48:13.766Z"
+    "updatedAt": "2025-11-14T10:25:09.100Z"
   },
   "variables": {
     "booking_reference": {
@@ -32,7 +32,10 @@
         "en": "Booking reference number"
       },
       "format": "text",
-      "example": "MT-43827-Hawk"
+      "example": {
+        "fr": "MT-43827-Hawk",
+        "en": "MT-43827-Hawk"
+      }
     },
     "client_name": {
       "description": {
@@ -40,7 +43,10 @@
         "en": "Client full name"
       },
       "format": "text",
-      "example": "Sophie Gendron"
+      "example": {
+        "fr": "Sophie Gendron",
+        "en": "Sophie Gendron"
+      }
     },
     "destination": {
       "description": {
@@ -48,7 +54,10 @@
         "en": "Travel destination"
       },
       "format": "text",
-      "example": "Banff, Alberta"
+      "example": {
+        "fr": "Banff, Alberta",
+        "en": "Banff, Alberta"
+      }
     },
     "total_cost": {
       "description": {
@@ -56,7 +65,10 @@
         "en": "Total cost with currency"
       },
       "format": "text",
-      "example": "3 425,50 $"
+      "example": {
+        "fr": "3 425,50 $",
+        "en": "3,425.50 $"
+      }
     },
     "travel_dates": {
       "description": {
@@ -64,7 +76,10 @@
         "en": "Travel dates"
       },
       "format": "date",
-      "example": "10-17 juin 2025"
+      "example": {
+        "fr": "10-17 juin 2025",
+        "en": "June 10-17, 2025"
+      }
     },
     "agent_name": {
       "description": {
@@ -72,7 +87,10 @@
         "en": "Travel consultant name"
       },
       "format": "text",
-      "example": "Emily Roy"
+      "example": {
+        "fr": "Emily Roy",
+        "en": "Emily Roy"
+      }
     },
     "quote_reference": {
       "description": {
@@ -80,7 +98,10 @@
         "en": "Quote reference number"
       },
       "format": "text",
-      "example": "MT-92841-Hawk"
+      "example": {
+        "fr": "MT-92841-Hawk",
+        "en": "MT-92841-Hawk"
+      }
     },
     "amount_due": {
       "description": {
@@ -88,7 +109,10 @@
         "en": "Amount due with currency"
       },
       "format": "text",
-      "example": "1 250,00 $"
+      "example": {
+        "fr": "1 250,00 $",
+        "en": "1,250.00 $"
+      }
     },
     "due_date": {
       "description": {
@@ -96,7 +120,10 @@
         "en": "Payment due date"
       },
       "format": "date",
-      "example": "15 décembre 2025"
+      "example": {
+        "fr": "15 décembre 2025",
+        "en": "December 15, 2025"
+      }
     },
     "refund_amount": {
       "description": {
@@ -104,7 +131,10 @@
         "en": "Refund amount with currency"
       },
       "format": "text",
-      "example": "2 100,00 $"
+      "example": {
+        "fr": "2 100,00 $",
+        "en": "2,100.00 $"
+      }
     },
     "refund_timeline": {
       "description": {
@@ -112,7 +142,10 @@
         "en": "Refund processing time"
       },
       "format": "text",
-      "example": "5 à 10 jours ouvrables"
+      "example": {
+        "fr": "5 à 10 jours ouvrables",
+        "en": "5-10 business days"
+      }
     },
     "departure_date": {
       "description": {
@@ -120,7 +153,10 @@
         "en": "Departure date"
       },
       "format": "date",
-      "example": "15 juillet 2025"
+      "example": {
+        "fr": "15 juillet 2025",
+        "en": "July 15, 2025"
+      }
     },
     "itinerary_link": {
       "description": {
@@ -128,7 +164,10 @@
         "en": "Itinerary document link"
       },
       "format": "text",
-      "example": "https://marlinhawkesbury.ca/itinerary/MT-43827"
+      "example": {
+        "fr": "https://marlinhawkesbury.ca/itinerary/MT-43827",
+        "en": "https://marlinhawkesbury.ca/itinerary/MT-43827"
+      }
     },
     "feedback_link": {
       "description": {
@@ -136,7 +175,10 @@
         "en": "Feedback survey link"
       },
       "format": "text",
-      "example": "https://marlinhawkesbury.ca/feedback"
+      "example": {
+        "fr": "https://marlinhawkesbury.ca/feedback",
+        "en": "https://marlinhawkesbury.ca/feedback"
+      }
     },
     "advisory_details": {
       "description": {
@@ -144,7 +186,10 @@
         "en": "Travel advisory details"
       },
       "format": "text",
-      "example": "Alerte météo - Saison des ouragans"
+      "example": {
+        "fr": "Alerte météo - Saison des ouragans",
+        "en": "Weather alert - Hurricane season"
+      }
     },
     "country_name": {
       "description": {
@@ -152,7 +197,10 @@
         "en": "Country name"
       },
       "format": "text",
-      "example": "Cuba"
+      "example": {
+        "fr": "Cuba",
+        "en": "Cuba"
+      }
     },
     "group_size": {
       "description": {
@@ -160,7 +208,10 @@
         "en": "Number of travelers"
       },
       "format": "text",
-      "example": "12 voyageurs"
+      "example": {
+        "fr": "12 voyageurs",
+        "en": "12 travelers"
+      }
     },
     "account_manager": {
       "description": {
@@ -168,7 +219,10 @@
         "en": "Account manager name"
       },
       "format": "text",
-      "example": "André Gagnon"
+      "example": {
+        "fr": "André Gagnon",
+        "en": "André Gagnon"
+      }
     },
     "company_name": {
       "description": {
@@ -176,7 +230,10 @@
         "en": "Company name"
       },
       "format": "text",
-      "example": "Corporation Acme"
+      "example": {
+        "fr": "Corporation Acme",
+        "en": "Acme Corporation"
+      }
     },
     "contact_name": {
       "description": {
@@ -184,7 +241,10 @@
         "en": "Primary contact name"
       },
       "format": "text",
-      "example": "Jean Tremblay"
+      "example": {
+        "fr": "Jean Tremblay",
+        "en": "Jean Tremblay"
+      }
     },
     "insurance_link": {
       "description": {
@@ -192,7 +252,10 @@
         "en": "Travel insurance information link"
       },
       "format": "text",
-      "example": "https://marlinhawkesbury.ca/insurance"
+      "example": {
+        "fr": "https://marlinhawkesbury.ca/insurance",
+        "en": "https://marlinhawkesbury.ca/insurance"
+      }
     },
     "passport_country": {
       "description": {
@@ -200,7 +263,10 @@
         "en": "Passport country"
       },
       "format": "text",
-      "example": "Canada"
+      "example": {
+        "fr": "Canada",
+        "en": "Canada"
+      }
     },
     "visa_link": {
       "description": {
@@ -208,7 +274,10 @@
         "en": "Visa information link"
       },
       "format": "text",
-      "example": "https://voyage.gc.ca/destinations"
+      "example": {
+        "fr": "https://voyage.gc.ca/destinations",
+        "en": "https://travel.gc.ca/destinations"
+      }
     },
     "case_number": {
       "description": {
@@ -216,7 +285,10 @@
         "en": "Complaint case number"
       },
       "format": "text",
-      "example": "CASE-2025-0142"
+      "example": {
+        "fr": "CASE-2025-0142",
+        "en": "CASE-2025-0142"
+      }
     },
     "resolution_timeline": {
       "description": {
@@ -224,7 +296,10 @@
         "en": "Resolution timeframe"
       },
       "format": "text",
-      "example": "3 à 5 jours ouvrables"
+      "example": {
+        "fr": "3 à 5 jours ouvrables",
+        "en": "3-5 business days"
+      }
     },
     "promotion_link": {
       "description": {
@@ -232,7 +307,10 @@
         "en": "Promotions page link"
       },
       "format": "text",
-      "example": "https://marlinhawkesbury.ca/deals"
+      "example": {
+        "fr": "https://marlinhawkesbury.ca/deals",
+        "en": "https://marlinhawkesbury.ca/deals"
+      }
     },
     "unsubscribe_link": {
       "description": {
@@ -240,7 +318,10 @@
         "en": "Unsubscribe link"
       },
       "format": "text",
-      "example": "https://marlinhawkesbury.ca/unsubscribe"
+      "example": {
+        "fr": "https://marlinhawkesbury.ca/unsubscribe",
+        "en": "https://marlinhawkesbury.ca/unsubscribe"
+      }
     },
     "after_hours_email": {
       "description": {
@@ -248,7 +329,10 @@
         "en": "Client email"
       },
       "format": "text",
-      "example": "sophie.gendron@email.com"
+      "example": {
+        "fr": "sophie.gendron@email.com",
+        "en": "sophie.gendron@email.com"
+      }
     },
     "emergency_number": {
       "description": {
@@ -256,7 +340,10 @@
         "en": "Information for emergency_number"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "inquiry_topic": {
       "description": {
@@ -264,7 +351,10 @@
         "en": "Information for inquiry_topic"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "e_ticket_link": {
       "description": {
@@ -272,7 +362,10 @@
         "en": "Information for e_ticket_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "check_in_link": {
       "description": {
@@ -280,7 +373,10 @@
         "en": "Information for check_in_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "flight_number": {
       "description": {
@@ -288,7 +384,10 @@
         "en": "Flight number"
       },
       "format": "text",
-      "example": "WS456 – Air Canada"
+      "example": {
+        "fr": "AC872 – Air Canada",
+        "en": "AC872 – Air Canada"
+      }
     },
     "check_in_date": {
       "description": {
@@ -296,7 +395,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-10"
+      "example": {
+        "fr": "2025-06-10",
+        "en": "2025-06-10"
+      }
     },
     "confirmation_number": {
       "description": {
@@ -304,7 +406,10 @@
         "en": "Information for confirmation_number"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "hotel_name": {
       "description": {
@@ -312,7 +417,10 @@
         "en": "Hotel booked"
       },
       "format": "text",
-      "example": "Whistler Village Inn"
+      "example": {
+        "fr": "Altis Grand Hotel",
+        "en": "Altis Grand Hotel"
+      }
     },
     "pickup_date": {
       "description": {
@@ -320,7 +428,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-24"
+      "example": {
+        "fr": "2025-06-24",
+        "en": "2025-06-24"
+      }
     },
     "rental_company": {
       "description": {
@@ -328,7 +439,10 @@
         "en": "Information for rental_company"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "reservation_number": {
       "description": {
@@ -336,7 +450,10 @@
         "en": "Information for reservation_number"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "activity_date": {
       "description": {
@@ -344,7 +461,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-07-15"
+      "example": {
+        "fr": "2025-07-15",
+        "en": "2025-07-15"
+      }
     },
     "activity_name": {
       "description": {
@@ -352,7 +472,10 @@
         "en": "Information for activity_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "item_name": {
       "description": {
@@ -360,7 +483,10 @@
         "en": "Information for item_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "waitlist_position": {
       "description": {
@@ -368,7 +494,10 @@
         "en": "Information for waitlist_position"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "seat_selection_link": {
       "description": {
@@ -376,7 +505,10 @@
         "en": "Information for seat_selection_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "airline_name": {
       "description": {
@@ -384,7 +516,10 @@
         "en": "Information for airline_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "baggage_details_link": {
       "description": {
@@ -392,7 +527,10 @@
         "en": "Information for baggage_details_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "request_details": {
       "description": {
@@ -400,7 +538,10 @@
         "en": "Information for request_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "quote_expiry_date": {
       "description": {
@@ -408,7 +549,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-07-02"
+      "example": {
+        "fr": "2025-06-10",
+        "en": "2025-06-10"
+      }
     },
     "quote_link": {
       "description": {
@@ -416,7 +560,10 @@
         "en": "Information for quote_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "alternative_options_link": {
       "description": {
@@ -424,7 +571,10 @@
         "en": "Information for alternative_options_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "new_price": {
       "description": {
@@ -432,7 +582,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "2 890,00 $",
+        "en": "$3,425.50"
+      }
     },
     "old_price": {
       "description": {
@@ -440,7 +593,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "3 425,50 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$4,120.75"
+      }
     },
     "required_details": {
       "description": {
@@ -448,7 +604,10 @@
         "en": "Information for required_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "payment_link": {
       "description": {
@@ -456,7 +615,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "2 890,00 $"
+      "example": {
+        "fr": "3 425,50 $",
+        "en": "$2,890.00"
+      }
     },
     "reason": {
       "description": {
@@ -464,7 +626,10 @@
         "en": "Information for reason"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "final_amount": {
       "description": {
@@ -472,7 +637,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "2 890,00 $",
+        "en": "$4,120.75"
+      }
     },
     "amount_paid": {
       "description": {
@@ -480,7 +648,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$4,120.75"
+      }
     },
     "payment_date": {
       "description": {
@@ -488,7 +659,10 @@
         "en": "Total amount due"
       },
       "format": "date",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$2,890.00"
+      }
     },
     "timeline": {
       "description": {
@@ -496,7 +670,10 @@
         "en": "Information for timeline"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "monthly_amount": {
       "description": {
@@ -504,7 +681,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$3,425.50"
+      }
     },
     "next_due_date": {
       "description": {
@@ -512,7 +692,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-24"
+      "example": {
+        "fr": "2025-06-24",
+        "en": "2025-06-24"
+      }
     },
     "cancellation_date": {
       "description": {
@@ -520,7 +703,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-10"
+      "example": {
+        "fr": "2025-06-10",
+        "en": "2025-06-10"
+      }
     },
     "invoice_link": {
       "description": {
@@ -528,7 +714,10 @@
         "en": "Information for invoice_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "invoice_number": {
       "description": {
@@ -536,7 +725,10 @@
         "en": "Information for invoice_number"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "deposit_amount": {
       "description": {
@@ -544,7 +736,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "2 890,00 $"
+      "example": {
+        "fr": "3 425,50 $",
+        "en": "$3,425.50"
+      }
     },
     "dispute_details": {
       "description": {
@@ -552,7 +747,10 @@
         "en": "Information for dispute_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "policy_details": {
       "description": {
@@ -560,7 +758,10 @@
         "en": "Insurance policy number"
       },
       "format": "text",
-      "example": "CV-HAWK-65122"
+      "example": {
+        "fr": "CV-HAWK-65122",
+        "en": "CV-HAWK-65122"
+      }
     },
     "net_refund": {
       "description": {
@@ -568,7 +769,10 @@
         "en": "Information for net_refund"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "penalty_amount": {
       "description": {
@@ -576,7 +780,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "2 890,00 $"
+      "example": {
+        "fr": "2 890,00 $",
+        "en": "$3,425.50"
+      }
     },
     "options": {
       "description": {
@@ -584,7 +791,10 @@
         "en": "Information for options"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "credit_amount": {
       "description": {
@@ -592,7 +802,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "3 425,50 $"
+      "example": {
+        "fr": "3 425,50 $",
+        "en": "$4,120.75"
+      }
     },
     "expiry_date": {
       "description": {
@@ -600,7 +813,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-07-02"
+      "example": {
+        "fr": "2025-07-02",
+        "en": "2025-07-02"
+      }
     },
     "missed_payment_date": {
       "description": {
@@ -608,7 +824,10 @@
         "en": "Total amount due"
       },
       "format": "date",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$4,120.75"
+      }
     },
     "new_reference": {
       "description": {
@@ -616,7 +835,10 @@
         "en": "Booking reference"
       },
       "format": "text",
-      "example": "MT-67155-Hawk"
+      "example": {
+        "fr": "MT-67155-Hawk",
+        "en": "MT-67155-Hawk"
+      }
     },
     "original_reference": {
       "description": {
@@ -624,7 +846,10 @@
         "en": "Booking reference"
       },
       "format": "text",
-      "example": "MT-67155-Hawk"
+      "example": {
+        "fr": "MT-67155-Hawk",
+        "en": "MT-67155-Hawk"
+      }
     },
     "partial_amount": {
       "description": {
@@ -632,7 +857,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$3,425.50"
+      }
     },
     "full_amount": {
       "description": {
@@ -640,7 +868,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "4 120,75 $"
+      "example": {
+        "fr": "4 120,75 $",
+        "en": "$3,425.50"
+      }
     },
     "change_details": {
       "description": {
@@ -648,7 +879,10 @@
         "en": "Information for change_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "new_itinerary_link": {
       "description": {
@@ -656,7 +890,10 @@
         "en": "Information for new_itinerary_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "new_time": {
       "description": {
@@ -664,7 +901,10 @@
         "en": "Information for new_time"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "old_time": {
       "description": {
@@ -672,7 +912,10 @@
         "en": "Information for old_time"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "tips_link": {
       "description": {
@@ -680,7 +923,10 @@
         "en": "Information for tips_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "connecting_city": {
       "description": {
@@ -688,7 +934,10 @@
         "en": "Information for connecting_city"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "gate_info": {
       "description": {
@@ -696,7 +945,10 @@
         "en": "Information for gate_info"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "layover_duration": {
       "description": {
@@ -704,7 +956,10 @@
         "en": "Information for layover_duration"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "new_room_type": {
       "description": {
@@ -712,7 +967,10 @@
         "en": "Information for new_room_type"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "meeting_point": {
       "description": {
@@ -720,7 +978,10 @@
         "en": "Information for meeting_point"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "start_time": {
       "description": {
@@ -728,7 +989,10 @@
         "en": "Information for start_time"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "tour_name": {
       "description": {
@@ -736,7 +1000,10 @@
         "en": "Information for tour_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "document_type": {
       "description": {
@@ -744,7 +1011,10 @@
         "en": "Information for document_type"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "boarding_pass_link": {
       "description": {
@@ -752,7 +1022,10 @@
         "en": "Information for boarding_pass_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "forecast_link": {
       "description": {
@@ -760,7 +1033,10 @@
         "en": "Information for forecast_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "currency_guide_link": {
       "description": {
@@ -768,7 +1044,10 @@
         "en": "Information for currency_guide_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "loyalty_link": {
       "description": {
@@ -776,7 +1055,10 @@
         "en": "Information for loyalty_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "welcome_bonus": {
       "description": {
@@ -784,7 +1066,10 @@
         "en": "Information for welcome_bonus"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "review_link": {
       "description": {
@@ -792,7 +1077,10 @@
         "en": "Information for review_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "supplier_name": {
       "description": {
@@ -800,7 +1088,10 @@
         "en": "Information for supplier_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "planning_link": {
       "description": {
@@ -808,7 +1099,10 @@
         "en": "Information for planning_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "hashtag": {
       "description": {
@@ -816,7 +1110,10 @@
         "en": "Information for hashtag"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "photo_upload_link": {
       "description": {
@@ -824,7 +1121,10 @@
         "en": "Information for photo_upload_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "item_description": {
       "description": {
@@ -832,7 +1132,10 @@
         "en": "Information for item_description"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "status": {
       "description": {
@@ -840,7 +1143,10 @@
         "en": "Information for status"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "referral_link": {
       "description": {
@@ -848,7 +1154,10 @@
         "en": "Information for referral_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "reward_amount": {
       "description": {
@@ -856,7 +1165,10 @@
         "en": "Total amount due"
       },
       "format": "text",
-      "example": "2 890,00 $"
+      "example": {
+        "fr": "2 890,00 $",
+        "en": "$4,120.75"
+      }
     },
     "passport_expiry_date": {
       "description": {
@@ -864,7 +1176,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-07-15"
+      "example": {
+        "fr": "2025-07-15",
+        "en": "2025-07-15"
+      }
     },
     "issue_details": {
       "description": {
@@ -872,7 +1187,10 @@
         "en": "Information for issue_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "resolution_plan": {
       "description": {
@@ -880,7 +1198,10 @@
         "en": "Information for resolution_plan"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "link": {
       "description": {
@@ -888,7 +1209,10 @@
         "en": "Information for link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "suggested_destination": {
       "description": {
@@ -896,7 +1220,10 @@
         "en": "destination"
       },
       "format": "text",
-      "example": "Venise, Italie"
+      "example": {
+        "fr": "Venise, Italie",
+        "en": "Banff, Alberta"
+      }
     },
     "weather_details": {
       "description": {
@@ -904,7 +1231,10 @@
         "en": "Information for weather_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "alert_details": {
       "description": {
@@ -912,7 +1242,10 @@
         "en": "Information for alert_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "cdc_link": {
       "description": {
@@ -920,7 +1253,10 @@
         "en": "Information for cdc_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "disruption_details": {
       "description": {
@@ -928,7 +1264,10 @@
         "en": "Information for disruption_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "government_link": {
       "description": {
@@ -936,7 +1275,10 @@
         "en": "Information for government_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "unrest_details": {
       "description": {
@@ -944,7 +1286,10 @@
         "en": "Information for unrest_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "airport_code": {
       "description": {
@@ -952,7 +1297,10 @@
         "en": "Information for airport_code"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "delay_reason": {
       "description": {
@@ -960,7 +1308,10 @@
         "en": "Information for delay_reason"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "disaster_type": {
       "description": {
@@ -968,7 +1319,10 @@
         "en": "Information for disaster_type"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "safety_link": {
       "description": {
@@ -976,7 +1330,10 @@
         "en": "Information for safety_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "change_percentage": {
       "description": {
@@ -984,7 +1341,10 @@
         "en": "Information for change_percentage"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "currency_code": {
       "description": {
@@ -992,7 +1352,10 @@
         "en": "Information for currency_code"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "impact_details": {
       "description": {
@@ -1000,7 +1363,10 @@
         "en": "Information for impact_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "effective_date": {
       "description": {
@@ -1008,7 +1374,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-24"
+      "example": {
+        "fr": "2025-06-24",
+        "en": "2025-06-24"
+      }
     },
     "rule_change": {
       "description": {
@@ -1016,7 +1385,10 @@
         "en": "Information for rule_change"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "new_hotel": {
       "description": {
@@ -1024,7 +1396,10 @@
         "en": "Hotel booked"
       },
       "format": "text",
-      "example": "Resort Playa Azul"
+      "example": {
+        "fr": "Resort Playa Azul",
+        "en": "Resort Playa Azul"
+      }
     },
     "original_hotel": {
       "description": {
@@ -1032,7 +1407,10 @@
         "en": "Hotel booked"
       },
       "format": "text",
-      "example": "Hotel Belle Époque"
+      "example": {
+        "fr": "Hotel Belle Époque",
+        "en": "Hotel Belle Époque"
+      }
     },
     "dates": {
       "description": {
@@ -1040,7 +1418,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-10"
+      "example": {
+        "fr": "2025-06-10",
+        "en": "2025-06-10"
+      }
     },
     "event_name": {
       "description": {
@@ -1048,7 +1429,10 @@
         "en": "Information for event_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "group_leader_name": {
       "description": {
@@ -1056,7 +1440,10 @@
         "en": "Group size"
       },
       "format": "text",
-      "example": "8 voyageurs"
+      "example": {
+        "fr": "12 voyageurs",
+        "en": "12 travelers"
+      }
     },
     "group_name": {
       "description": {
@@ -1064,7 +1451,10 @@
         "en": "Group size"
       },
       "format": "text",
-      "example": "12 voyageurs"
+      "example": {
+        "fr": "8 voyageurs",
+        "en": "8 travelers"
+      }
     },
     "deadline": {
       "description": {
@@ -1072,7 +1462,10 @@
         "en": "Information for deadline"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "registration_link": {
       "description": {
@@ -1080,7 +1473,10 @@
         "en": "Information for registration_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "traveler_name": {
       "description": {
@@ -1088,7 +1484,10 @@
         "en": "Information for traveler_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "policy_detail": {
       "description": {
@@ -1096,7 +1495,10 @@
         "en": "Insurance policy number"
       },
       "format": "text",
-      "example": "CV-HAWK-65122"
+      "example": {
+        "fr": "CV-HAWK-65122",
+        "en": "CV-HAWK-65122"
+      }
     },
     "month": {
       "description": {
@@ -1104,7 +1506,10 @@
         "en": "Information for month"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "report_link": {
       "description": {
@@ -1112,7 +1517,10 @@
         "en": "Information for report_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "approver_name": {
       "description": {
@@ -1120,7 +1528,10 @@
         "en": "Information for approver_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "cost": {
       "description": {
@@ -1128,7 +1539,10 @@
         "en": "Information for cost"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "profile_link": {
       "description": {
@@ -1136,7 +1550,10 @@
         "en": "Information for profile_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "end_date": {
       "description": {
@@ -1144,7 +1561,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-07-02"
+      "example": {
+        "fr": "2025-07-02",
+        "en": "2025-07-02"
+      }
     },
     "holiday_name": {
       "description": {
@@ -1152,7 +1572,10 @@
         "en": "Information for holiday_name"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "start_date": {
       "description": {
@@ -1160,7 +1583,10 @@
         "en": "Date"
       },
       "format": "date",
-      "example": "2025-06-24"
+      "example": {
+        "fr": "2025-06-24",
+        "en": "2025-06-24"
+      }
     },
     "resolution_details": {
       "description": {
@@ -1168,7 +1594,10 @@
         "en": "Information for resolution_details"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "claim_link": {
       "description": {
@@ -1176,7 +1605,10 @@
         "en": "Information for claim_link"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     },
     "policy_number": {
       "description": {
@@ -1184,7 +1616,10 @@
         "en": "Insurance policy number"
       },
       "format": "text",
-      "example": "MARLIN-98274"
+      "example": {
+        "fr": "MARLIN-98274",
+        "en": "MARLIN-98274"
+      }
     },
     "resolution_offer": {
       "description": {
@@ -1192,12 +1627,15 @@
         "en": "Information for resolution_offer"
       },
       "format": "text",
-      "example": "Valeur à définir"
+      "example": {
+        "fr": "Valeur à définir",
+        "en": "Value to be defined"
+      }
     }
   },
   "templates": [
     {
-      "id": "b001",
+      "id": "b001_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1226,7 +1664,7 @@
       ]
     },
     {
-      "id": "q002",
+      "id": "q002_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -1254,7 +1692,7 @@
       ]
     },
     {
-      "id": "p003",
+      "id": "p003_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -1282,7 +1720,7 @@
       ]
     },
     {
-      "id": "c004",
+      "id": "c004_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -1310,7 +1748,7 @@
       ]
     },
     {
-      "id": "i005",
+      "id": "i005_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -1338,7 +1776,7 @@
       ]
     },
     {
-      "id": "p006",
+      "id": "p006_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -1365,7 +1803,7 @@
       ]
     },
     {
-      "id": "t007",
+      "id": "t007_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -1393,7 +1831,7 @@
       ]
     },
     {
-      "id": "g008",
+      "id": "g008_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -1421,7 +1859,7 @@
       ]
     },
     {
-      "id": "c009",
+      "id": "c009_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -1448,7 +1886,7 @@
       ]
     },
     {
-      "id": "i010",
+      "id": "i010_1",
       "category": "Assurance",
       "category_fr": "Assurance",
       "category_en": "Insurance",
@@ -1476,7 +1914,7 @@
       ]
     },
     {
-      "id": "v011",
+      "id": "v011_1",
       "category": "Visa & documentation",
       "category_fr": "Visa & documentation",
       "category_en": "Visa & Documentation",
@@ -1504,7 +1942,7 @@
       ]
     },
     {
-      "id": "c012",
+      "id": "c012_1",
       "category": "Plaintes",
       "category_fr": "Plaintes",
       "category_en": "Complaints",
@@ -1532,7 +1970,7 @@
       ]
     },
     {
-      "id": "m013",
+      "id": "m013_1",
       "category": "Marketing & promotions",
       "category_fr": "Marketing & promotions",
       "category_en": "Marketing & Promotions",
@@ -1559,7 +1997,7 @@
       ]
     },
     {
-      "id": "e014",
+      "id": "e014_1",
       "category": "Urgence",
       "category_fr": "Urgence",
       "category_en": "Emergency",
@@ -1586,7 +2024,7 @@
       ]
     },
     {
-      "id": "g015",
+      "id": "g015_1",
       "category": "Demande générale",
       "category_fr": "Demande générale",
       "category_en": "General Inquiry",
@@ -1613,7 +2051,7 @@
       ]
     },
     {
-      "id": "b016",
+      "id": "b016_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1640,7 +2078,7 @@
       ]
     },
     {
-      "id": "b017",
+      "id": "b017_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1668,7 +2106,7 @@
       ]
     },
     {
-      "id": "b018",
+      "id": "b018_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1696,7 +2134,7 @@
       ]
     },
     {
-      "id": "b019",
+      "id": "b019_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1724,7 +2162,7 @@
       ]
     },
     {
-      "id": "b020",
+      "id": "b020_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1752,7 +2190,7 @@
       ]
     },
     {
-      "id": "b021",
+      "id": "b021_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1779,7 +2217,7 @@
       ]
     },
     {
-      "id": "b022",
+      "id": "b022_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1806,7 +2244,7 @@
       ]
     },
     {
-      "id": "b023",
+      "id": "b023_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1833,7 +2271,7 @@
       ]
     },
     {
-      "id": "b024",
+      "id": "b024_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1860,7 +2298,7 @@
       ]
     },
     {
-      "id": "b025",
+      "id": "b025_1",
       "category": "Réservation",
       "category_fr": "Réservation",
       "category_en": "Booking",
@@ -1887,7 +2325,7 @@
       ]
     },
     {
-      "id": "q026",
+      "id": "q026_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -1915,7 +2353,7 @@
       ]
     },
     {
-      "id": "q027",
+      "id": "q027_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -1942,7 +2380,7 @@
       ]
     },
     {
-      "id": "q028",
+      "id": "q028_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -1969,7 +2407,7 @@
       ]
     },
     {
-      "id": "q029",
+      "id": "q029_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -1997,7 +2435,7 @@
       ]
     },
     {
-      "id": "q030",
+      "id": "q030_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2025,7 +2463,7 @@
       ]
     },
     {
-      "id": "q031",
+      "id": "q031_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2051,7 +2489,7 @@
       ]
     },
     {
-      "id": "q032",
+      "id": "q032_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2077,7 +2515,7 @@
       ]
     },
     {
-      "id": "q033",
+      "id": "q033_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2104,7 +2542,7 @@
       ]
     },
     {
-      "id": "q034",
+      "id": "q034_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2131,7 +2569,7 @@
       ]
     },
     {
-      "id": "q035",
+      "id": "q035_1",
       "category": "Devis",
       "category_fr": "Devis",
       "category_en": "Quotes",
@@ -2158,7 +2596,7 @@
       ]
     },
     {
-      "id": "p036",
+      "id": "p036_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2186,7 +2624,7 @@
       ]
     },
     {
-      "id": "p037",
+      "id": "p037_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2214,7 +2652,7 @@
       ]
     },
     {
-      "id": "p038",
+      "id": "p038_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2242,7 +2680,7 @@
       ]
     },
     {
-      "id": "p039",
+      "id": "p039_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2270,7 +2708,7 @@
       ]
     },
     {
-      "id": "p040",
+      "id": "p040_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2298,7 +2736,7 @@
       ]
     },
     {
-      "id": "p041",
+      "id": "p041_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2326,7 +2764,7 @@
       ]
     },
     {
-      "id": "p042",
+      "id": "p042_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2354,7 +2792,7 @@
       ]
     },
     {
-      "id": "p043",
+      "id": "p043_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2382,7 +2820,7 @@
       ]
     },
     {
-      "id": "p044",
+      "id": "p044_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2409,7 +2847,7 @@
       ]
     },
     {
-      "id": "p045",
+      "id": "p045_1",
       "category": "Paiements",
       "category_fr": "Paiements",
       "category_en": "Payments",
@@ -2436,7 +2874,7 @@
       ]
     },
     {
-      "id": "c046",
+      "id": "c046_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2463,7 +2901,7 @@
       ]
     },
     {
-      "id": "c047",
+      "id": "c047_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2491,7 +2929,7 @@
       ]
     },
     {
-      "id": "c048",
+      "id": "c048_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2519,7 +2957,7 @@
       ]
     },
     {
-      "id": "c049",
+      "id": "c049_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2546,7 +2984,7 @@
       ]
     },
     {
-      "id": "c050",
+      "id": "c050_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2573,7 +3011,7 @@
       ]
     },
     {
-      "id": "c051",
+      "id": "c051_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2601,7 +3039,7 @@
       ]
     },
     {
-      "id": "c052",
+      "id": "c052_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2628,7 +3066,7 @@
       ]
     },
     {
-      "id": "c053",
+      "id": "c053_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2655,7 +3093,7 @@
       ]
     },
     {
-      "id": "c054",
+      "id": "c054_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2683,7 +3121,7 @@
       ]
     },
     {
-      "id": "c055",
+      "id": "c055_1",
       "category": "Annulations",
       "category_fr": "Annulations",
       "category_en": "Cancellations",
@@ -2710,7 +3148,7 @@
       ]
     },
     {
-      "id": "i056",
+      "id": "i056_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2738,7 +3176,7 @@
       ]
     },
     {
-      "id": "i057",
+      "id": "i057_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2767,7 +3205,7 @@
       ]
     },
     {
-      "id": "i058",
+      "id": "i058_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2795,7 +3233,7 @@
       ]
     },
     {
-      "id": "i059",
+      "id": "i059_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2823,7 +3261,7 @@
       ]
     },
     {
-      "id": "i060",
+      "id": "i060_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2850,7 +3288,7 @@
       ]
     },
     {
-      "id": "i061",
+      "id": "i061_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2878,7 +3316,7 @@
       ]
     },
     {
-      "id": "i062",
+      "id": "i062_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2906,7 +3344,7 @@
       ]
     },
     {
-      "id": "i063",
+      "id": "i063_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2933,7 +3371,7 @@
       ]
     },
     {
-      "id": "i064",
+      "id": "i064_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2960,7 +3398,7 @@
       ]
     },
     {
-      "id": "i065",
+      "id": "i065_1",
       "category": "Itinéraire",
       "category_fr": "Itinéraire",
       "category_en": "Itinerary",
@@ -2987,7 +3425,7 @@
       ]
     },
     {
-      "id": "p066",
+      "id": "p066_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3014,7 +3452,7 @@
       ]
     },
     {
-      "id": "p067",
+      "id": "p067_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3041,7 +3479,7 @@
       ]
     },
     {
-      "id": "p068",
+      "id": "p068_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3068,7 +3506,7 @@
       ]
     },
     {
-      "id": "p069",
+      "id": "p069_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3095,7 +3533,7 @@
       ]
     },
     {
-      "id": "p070",
+      "id": "p070_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3122,7 +3560,7 @@
       ]
     },
     {
-      "id": "p071",
+      "id": "p071_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3149,7 +3587,7 @@
       ]
     },
     {
-      "id": "p072",
+      "id": "p072_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3175,7 +3613,7 @@
       ]
     },
     {
-      "id": "p073",
+      "id": "p073_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3202,7 +3640,7 @@
       ]
     },
     {
-      "id": "p074",
+      "id": "p074_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3227,7 +3665,7 @@
       ]
     },
     {
-      "id": "p075",
+      "id": "p075_1",
       "category": "Suivi post-voyage",
       "category_fr": "Suivi post-voyage",
       "category_en": "Post-Travel Follow-up",
@@ -3255,7 +3693,7 @@
       ]
     },
     {
-      "id": "t076",
+      "id": "t076_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3283,7 +3721,7 @@
       ]
     },
     {
-      "id": "t077",
+      "id": "t077_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3311,7 +3749,7 @@
       ]
     },
     {
-      "id": "t078",
+      "id": "t078_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3339,7 +3777,7 @@
       ]
     },
     {
-      "id": "t079",
+      "id": "t079_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3367,7 +3805,7 @@
       ]
     },
     {
-      "id": "t080",
+      "id": "t080_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3395,7 +3833,7 @@
       ]
     },
     {
-      "id": "t081",
+      "id": "t081_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3423,7 +3861,7 @@
       ]
     },
     {
-      "id": "t082",
+      "id": "t082_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3451,7 +3889,7 @@
       ]
     },
     {
-      "id": "t083",
+      "id": "t083_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3479,7 +3917,7 @@
       ]
     },
     {
-      "id": "t084",
+      "id": "t084_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3507,7 +3945,7 @@
       ]
     },
     {
-      "id": "t085",
+      "id": "t085_1",
       "category": "Avis de voyage",
       "category_fr": "Avis de voyage",
       "category_en": "Travel Advisories",
@@ -3535,7 +3973,7 @@
       ]
     },
     {
-      "id": "g086",
+      "id": "g086_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -3563,7 +4001,7 @@
       ]
     },
     {
-      "id": "g087",
+      "id": "g087_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -3591,7 +4029,7 @@
       ]
     },
     {
-      "id": "g088",
+      "id": "g088_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -3618,7 +4056,7 @@
       ]
     },
     {
-      "id": "c089",
+      "id": "c089_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -3646,7 +4084,7 @@
       ]
     },
     {
-      "id": "c090",
+      "id": "c090_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -3674,7 +4112,7 @@
       ]
     },
     {
-      "id": "c091",
+      "id": "c091_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -3701,7 +4139,7 @@
       ]
     },
     {
-      "id": "c092",
+      "id": "c092_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -3729,7 +4167,7 @@
       ]
     },
     {
-      "id": "g093",
+      "id": "g093_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -3757,7 +4195,7 @@
       ]
     },
     {
-      "id": "c094",
+      "id": "c094_1",
       "category": "Voyages d'affaires",
       "category_fr": "Voyages d'affaires",
       "category_en": "Corporate Travel",
@@ -3784,7 +4222,7 @@
       ]
     },
     {
-      "id": "g095",
+      "id": "g095_1",
       "category": "Voyages de groupe",
       "category_fr": "Voyages de groupe",
       "category_en": "Group Travel",
@@ -3811,7 +4249,7 @@
       ]
     },
     {
-      "id": "g096",
+      "id": "g096_1",
       "category": "Demande générale",
       "category_fr": "Demande générale",
       "category_en": "General Inquiry",
@@ -3839,7 +4277,7 @@
       ]
     },
     {
-      "id": "g097",
+      "id": "g097_1",
       "category": "Demande générale",
       "category_fr": "Demande générale",
       "category_en": "General Inquiry",
@@ -3866,7 +4304,7 @@
       ]
     },
     {
-      "id": "e098",
+      "id": "e098_1",
       "category": "Urgence",
       "category_fr": "Urgence",
       "category_en": "Emergency",
@@ -3893,7 +4331,7 @@
       ]
     },
     {
-      "id": "i099",
+      "id": "i099_1",
       "category": "Assurance",
       "category_fr": "Assurance",
       "category_en": "Insurance",
@@ -3920,7 +4358,7 @@
       ]
     },
     {
-      "id": "c100",
+      "id": "c100_1",
       "category": "Plaintes",
       "category_fr": "Plaintes",
       "category_en": "Complaints",
