@@ -5,7 +5,7 @@ import { normalizeVarKey } from './utils/variables'
 import canonicalTemplatesRaw from '../complete_email_templates.json'
 import { createPortal } from 'react-dom'
 import Fuse from 'fuse.js'
-import { loadState, saveState } from './utils/storage.js';
+import { loadState, saveState, getDefaultState, clearState } from './utils/storage.js';
 // Deploy marker: 2025-10-16T07:31Z
 import { Search, FileText, Copy, RotateCcw, Languages, Filter, Globe, Sparkles, Mail, Edit3, Link, Settings, X, Move, Send, Star, ClipboardPaste, Eraser, Pin, PinOff, Minimize2, ExternalLink, Expand, Shrink, MoveRight, LifeBuoy } from 'lucide-react'
 import echoLogo from './assets/echo-logo.svg'
@@ -34,7 +34,32 @@ const CATEGORY_BADGE_STYLES = {
   default: { bg: '#e6f0ff', border: '#c7dbff', text: '#8a7530' }
 }
 
-const getCategoryBadgeStyle = (category = '') => CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default
+const CATEGORY_INDICATOR_COLORS_DEFAULT = {
+  'Devis et approbations': '#1d5f58',
+  'Devis et approbation': '#1d5f58',
+  'Documents et formats': '#4932a8',
+  'Délai et livraison': '#b35b1f',
+  'Délais et livraison': '#b35b1f',
+  'Précisions et instructions client': '#1f593a',
+  'Suivi et annulation': '#8f1e46',
+  'Sécurité et droits d\'auteur': '#7a5717',
+  default: '#5a88b5'
+}
+
+const getCategoryBadgeStyle = (category = '', customColors = {}) => {
+  // If custom color exists, generate dynamic style
+  if (customColors[category]) {
+    const baseColor = customColors[category]
+    return {
+      bg: baseColor + '20',  // 20% opacity for background
+      border: baseColor + '80',  // 80% opacity for border
+      text: baseColor
+    }
+  }
+  // Fall back to predefined styles
+  return CATEGORY_BADGE_STYLES[category] || CATEGORY_BADGE_STYLES.default
+}
+const getCategoryIndicatorColor = (category = '', customColors = {}) => customColors[category] || CATEGORY_INDICATOR_COLORS_DEFAULT[category] || CATEGORY_INDICATOR_COLORS_DEFAULT.default
 
 // Custom CSS for modern typography and variable highlighting with the EXACT original teal/sage styling
 const customEditorStyles = `
@@ -1007,7 +1032,29 @@ function App() {
   }, [])
 
   // Load saved state
-  const savedState = loadState()
+  const skipSavedState = useMemo(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('reset') === '1'
+    } catch {
+      return false
+    }
+  }, [])
+
+  const savedState = useMemo(() => (skipSavedState ? getDefaultState() : loadState()), [skipSavedState])
+
+  useEffect(() => {
+    if (!skipSavedState) return
+    clearState()
+    try {
+      localStorage.removeItem('ea_last_template_id')
+      localStorage.removeItem('ea_last_template_lang')
+    } catch {}
+    try {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('reset')
+      window.history.replaceState(null, '', url.toString())
+    } catch {}
+  }, [skipSavedState])
   
   // State for template data
   const [templatesData, setTemplatesData] = useState(null)
@@ -2078,17 +2125,18 @@ function App() {
 
   // Auto-select first template after load to avoid "no template" UX if user hasn't picked one
   useEffect(() => {
-    if (!loading && templatesData && !selectedTemplate && Array.isArray(templatesData.templates) && templatesData.templates.length > 0) {
-      let templateToSelect = null
-      if (selectedTemplateId) {
-        templateToSelect = templatesData.templates.find(t => t.id === selectedTemplateId)
-      }
-      if (!templateToSelect) {
-        templateToSelect = templatesData.templates[0]
-      }
-      setSelectedTemplate(templateToSelect)
-      if (debug) console.log('[EA][Debug] Auto-selected template:', templateToSelect.id)
+    if (!loading || selectedTemplate || !templatesData?.templates?.length) return
+    if (!selectedTemplateId) {
+      if (debug) console.log('[EA][Debug] Template load complete without saved selection; awaiting user pick')
+      return
     }
+    const templateToSelect = templatesData.templates.find(t => t.id === selectedTemplateId)
+    if (!templateToSelect) {
+      if (debug) console.warn('[EA][Debug] Saved template id not found in catalog:', selectedTemplateId)
+      return
+    }
+    setSelectedTemplate(templateToSelect)
+    if (debug) console.log('[EA][Debug] Auto-selected restored template:', templateToSelect.id)
   }, [loading, templatesData, selectedTemplate, selectedTemplateId, debug])
 
   /**
@@ -3762,7 +3810,8 @@ ${cleanBodyHtml}
                   <div style={{ height: topPad }} />
                   <div className="space-y-3">
                     {filteredTemplates.slice(start, end).map((template) => {
-                      const badgeStyle = getCategoryBadgeStyle(template.category)
+                      const badgeStyle = getCategoryBadgeStyle(template.category, templatesData?.metadata?.categoryColors || {})
+                      const indicatorColor = getCategoryIndicatorColor(template.category, templatesData?.metadata?.categoryColors || {})
                       const badgeLabel = t.categories?.[template.category] || template.category
                       return (
                         <div
@@ -3793,12 +3842,18 @@ ${cleanBodyHtml}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h3 className="font-bold text-gray-900 text-[13px] mb-1" title={template.title[templateLanguage]}>
-                                {renderHighlighted(
-                                  template.title[templateLanguage],
-                                  getMatchRanges(template.id, `title.${templateLanguage}`)
-                                )}
-                              </h3>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span
+                                  className="h-2.5 w-2.5 rounded-full shadow-sm"
+                                  style={{ backgroundColor: indicatorColor, border: '1px solid rgba(0,0,0,0.08)' }}
+                                />
+                                <h3 className="font-bold text-gray-900 text-[13px]" title={template.title[templateLanguage]}>
+                                  {renderHighlighted(
+                                    template.title[templateLanguage],
+                                    getMatchRanges(template.id, `title.${templateLanguage}`)
+                                  )}
+                                </h3>
+                              </div>
                               <p className="text-[12px] text-gray-600 mb-2 leading-relaxed line-clamp-2" title={template.description[templateLanguage]}>
                                 {renderHighlighted(
                                   template.description[templateLanguage],
@@ -3904,7 +3959,7 @@ ${cleanBodyHtml}
               </div>
               <div className="mt-3 space-y-3">
                 {filteredTemplates.slice(0, 80).map((template) => {
-                  const badgeStyle = getCategoryBadgeStyle(template.category)
+                  const badgeStyle = getCategoryBadgeStyle(template.category, templatesData?.metadata?.categoryColors || {})
                   const badgeLabel = t.categories?.[template.category] || template.category
                   return (
                     <div key={template.id} onClick={() => { setSelectedTemplate(template); setShowMobileTemplates(false) }} className="w-full p-4 border border-[#e1eaf2] bg-white rounded-[14px]">
